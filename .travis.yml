@@ -12,8 +12,8 @@ addons:
 script:
   - doxygen Doxyfile
 
-include: 
-  - "_*.*"
+after_success:
+- touch .nojekyll
 
 deploy:
   provider: pages
