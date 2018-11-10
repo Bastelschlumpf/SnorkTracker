@@ -12,6 +12,9 @@ addons:
 script:
   - doxygen Doxyfile
 
+include: 
+  - "_*.*"
+
 deploy:
   provider: pages
   skip_cleanup: true
