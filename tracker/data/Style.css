@@ -1,0 +1,86 @@
+
+div, fieldset, input, select {
+	padding: 5px;
+	font-size: 1em;
+}
+
+input {
+	width: 100%;
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+}
+
+select {
+	width: 100%;
+}
+
+textarea {
+	resize: none;
+	width: 98%;
+	height: 318px;
+	padding: 5px;
+	overflow: auto;
+}
+
+body {
+	text-align: center;
+	font-family: verdana;
+}
+
+td {
+	padding: 0px;
+}
+
+button {
+   border: 0;
+   border-radius: 0.3rem;
+   background-color: #007dc1;
+   color: #fff;
+   line-height: 2.4rem;
+   font-size: 1.2rem;
+   width: 100%;
+   -webkit-transition-duration: 0.4s;
+   transition-duration: 0.4s;
+   cursor: pointer;
+}
+
+button:hover {
+   background-color: #004266;
+}
+
+.bred {
+   background-color: #d22d2d;
+}
+
+.bred:hover {
+	background-color: #931f1f;
+}
+
+.bgrn {
+   background-color: #009900;
+}
+
+.bgrn:hover {
+   background-color: #004d00;
+}
+
+a {
+	text-decoration: none;
+}
+
+.p {
+	float: left;
+	text-align: left;
+}
+
+br {
+   content: "";
+   display: block;
+   margin: 1rem;
+}
+
+.q {
+    float: right;
+    text-align: right;
+}
