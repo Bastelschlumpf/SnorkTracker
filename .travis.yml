@@ -19,8 +19,8 @@ addons:
 # Build your code e.g. by calling make
 script:
   - touch .nojekyll
-  - doxysen Doxyfile
-  - ls -l
+  - doxygen Doxyfile
+  - ls -la
 
 # Deploy using travis builtin GitHub Pages support
 deploy:
