@@ -19,6 +19,7 @@ addons:
 # Build your code e.g. by calling make
 script:
   - touch .nojekyll
+  - touch html/atest.txt
   - doxygen Doxyfile
   - ls -la
 
