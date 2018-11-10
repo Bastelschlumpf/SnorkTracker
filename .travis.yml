@@ -2,7 +2,7 @@
 # Travis ci script for doxygen generation.
 ##########################################
 
-# This will run on Travis' 'new' container-based infrastructure
+# Runs on travis container-based infrastructure
 sudo: false
 
 # Blacklist
@@ -18,10 +18,8 @@ addons:
 
 # Build your code e.g. by calling make
 script:
-  - touch .nojekyll
   - doxygen Doxyfile
-  - touch html/atest.txt
-  - ls -la
+  - touch html/.nojekyll
 
 # Deploy using travis builtin GitHub Pages support
 deploy:
