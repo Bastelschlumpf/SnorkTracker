@@ -1,8 +1,8 @@
 
 ## SnorkTracker
-   **GPS IoT tracker board for scanning gps and environment information and sending this to a MQTT server via GPRS.**
+   **GPS IoT tracker board for scanning gps and environment information and sending them to a MQTT server via GPRS.**
 
-   ![Figure 1](images/SnorkTracker.jpg "Figure 1") 
+   ![Figure 1](images/SnorkTracker.jpg "Figure 1")
 
    ![Figure 1](images/WebInterface.png "Figure 1")
 
@@ -13,8 +13,8 @@
 
    The main components of the systems are:
    * A 'Wemos D1 mini lite' to run the software.
-   * A BK-808 v2 (SIM808) GPS/GPRS Modul to communicate with a MQTT server and send/receive SMS.
-   * An BME280 modul to scan environment.
+   * A BK-808 v2 (SIM808) GPS/GPRS modul to communicate with a MQTT server and to send/receive SMS.
+   * An BME280 modul to scan environmental data.
    * An LM2596 DC-DC converter to supply the GPS/GPRS board.
    * An MCP1703 for the 3.3V Wemos power supply.
 
@@ -25,13 +25,16 @@
    The board has an resistor divider to scan the 'power supply voltage' and
    a BME280 sensor to read the temperature, humidity and pressure.
 
-   It can works on a typically car battery voltage from 10V to 16V.
+   The module operates with a supply voltage of approx. 6V to 16V. Perfect for a car battery.
 
    For saving power the 'supply voltage' can be used to decide if the battery is on loading or not
    and so the system can configured to go into deep sleep mode which uses only ~0.3mA.
 
-   With the GSM chip the system can interact with sms commandos to set default values or send 
-   current information like gps or temperature.
+   With the GSM chip, the system can interact with SMS commands to set default values or send current
+   information such as GPS or temperature.
+
+   You can also use the software on a esp8266 chip like the wemos d1 for having a serial console over HTTP if you connect
+   to the D5 and D6 pin.
 
 ### Disclaimer
    I don't take any responsibility nor liability for using this software nor for the 
@@ -40,25 +43,27 @@
 ### Prerequisites
    * Arduino IDE
    * ESP8266 Board software
-   * ESP8266 filesystem uploader
+   * ESP8266 file-system up-loader
    * **SnorkTracker** software
-   * Parts from the partlist
+   * Parts from the part-list
    * Micro-USB cable
    * Soldering iron kit
    * Multimeter
    * Electronics tool
 
 ### Setup Arduino Environment
-   * Download Arduino IDE from https://www.arduino.cc/en/Main/Software and
-     follow the installation instructions.
+   * Download Arduino IDE from  
+     https://www.arduino.cc/en/Main/Software  
+     and follow the installation instructions.
    * Install ESP8266 board software
-      *  In Arduino IDE set 'File | Preferences' to Boards Manager URL http://arduino.esp8266.com/stable/package_esp8266com_index.json 
-         and select OK.
+      *  In Arduino IDE set 'File | Preferences' to Boards Manager URL  
+         http://arduino.esp8266.com/stable/package_esp8266com_index.json  
       * Open 'Tools | Board... | Boards Manager...' 
         and search for 'esp8266' and install the software package
-   * Install the ESP8266 filesystem uploader from https://github.com/esp8266/arduino-esp8266fs-plugin
+   * Install the ESP8266 file-system up-loader from  
+      https://github.com/esp8266/arduino-esp8266fs-plugin  
       and follow the installation instructions.
-   * Download **SnorkTracker** software
+   * Download **SnorkTracker** software by clone or download.
    * Copy the content of the snorktracker/lib directory to the Arduino installation lib directory.
      For example c:/Program Files (x86)/Arduino/lib/
    * Configure Arduino IDE
@@ -69,30 +74,32 @@
 ### Circuit
    ![Figure 2](circuit/Esp8266Sim808.png "Figure 2")
 
-### Assemble
-   * Take the Breadboard and the other items from the partlist.*  
+### Assemble the Components
+   * Take the Breadboard and the other items from the part-list.  
      ![Figure 3](images/Breadboard.jpg   "Figure 3")
-   * First of all unsolder the pin 5 from the DC-DC Modul, bend it up and
-     solder solder a line to it. After that put 4 spacers under the DC-DC Modul and solder it
-     to the breadboard. See  
+   * First of all unsolder the (ON/OFF) pin 5 from the DC-DC Modul, bend it up and
+     solder a line to it. After that put 4 spacers under the DC-DC Modul and solder it
+     to the breadboard. Check that the bottom of the LM2596 module is not in contact with the board.
+     See  
      ![Figure 4](images/DC-DC-Modul.jpg  "Figure 4")
-   * Place the other parts from the partlist on the breadboard and solder it as shown.  
+   * Place the other parts from the part-list on the breadboard and solder it as shown.  
      Pay attention to the polarity of the capacitors!  
      Split the header connector to the length it is needed and solder it. 
-     A header connector is needed because flashing of the Wemos modul does not work 
-     if it is connected to the board.
+     A header connector is needed because flashing of the Wemos modul often does not work 
+     if it is still connected to the board.
      Check if the Wemos and SIM808 modul has enough space and fits into the pins.
      ![Figure 5](images/Unplugged.jpg    "Figure 5")
-   * Connect all the pins of the parts as seen on the circuit image.  
+   * Connect all the pins of the parts as seen on the circuit image with wires.  
      ![Figure 4](images/Back.jpg         "Figure 4")
    * The final board could look like this  
      ![Figure 6](images/SnorkTracker.jpg "Figure 6")
-   * Check all the wirring twice with a multimeter
+   * Check all the wiring with a multimeter. Also against short-circuit.
 
-### Setup
+### Setup the LM2596 voltage and install the software
    * The first step we have to do is to set the right 5V for the SIM808 modul.  
      * For that unplug the Wemos and the SIM808 modul.  
      * Connect a 12 power supply to the screw connector. Be sure + and - are correct!
+     * Switch on the LM2596 modul by connection the unsoldered pin 5 to ground. 
      * Now, connect the multimeter to the output pins of the DC-DC modul and screw on
         the modul resistor until the multimeter shows exact 5.0V on the two out-pins.
    * Check the pins on the female header connector for the right voltage.
@@ -102,26 +109,33 @@
         the Wemos modul and still open.
    * Now its time to flash the software to the Wemos modul.
      * Unplug the Wemos modul (if plugged) and connect it with the USB cable to your computer.  
+       After connect via usb you should can the select the arduino port under 'Tools | Port | ...'.  
      * Open the tracker.ino file in the tracker folder and check the Arduino environment settings.
-     * Upload the SPIFFS files with the 'Tools | ESP8266 Sketch data upload' menu.
+     * Upload the SPIFFS files with the 'Tools | ESP8266 Sketch data upload' menu.  
+       The SPIFFS files (html's, styles and javascripts) are taken from the data subdirectory.
      * After that go to the *Config.h* file of the project and enter the right configure values.
      * Now we can flash the program to the Wemos chip by clicking 'Sketch | upload'
-     * Unplug and plug the Wemos modul.
-     * If everything is correct you can see an accesspoint in the WLAN of your computer or 
-       you can connect to the browser interface by entering a dummy http request because the AP has
-       a captive functionality to reroute the url to the right ip.
-       http://dummy.com  
+     * Unplug and plug again the Wemos modul to the usb cable and start immediately the serial monitor 
+       of the Arduino IDE 'Tools | Serial monitor'.
+     * If everything is correct you can see an access-point in the WLAN of your computer and you can connect 
+       to the browser interface by calling the ip in your browser.
+       The software works alos in a captive way, so you can entering a dummy (not https) url and the system should you 
+       redirect to the web interface. For example http://dummy.com  
        If this does not work find out the new ip via your WLAN router interface.
-   * If the flashing works fine you can plug the modules to the board and check if the interface works.
+   * If the software works fine on the usb cable then you can plug the wemos into the board and connect a power supply.
+     Check again the connectivity.
 
 ## Function
-   * The software in the Wemos modul creates a webserver in station and/or in ap mode.
+   * The software in the Wemos modul creates a web-server in station and/or in access-point mode.
    * The analog input of the wemos is connected to the middle of two voltage divider resistors.  
      So it can read the power supply voltage of the system (for example the car battery voltage).
    * The software can be configured to recognize a charging or discharging car battery to switch on or off the 
-     submodules.
-   * A BME280 sensor is connected to the 3.3V power and can be switch on via a ground pin of the wemos chip.  
-      This is done only from time to time to save energy.
+     submodules. With my car this was:
+     * 11.8 Volt if the car was switched off for more than a day.
+     * 14.2 Volt if the engine is running.
+     * 13.3 Volt after switch off the engine.
+   * A BME280 sensor is connected to the 3.3V power and can be switch on via setting the D4 pin of the wemos chip
+     to ground. This is done only from time to time to save energy.
    * There is a LM2596 DC-DC modul on the board which can be switched on by a '-' signal to the pin 5 of the LM2596.  
      Behind the DC-DC modul there is a SIM808 modul with GPS/GPRS/GSM functionality. So the Wemos can switch on/off 
      the SIM808 chip to save energy.  
@@ -129,23 +143,23 @@
    * Via the GPRS modul it can send the scanned data to a MQTT server and can communicate via SMS to a phone.
 
 ## Source Code
-   The easiest way to understand what the programm does is to navigate by the main source modules via the Arduino IDE or 
+   The easiest way to understand what the program does is to navigate by the main source modules via the Arduino IDE or 
    to explore the source code via  
    [**DoxyGen generated documentation**](https://bastelschlumpf.github.io/Snorktracker).  
    You can update the DoxyGen generated documentation by installing Doxygen (from http://www.doxygen.org) on your machine 
    and run the DoxyGen generation batch **Doxygen.bat** from the main folder.
 
-## Partlist
+## Part-list
 |Label              |Part Type                |Properties        |
 |-------------------|-------------------------|------------------|
 |Breadboard         |Double sided PCB board   |24 x 18 holes     |
 |Power connector    |Mount screw connector    |2 pins            |
 |Header connector   |Female header connector  |3 x 9 pins        |
 |wire               |colored breadboard wire  |i.e. 0.14 mm2     |
-|V1                 |VC Power                 |10V - 16V         |
+|V1                 |VC Power                 |6V - 16V          |
 |WeMos D1 Mini lite |WeMos D1 Mini lite       |ESP8295           |
 |BK-808v2           |BK-808 v2                |www.and-global.com|
-|GPS Antenna        |Embedded GPS Antenne     |uFL connector     |
+|GPS Antenna        |Embedded GPS Antenna     |uFL connector     |
 |GSM Antenna        |Embedded GSM Antenna     |uFL connector     |
 |SIM card           |SIM card for sms/data    |with deposit      |
 |BME280             |BME280                   |3.3V              |
@@ -162,7 +176,7 @@
 ### Shopping list
 Here are some sample shopping items. Please check the detail if everything is correct.
 
-|Label              |Price      |Sample url        |
+|Label              |Price      |Sample URL        |
 |-------------------|-----------|------------------|
 |Breadboard set     |13$        | https://www.amazon.com/Paxcoo-Double-Prototype-Connector-Terminal/dp/B07C3TC68Z |
 |wire               |13$        | https://www.amazon.com/StrivedayTM-Flexible-Silicone-electronic-electrics/dp/B01KQ2JN |
@@ -180,8 +194,8 @@ Here are some sample shopping items. Please check the detail if everything is co
 Some of the items are set's for further projects or you can decide to buy cheaper single items.
 So the material price could be between **50$** and **100$**.
 
-## User manual
-  [See usermanual](USERMANUAL.md)
+## User manual of the web interface
+  [See user-manual](USERMANUAL.md)
 
 ### License
    This program is licensed under GPL-3.0
