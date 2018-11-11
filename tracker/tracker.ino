@@ -48,7 +48,7 @@
 #define     PIN_TX        14                               //!< Transmit-pin to the sim808
 #define     PIN_RX        12                               //!< receive-pin to the sim808
 #define     PIN_POWER     0                                //!< power on/off to DC-DC LM2596
-#define     PIN_BME_POWER 2                                //!< poswer pin to the BME280 module
+#define     PIN_BME_POWER 2                                //!< power pin to the BME280 module
 #define     ANALOG_FACTOR 0.03                             //!< Factor to the analog voltage divider
 
 MyOptions   myOptions;                                     //!< The global options.
@@ -57,7 +57,7 @@ MyDeepSleep myDeepSleep(myOptions, myData);                //!< Helper class for
 MyWebServer myWebServer(myOptions, myData);                //!< The Webserver
 MyGsmPower  myGsmPower(PIN_POWER);                         //!< Helper class to switch on/off the sim808 power.
 MyGsmGps    myGsmGps(myOptions, myData, PIN_RX, PIN_TX);   //!< sim808 gsm/gps communication class.
-MySmsCmd    mySmsCmd(myGsmGps, myOptions, myData);         //!< sms controler class for the sms handling.
+MySmsCmd    mySmsCmd(myGsmGps, myOptions, myData);         //!< sms controller class for the sms handling.
 MyMqtt      myMqtt(myGsmGps, myOptions, myData);           //!< Helper class for the mqtt communication.
 MyBME280    myBME280(myOptions, myData, PIN_BME_POWER);    //!< Helper class for the BME280 sensor communication.
 
@@ -66,7 +66,7 @@ bool        isStarting  = false;                           //!< Are we in a star
 bool        isStopping  = false;                           //!< Are we in a stopping process?
 
 /** Overwritten Debug Function 
-  * It logs all the debug calls to the console stringlist
+  * It logs all the debug calls to the console string-list
   * And call a refresh of the webserver for not blocking the system.
   */
 void myDebugInfo(String info, bool fromWebserver, bool newline)
@@ -95,7 +95,7 @@ void myDebugInfo(String info, bool fromWebserver, bool newline)
    } 
 }
 
-/** Overwritten delay loop for refreshing the werbserver on waiting processes. */
+/** Overwritten delay loop for refreshing the webserver on waiting processes. */
 void myDelayLoop()
 {
    myWebServer.handleClient();   
@@ -115,7 +115,7 @@ void readVoltage(bool dbg = false)
 }
 
 /** Main setup function. This is also called after every deep sleep. 
-  * Do the initialisation of every sub-component. */
+  * Do the initialization of every sub-component. */
 void setup() 
 {
    Serial.begin(115200); 
@@ -135,7 +135,7 @@ void setup()
 
 /** Main loop function.
   * Read the power supply voltage.
-  * Checks for console inouts and send them to the SIM808 modul.
+  * Checks for console inputs and send them to the SIM808 modul.
   * Checks for OTA activities.
   * Start or stop the gsm and/or gps activities.
   * Check for receiving sms and process them.

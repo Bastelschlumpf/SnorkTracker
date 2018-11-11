@@ -26,10 +26,10 @@
 class MySmsCmd
 {
 protected:
-   MyGsmGps  &myGsmGps;       //!< Reference to the gsmgps instance.
+   MyGsmGps  &myGsmGps;       //!< Reference to the gsm/gps instance.
    MyOptions &myOptions;      //!< Reference to the options.
    MyData    &myData;         //!< Reference to the data.
-   long      smsLastCheckSec; //!< Timstamp of the last sms check.
+   long      smsLastCheckSec; //!< Timestamps of the last sms check.
 
 protected:   
    void checkSms();   
@@ -68,14 +68,14 @@ MySmsCmd::MySmsCmd(MyGsmGps &gsmGps, MyOptions &options, MyData &data)
 {
 }
 
-/** Log only the start of the sms controler */
+/** Log only the start of the sms controller */
 bool MySmsCmd::begin()
 {
    MyDbg("MySmsCmd::begin");
    return true;
 }
 
-/** Checkl the sms if the time from the options is elapsed. */
+/** Check the sms if the time from the options is elapsed. */
 void MySmsCmd::handleClient()
 {
    long currSec = millis() / 1000;
@@ -129,7 +129,7 @@ void MySmsCmd::sendSms(const String &message)
    myGsmGps.sendSMS(myOptions.phoneNumber, message);
 }
 
-/** Send an ok sms */
+/** Send an OK sms */
 void MySmsCmd::sendOk(const SmsData &sms)
 {
    sendSms(sms.message + " -> OK");
@@ -197,16 +197,20 @@ void MySmsCmd::cmdStatus(const SmsData &sms)
 {
    String status;
 
-   status += "Status:"     + myData.status     + '\n';
-   status += "Modem Info:" + myData.modemInfo  + '\n';
-   status += "Longitude:"  + myData.longitude  + '\n';
-   status += "Latitude:"   + myData.latitude   + '\n';
-   status += "Altitude:"   + myData.altitude   + '\n';
-   status += "Satelittes:" + myData.satellites + '\n';
+   status += "Status:"       + myData.status              + '\n';
+   status += "Voltage:"      + String(myData.voltage, 1)  + "V\n";
+   status += "Temperature: " + String(myData.temperature) + "°C\n";
+   status += "Humidity: "    + String(myData.humidity)    + "%\n";
+   status += "Pressure: "    + String(myData.pressure)    + "hPa\n";
+   status += "Modem Info:"   + myData.modemInfo           + '\n';
+   status += "Longitude:"    + myData.longitude           + '\n';
+   status += "Latitude:"     + myData.latitude            + '\n';
+   status += "Altitude:"     + myData.altitude            + '\n';
+   status += "Satellites:"   + myData.satellites          + '\n';
    sendSms(status);
 }
 
-/** Command: send the gps position as an google map url. */
+/** Command: send the gps position as an google map URL. */
 void MySmsCmd::cmdGps(const SmsData &sms)
 {
    if (sms.message.indexOf(":") == -1) {
@@ -242,7 +246,7 @@ void MySmsCmd::cmdMqtt(const SmsData &sms)
    }
 }
 
-/** Command: Set the receving phone number. */
+/** Command: Set the receiving phone number. */
 void MySmsCmd::cmdPhone(const SmsData &sms)
 {
    if (readValues(myOptions.phoneNumber, sms.message)) {
@@ -257,13 +261,13 @@ void MySmsCmd::cmdDefault(const SmsData &sms)
 {
    String info;
 
-   info += "Falsches Kommando\n";
+   info += "wrong command\n";
    info += "on\n";
    info += "off\n";
    info += "status\n";
-   info += "gps[:15] - Check alle (Sek)\n";
-   info += "sms[:15] - Check alle (Sek)\n";
-   info += "mqtt[30:60] - (Bewegung:Stehen (Sek)\n";
+   info += "gps[:15] - check every (sec)\n";
+   info += "sms[:15] - check every (sec)\n";
+   info += "mqtt[30:60] - (moving:standing (sec)\n";
    info += "phone:1234\n";
    sendSms(info);
 }

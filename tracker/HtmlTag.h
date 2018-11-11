@@ -22,7 +22,7 @@
 
 
 /**
-  * Helper class for nested html elements, 
+  * Helper class for nested HTML elements, 
   * Works with the scope of the instances
   * { 
   *    HtmlTag begin("html");

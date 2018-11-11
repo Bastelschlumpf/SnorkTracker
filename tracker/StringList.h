@@ -28,7 +28,7 @@
   * String List class. 
   * Internally all items are stored in one string with '\1' as separator.
   * The list has a maximum internal storage. While appending items it deletes
-  * automatically from the begining until it fits.
+  * automatically from the beginning until it fits.
   * The performance could be optimized.
   */
 class StringList

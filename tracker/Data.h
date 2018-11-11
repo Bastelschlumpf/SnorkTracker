@@ -59,7 +59,7 @@ public:
    String gpsTime;            //!< Time from GPS (UTC)
    long   lastGpsUpdateSec;   //!< Elapsed Time of last read
    
-   bool   isMoving;           //!< Is moving recogniced
+   bool   isMoving;           //!< Is moving recognized
    double movingDistance;     //!< Minimum distance for moving flag
    
    StringList consoleCmds;    //!< open commands to send to the sim808 module

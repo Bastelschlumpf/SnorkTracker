@@ -2,7 +2,7 @@
 <html lang="de" class="">
 	<head>
 		<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" charset='utf-8' />
-		<title>ESP8266 - SIM808 - Hauptmenü</title>
+		<title>ESP8266 - SIM808 - Main menu</title>
 		<script src="JavaScript.js"></script>
 		<link rel="stylesheet" type="text/css" href="Style.css">
 	</head>
@@ -16,29 +16,29 @@
 			<table style='width:100%'>
 				<tr>
 					<td style='width:100'>
-						<button onclick='loadMainInfo("?o=1");'>An/Aus</button>
+						<button onclick='loadMainInfo("?o=1");'>On/Off</button>
 					</td>
 				</tr>
 			</table>
 			<br />
 			<form action='Settings.html' method='get'>
-				<button>Einstellungen</button>
+				<button>Settings</button>
 			</form>
 			<br />
 			<form action='Infos.html' method='get'>
-				<button>Informationen</button>
+				<button>Information</button>
 			</form>
 			<br />
-			<form action='FirmwareUpdate.html' method='get' onsubmit='return confirm("Wollen Sie OTA wirklich starten?");'>
+			<form action='FirmwareUpdate.html' method='get' onsubmit='return confirm("Do you really want to start OTA?");'>
 				<button>Firmware Update</button>
 			</form>
 			<br />
 			<form action='Console.html' method='get'>
-				<button>Konsole</button>
+				<button>Console</button>
 			</form>
 			<br />
-			<form action='Restart.html' method='get' onsubmit='return confirm("Wirklich neustarten?");'>
-				<button class='button bred'>Neustart</button>
+			<form action='Restart.html' method='get' onsubmit='return confirm("Really restart?");'>
+				<button class='button bred'>Restart</button>
 			</form>
 			<br />
 			<div style='text-align:right;font-size:11px;'>

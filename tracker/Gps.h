@@ -195,7 +195,7 @@ bool MyDegrees::set(const String &data)
    return true;
 }
 
-/** Calculate the dustance between two gps positions in meter */
+/** Calculate the distance between two gps positions in meter */
 double MyLocation::distanceBetween(double lat1, double long1, double lat2, double long2)
 {
    // returns distance in meters between two positions, both specified
@@ -420,13 +420,13 @@ bool MyGps::setVdop(const String &data)
    return parse(vdop, data);
 }
 
-/** Sets the satelittes in view value from the data string */
+/** Sets the satellites in view value from the data string */
 bool MyGps::setSatellitesInView(const String &data)
 {
    return parse(satellitesInView, data);
 }
 
-/** Sets the satelittes used value from the data string */
+/** Sets the satellites used value from the data string */
 bool MyGps::setSatellitesUsed(const String &data)
 {
    return parse(satellitesUsed, data);

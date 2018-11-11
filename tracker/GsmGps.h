@@ -26,7 +26,7 @@
 #include "Serial.h"
 
 /**
-  * SIM808 Communcation class to handle gprs and gps activities.
+  * SIM808 Communication class to handle gprs and gps activities.
   */
 class MyGsmGps
 {
@@ -35,10 +35,10 @@ public:
    MyGsmSim808      gsmSim808;         //!< SIM808 interface class 
    TinyGsmClient    gsmClient;         //!< Gsm client interface
    
-   bool             isSimActive;      //!< Is the sim808 modul startet?
+   bool             isSimActive;      //!< Is the sim808 modul started?
    bool             isGsmActive;      //!< Is the gsm part of the sim808 activated?
    bool             isGpsActive;      //!< Is the gs part of the sim808 activated?
-   long             gpsLastCheckSec;  //!< Timstamp of the last gps check.
+   long             gpsLastCheckSec;  //!< Timestamps of the last gps check.
 
    MyGps            gps;              //!< Last gps values.
    MyLocation       lastLocation;     //!< Last gps location to check for moving.
@@ -82,7 +82,7 @@ MyGsmGps::MyGsmGps(MyOptions &options, MyData &data, short pinRx, short pinTx)
    gsmSerial.begin(9600);
 }
 
-/** Initialized the sim808 modul and start optoinally the gsm and/ or gps part. */
+/** Initialized the sim808 modul and start optionally the gsm and/ or gps part. */
 bool MyGsmGps::begin()
 {
    if (!myOptions.gsmPower) {
@@ -99,7 +99,7 @@ bool MyGsmGps::begin()
             MyDbg("Sim808 Initializing ... canceled");
             return false;
          }
-         if (i == 5) { // nicht geklappt!
+         if (i == 5) { // not working!
             myData.status = "Sim808 restart failed";
             MyDbg(myData.status);
             return false;
@@ -127,7 +127,7 @@ bool MyGsmGps::begin()
             MyDbg("Sim808 Waiting for network... canceled");
             return false;
          }
-         if (i == 5) { // nicht geklappt!
+         if (i == 5) { // not working!
             myData.status = "Sim808 network failed";
             MyDbg(myData.status);
             return false;
@@ -184,7 +184,7 @@ void MyGsmGps::handleClient()
    }
 }
 
-/** Stops the sim808 modula dn go to deep sleep mode. */
+/** Stops the sim808 modul and go to deep sleep mode. */
 bool MyGsmGps::stop()
 {
    bool ret = true;

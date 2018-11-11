@@ -32,10 +32,10 @@ class MyBME280
 {
 protected:
    MyOptions      &myOptions;    //!< Reference to global options
-   MyData         &myData;       //!< Referende to global data
+   MyData         &myData;       //!< Reference to global data
    int             pinPower;     //!< Pin connection to switch on the BME280 module
    Adafruit_BME280 bme280;       //!< Adafruit BME280 helper interface
-   long            lastReadSec;  //!< Elpsed time in sec for from the last read.
+   long            lastReadSec;  //!< Elapsed time in sec for from the last read.
    
 public:
    MyBME280(MyOptions &options, MyData &data, int pin);

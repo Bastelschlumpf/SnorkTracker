@@ -28,7 +28,7 @@
 #define PHONE_NUMBER  "0123456789" //!< my phone number for sms communication
 
 #define MQTT_NAME     "SIM808"     //!< MQTT name
-#define MQTT_SERVER   "server"     //!< MQTT Server url
+#define MQTT_SERVER   "server"     //!< MQTT Server URL
 #define MQTT_PORT     1883         //!< MQTT Port (Default is 1883)
 #define MQTT_USER     "user"       //!< MQTT connection user
 #define MQTT_PASSWORD "password"   //!< MQTT connection password

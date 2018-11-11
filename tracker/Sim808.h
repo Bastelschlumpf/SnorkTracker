@@ -34,7 +34,7 @@ class SmsData
 {
 public:
    long   index;            //!< Sms index on sim card.
-   String status;           //!< Sms status like readed or not.
+   String status;           //!< Sms status like read or not.
    String phoneNumber;      //!< Sms sender number.
    String referenceNumber;  //!< ???
    String dateTime;         //!< DateTime of the sms.

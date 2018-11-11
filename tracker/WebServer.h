@@ -17,7 +17,7 @@
 /**
   * @file WebServer.h
   *
-  * Webserver Interface to communicate via esp8266 in sta or ap mode. 
+  * Webserver Interface to communicate via esp8266 in station or access-point mode. 
   * Works with the SPIFFS (.html, .css, .js).
   */
 
@@ -36,7 +36,7 @@ class MyWebServer
 {
 public:
    static ESP8266WebServer server;    //!< Webserver helper class.
-   static IPAddress        ip;        //!< Soft AP ip Adress
+   static IPAddress        ip;        //!< Soft AP ip Address
    static DNSServer        dnsServer; //!< Dns server
    static MyOptions       *myOptions; //!< Reference to the options.
    static MyData          *myData;    //!< Reference to the data.
@@ -169,7 +169,7 @@ void MyWebServer::handleClient()
    }
 }
 
-/** Helper html text conversation function for special character. */
+/** Helper HTML text conversation function for special character. */
 String MyWebServer::TextToXml(String data)
 {
    data.replace(F("&"), F("%26"));
@@ -178,19 +178,19 @@ String MyWebServer::TextToXml(String data)
    return data;
 } 
 
-/** Helper function to start a html table. */
+/** Helper function to start a HTML table. */
 void MyWebServer::AddTableBegin(String &info)
 {
    info += "<table style='width:100%'>";
 }
 
-/** Helper function to write one html row with no data. */
+/** Helper function to write one HTML row with no data. */
 void MyWebServer::AddTableTr(String &info)
 {
    info += "<tr><th></th><td>&nbsp;</td></tr>";
 }
 
-/** Helper function to add one html table row line with data. */
+/** Helper function to add one HTML table row line with data. */
 void MyWebServer::AddTableTr(String &info, String name, String value)
 {
    if (value != "") {
@@ -201,7 +201,7 @@ void MyWebServer::AddTableTr(String &info, String name, String value)
    }
 }
   
-/** Helper function to add one html table end element. */
+/** Helper function to add one HTML table end element. */
 void MyWebServer::AddTableEnd(String &info)
 {
    info += "</table>";
@@ -217,7 +217,7 @@ bool MyWebServer::GetOption(String id, String &option)
    return false;
 }
 
-/** Reads one long option from the url args. */
+/** Reads one long option from the URL args. */
 bool MyWebServer::GetOption(String id, long &option)
 {
    String opt = server.arg(id);
@@ -229,7 +229,7 @@ bool MyWebServer::GetOption(String id, long &option)
    return false;
 }
 
-/** Reads one double option from the url args. */
+/** Reads one double option from the URL args. */
 bool MyWebServer::GetOption(String id, double &option)
 {
    String opt = server.arg(id);
@@ -241,7 +241,7 @@ bool MyWebServer::GetOption(String id, double &option)
    return false;
 }
 
-/** Reads one bool option from the url args. */
+/** Reads one bool option from the URL args. */
 bool MyWebServer::GetOption(String id, bool &option)
 {
    String opt = server.arg(id);
@@ -256,13 +256,13 @@ bool MyWebServer::GetOption(String id, bool &option)
    return false;
 }
 
-/** Add a html br element. */
+/** Add a HTML br element. */
 void MyWebServer::AddBr(String &info)
 {
    info += "<br />";
 }
 
-/** Add one string input option field to the html source. */
+/** Add one string input option field to the HTML source. */
 void MyWebServer::AddOption(String &info, String id, String name, String value, bool addBr /* = true */, bool isPassword /* = false */)
 {
    info += "<b>" + TextToXml(name) + "</b>";
@@ -276,7 +276,7 @@ void MyWebServer::AddOption(String &info, String id, String name, String value, 
    }
 }
 
-/** Add one bool input option field to the html source. */
+/** Add one bool input option field to the HTML source. */
 void MyWebServer::AddOption(String &info, String id, String name, bool value, bool addBr /* = true */)
 {
    info += "<input style='width:auto;' id='" + id + "' name='" + id + "' type='checkbox' " + 
@@ -355,19 +355,19 @@ void MyWebServer::handleLoadMainInfo()
    if (myData->status != "") {
       AddTableTr(info, "Status", myData->status);
    }
-   AddTableTr(info, "Batterie",         String(myData->voltage,     1) + " V");
-   AddTableTr(info, "Temperatur",       String(myData->temperature, 1) + " Grad C");
-   AddTableTr(info, "Luftfeuchtigkeit", String(myData->humidity,    1) + " %");
-   AddTableTr(info, "Luftdruck",        String(myData->temperature, 1) + " hPa");
+   AddTableTr(info, "Battery",     String(myData->voltage,     1) + " V");
+   AddTableTr(info, "Temperature", String(myData->temperature, 1) + " °C");
+   AddTableTr(info, "Humidity",    String(myData->humidity,    1) + " %");
+   AddTableTr(info, "Pressure",    String(myData->temperature, 1) + " hPa");
    if (myData->status != "") {
       AddTableTr(info, "Modem Info", myData->modemInfo);
       AddTableTr(info, "Longitude",  myData->longitude);
       AddTableTr(info, "Latitude",   myData->latitude);
       AddTableTr(info, "Altitude",   myData->altitude);
-      AddTableTr(info, "Satelittes", myData->satellites);
+      AddTableTr(info, "Satellites", myData->satellites);
    }
    if (myData->secondsToDeepSleep >= 0) {
-      AddTableTr(info, "Energiesparmodus in ", String(myData->secondsToDeepSleep) + " Sekunden");
+      AddTableTr(info, "Power saving in ", String(myData->secondsToDeepSleep) + " Seconds");
    }
    AddTableEnd(info);
    
@@ -423,28 +423,28 @@ void MyWebServer::handleLoadSettingsInfo()
 
    MyDbg("LoadSettings", true);
    AddOption(info, "wlanAP",                 "WLAN SSID",                         myOptions->wlanAP);
-   AddOption(info, "wlanPassword",           "WLAN Passwort",                     myOptions->wlanPassword, true, true);
+   AddOption(info, "wlanPassword",           "WLAN Password",                     myOptions->wlanPassword, true, true);
    AddOption(info, "gprsAP",                 "GPRS AP",                           myOptions->gprsAP);
-   AddOption(info, "isDebugActive",          "Debug Aktiv",                       myOptions->isDebugActive);
+   AddOption(info, "isDebugActive",          "Debug Active",                      myOptions->isDebugActive);
    
-   AddOption(info, "bme280CheckIntervalSec", "Temperatur prüfen alle (Sekunden)", String(myOptions->bme280CheckIntervalSec));
+   AddOption(info, "bme280CheckIntervalSec", "Temperature check every (Seconds)", String(myOptions->bme280CheckIntervalSec));
    AddOption(info, "isGsmEnabled",           "GSM Enabled",                       myOptions->isGsmEnabled);
    AddOption(info, "isGpsEnabled",           "GPS Enabled",                       myOptions->isGpsEnabled);
-   AddOption(info, "gpsCheckIntervalSec",    "GPS prüfen alle (Sekunden)",        String(myOptions->gpsCheckIntervalSec));
-   AddOption(info, "phoneNumber",            "Informationen senden an",           myOptions->phoneNumber);
-   AddOption(info, "smsCheckIntervalSec",    "SMS prüfen alle (Sekunden)",        String(myOptions->smsCheckIntervalSec));
+   AddOption(info, "gpsCheckIntervalSec",    "GPS check every (Seconds)",         String(myOptions->gpsCheckIntervalSec));
+   AddOption(info, "phoneNumber",            "Information send to",               myOptions->phoneNumber);
+   AddOption(info, "smsCheckIntervalSec",    "SMS check every (Seconds)",         String(myOptions->smsCheckIntervalSec));
    {
       HtmlTag fieldset(info, "fieldset");
       {
          HtmlTag legend(info, "legend");
          
-         AddOption(info, "isDeepSleepEnabled", "Energiesparmodus Aktiv", myOptions->isDeepSleepEnabled, false);
+         AddOption(info, "isDeepSleepEnabled", "Power saving mode active", myOptions->isDeepSleepEnabled, false);
       }
-      AddOption(info, "powerSaveModeVoltage",  "Energiesparmodus bei unter (Volt)", String(myOptions->powerSaveModeVoltage, 1));
-      AddOption(info, "powerCheckIntervalSec", "Spannung prüfen alle (Sekunden)",   String(myOptions->powerCheckIntervalSec));
+      AddOption(info, "powerSaveModeVoltage",  "Power saving mode under (Volt)", String(myOptions->powerSaveModeVoltage, 1));
+      AddOption(info, "powerCheckIntervalSec", "Check power every (Seconds)",    String(myOptions->powerCheckIntervalSec));
       
-      AddOption(info, "wakeTimeSec",          "Aktiv Zeit (Sekunden",          String(myOptions->wakeTimeSec));
-      AddOption(info, "deepSleepTimeSec",     "DeepSleep Zeit (Sekunden)",     String(myOptions->deepSleepTimeSec));
+      AddOption(info, "wakeTimeSec",          "Active time (Seconds)",           String(myOptions->wakeTimeSec));
+      AddOption(info, "deepSleepTimeSec",     "DeepSleep time (Seconds)",        String(myOptions->deepSleepTimeSec));
    }
    AddBr(info);
    {
@@ -452,16 +452,16 @@ void MyWebServer::handleLoadSettingsInfo()
       {
          HtmlTag legend(info, "legend");
          
-         AddOption(info, "isMqttEnabled", "MQTT Aktiv", myOptions->isMqttEnabled, false);
+         AddOption(info, "isMqttEnabled", "MQTT Active", myOptions->isMqttEnabled, false);
       }
-      AddOption(info, "mqttName",                  "MQTT Name",                                myOptions->mqttName);
-      AddOption(info, "mqttServer",                "MQTT Server",                              myOptions->mqttServer);
-      AddOption(info, "mqttPort",                  "MQTT Port",                                String(myOptions->mqttPort));
-      AddOption(info, "mqttUser",                  "MQTT Benutzer",                            myOptions->mqttUser);
-      AddOption(info, "mqttPassword",              "MQTT Passwort",                            myOptions->mqttPassword, true, true);
-      AddOption(info, "mqttReconnectIntervalSec",  "MQTT Wiederverbinden alle (Sekunden)",     String(myOptions->mqttReconnectIntervalSec));
-      AddOption(info, "mqttSendOnMoveEverySec",    "MQTT Senden bei Bewegung alle (Sekunden)", String(myOptions->mqttSendOnMoveEverySec));
-      AddOption(info, "mqttSendOnNonMoveEverySec", "MQTT Senden im Stand alle (Sekunden)",     String(myOptions->mqttSendOnNonMoveEverySec), false);
+      AddOption(info, "mqttName",                  "MQTT Name",                             myOptions->mqttName);
+      AddOption(info, "mqttServer",                "MQTT Server",                           myOptions->mqttServer);
+      AddOption(info, "mqttPort",                  "MQTT Port",                             String(myOptions->mqttPort));
+      AddOption(info, "mqttUser",                  "MQTT User",                             myOptions->mqttUser);
+      AddOption(info, "mqttPassword",              "MQTT Password",                         myOptions->mqttPassword, true, true);
+      AddOption(info, "mqttReconnectIntervalSec",  "MQTT Reconnect every (Seconds)",        String(myOptions->mqttReconnectIntervalSec));
+      AddOption(info, "mqttSendOnMoveEverySec",    "MQTT Send on moving every (Seconds)",   String(myOptions->mqttSendOnMoveEverySec));
+      AddOption(info, "mqttSendOnNonMoveEverySec", "MQTT Send on standing every (Seconds)", String(myOptions->mqttSendOnNonMoveEverySec), false);
    }
 
    server.send(200,"text/html", info);
@@ -504,7 +504,7 @@ void MyWebServer::handleSaveSettings()
 
    if (false /* reboot */) {
       myData->restartInfo = 
-         "<b>Einstellungen gespeichert</b>";
+         "<b>Settings saved</b>";
       loadRestart();
    }
    loadMain();
@@ -526,14 +526,14 @@ void MyWebServer::handleLoadInfoInfo()
       AddTableTr(info);
    }
    if (myData->isOtaActive) {
-      AddTableTr(info, "OTA",                  "Aktiv");
+      AddTableTr(info, "OTA",                  "Active");
       AddTableTr(info);
    }
    if (ssidRssi != "" || myData->softAPIP || myData->softAPmacAddress != "" || myData->stationIP != "") {
       AddTableTr(info, "AP1 SSID (RSSI)",      ssidRssi);
       AddTableTr(info, "AP IP",                myData->softAPIP);
-      AddTableTr(info, "Lokale IP",            myData->stationIP);
-      AddTableTr(info, "MAC Addresse",         myData->softAPmacAddress);
+      AddTableTr(info, "Locale IP",            myData->stationIP);
+      AddTableTr(info, "MAC Address",          myData->softAPmacAddress);
       AddTableTr(info);
    }
    if (myData->modemInfo     != "" || myData->modemIP != ""      || myData->imei        != "" || myData->cop != "" || 
@@ -542,7 +542,7 @@ void MyWebServer::handleLoadInfoInfo()
       AddTableTr(info, "Modem IP",             myData->modemIP);
       AddTableTr(info, "IMEI",                 myData->imei);
       AddTableTr(info, "COP",                  myData->cop);
-      AddTableTr(info, "Signal Qualität",      myData->signalQuality);
+      AddTableTr(info, "Signal Quality",       myData->signalQuality);
       AddTableTr(info, "Battery Level",        myData->batteryLevel);
       AddTableTr(info, "Battery Volt",         myData->batteryVolt);
       AddTableTr(info);
@@ -553,30 +553,30 @@ void MyWebServer::handleLoadInfoInfo()
       AddTableTr(info, "Latitude",             myData->latitude);
       AddTableTr(info, "Altitude",             myData->altitude);
       AddTableTr(info, "Km/h",                 myData->kmph);
-      AddTableTr(info, "Sateliten",            myData->satellites);
+      AddTableTr(info, "Satellite",            myData->satellites);
       AddTableTr(info, "Course",               myData->course);
       AddTableTr(info, "GPS Datum",            myData->gpsDate);
-      AddTableTr(info, "GPS Zeit",             myData->gpsTime);
+      AddTableTr(info, "GPS Time",             myData->gpsTime);
       AddTableTr(info);
    }
    if (myData->isMoving || myData->movingDistance != 0.0) {
-      AddTableTr(info, "Bewegung",             myData->isMoving ? "Ja" : "Nein");
-      AddTableTr(info, "Entfernung (m)",       String(myData->movingDistance, 2));
+      AddTableTr(info, "Moving",               myData->isMoving ? "Yes" : "No");
+      AddTableTr(info, "Distance (m)",         String(myData->movingDistance, 2));
       AddTableTr(info);
    }
    AddTableTr(info, "ESP Chip ID",            String(ESP.getChipId()));
    AddTableTr(info, "Flash Chip ID",          String(ESP.getFlashChipId()));
-   AddTableTr(info, "Realer Flash Speicher",  String(ESP.getFlashChipRealSize() / 1024) + " kB");
-   AddTableTr(info, "Ges. Flash Speicher",    String(ESP.getFlashChipSize()     / 1024) + " kB");
-   AddTableTr(info, "Ben. Flash Speicher",    String(ESP.getSketchSize()        / 1024) + " kB");
-   AddTableTr(info, "Verf. Speicher",         String(ESP.getFreeSketchSpace()   / 1024) + " kB");
-   AddTableTr(info, "Freier Arbeitsspeicher", String(ESP.getFreeHeap()          / 1024) + " kB");
+   AddTableTr(info, "Real Flash Memory",      String(ESP.getFlashChipRealSize() / 1024) + " kB");
+   AddTableTr(info, "Total Flash Memory",     String(ESP.getFlashChipSize()     / 1024) + " kB");
+   AddTableTr(info, "Used Flash Memory",      String(ESP.getSketchSize()        / 1024) + " kB");
+   AddTableTr(info, "Free Sketch Memory",     String(ESP.getFreeSketchSpace()   / 1024) + " kB");
+   AddTableTr(info, "Free Heap Memory",       String(ESP.getFreeHeap()          / 1024) + " kB");
    AddTableEnd(info);
    
    server.send(200,"text/html", info);
 }
 
-/** Load the concole page */
+/** Load the console page */
 void MyWebServer::loadConsole()
 {
    if (loadFromSpiffs("/Console.html")) {
@@ -588,7 +588,7 @@ void MyWebServer::loadConsole()
    handleNotFound();
 }
 
-/** Handle the Comnsole ajax calls to get AT commands and show the result of the calls or debug informations. */
+/** Handle the Console ajax calls to get AT commands and show the result of the calls or debug informations. */
 void MyWebServer::handleLoadConsoleInfo()
 {
    if (!myOptions || !myData) {

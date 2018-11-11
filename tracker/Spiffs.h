@@ -17,10 +17,10 @@
 /**
   * @file Spiffs.h
   * 
-  * Helperfunction for the SPIFF.
+  * Helper-function for the SPIFF.
   */
 
-/** Read the content of a file from the SPIFF filesystem. */
+/** Read the content of a file from the SPIFF file-system. */
 String readFromSpiffs(String path)
 {
    String ret;
