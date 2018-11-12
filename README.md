@@ -52,16 +52,16 @@
    * Electronics tools
 
 ### Setup Arduino Environment
-   * Download Arduino IDE from 
-     https://www.arduino.cc/en/Main/Software 
+   * Download Arduino IDE from  
+     https://www.arduino.cc/en/Main/Software  
      and follow the installation instructions.
    * Install ESP8266 board software
       *  In Arduino IDE set 'File | Preferences' to Boards Manager URL 
          http://arduino.esp8266.com/stable/package_esp8266com_index.json  
       * Open 'Tools | Board... | Boards Manager...' 
         and search for 'esp8266' and install the software package
-   * Install the ESP8266 file-system up-loader from 
-      https://github.com/esp8266/arduino-esp8266fs-plugin 
+   * Install the ESP8266 file-system up-loader from  
+      https://github.com/esp8266/arduino-esp8266fs-plugin  
       and follow the installation instructions.
    * Download **SnorkTracker** software by clone or download.
    * Copy the content of the snorktracker/lib directory to the Arduino installation lib directory.
@@ -75,23 +75,23 @@
    ![Figure 2](circuit/Esp8266Sim808.png "Figure 2")
 
 ### Assemble the Components
-   * Take the Breadboard and the other items from the part-list.
+   * Take the Breadboard and the other items from the part-list.  
      ![Figure 3](images/Breadboard.jpg   "Figure 3")
    * First of all unsolder the (ON/OFF) pin 5 from the DC-DC module, bend it up and
      solder a line to it. After that put 4 spacers under the DC-DC module and solder it
      to the breadboard. Check that the bottom of the LM2596 module is not in contact with the board.
-     See
+     See  
      ![Figure 4](images/DC-DC-Modul.jpg  "Figure 4")
    * Place the other parts from the part-list on the breadboard and solder it as shown. 
      Pay attention to the polarity of the capacitors!
      Split the header connector to the length that is needed and solder it. 
      A header connector is needed because flashing of the Wemos module often does not work 
      if it is still connected to the board.
-     Check if the Wemos and SIM808 module has enough space and fits into the pins.
+     Check if the Wemos and SIM808 module has enough space and fits into the pins.  
      ![Figure 5](images/Unplugged.jpg    "Figure 5")
-   * Connect all the pins of the parts as seen on the circuit image with wires.
+   * Connect all the pins of the parts as seen on the circuit image with wires.  
      ![Figure 4](images/Back.jpg         "Figure 4")
-   * The final board could look like this
+   * The final board could look like this  
      ![Figure 6](images/SnorkTracker.jpg "Figure 6")
    * Check all the wiring with a multimeter. Also against short-circuit.
 
@@ -145,7 +145,7 @@
 ## Source Code
    The easiest way to understand what the program does is to navigate by the main source modules via the Arduino IDE or 
    to explore the source code via
-   [**DoxyGen generated documentation**](https://bastelschlumpf.github.io/Snorktracker).
+   [**DoxyGen generated documentation**](https://bastelschlumpf.github.io/Snorktracker).  
    You can update the DoxyGen generated documentation by installing Doxygen (from http://www.doxygen.org) on your machine 
    and run the DoxyGen generation batch **Doxygen.bat** from the main folder.
 
