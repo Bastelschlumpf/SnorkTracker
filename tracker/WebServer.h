@@ -358,7 +358,7 @@ void MyWebServer::handleLoadMainInfo()
    AddTableTr(info, "Battery",     String(myData->voltage,     1) + " V");
    AddTableTr(info, "Temperature", String(myData->temperature, 1) + " °C");
    AddTableTr(info, "Humidity",    String(myData->humidity,    1) + " %");
-   AddTableTr(info, "Pressure",    String(myData->temperature, 1) + " hPa");
+   AddTableTr(info, "Pressure",    String(myData->pressure,    1) + " hPa");
    if (myData->status != "") {
       AddTableTr(info, "Modem Info", myData->modemInfo);
       AddTableTr(info, "Longitude",  myData->longitude);
