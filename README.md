@@ -145,7 +145,7 @@
 ## Source Code
    The easiest way to understand what the program does is to navigate by the main source modules via the Arduino IDE or 
    to explore the source code via
-   [**DoxyGen generated documentation**](https://bastelschlumpf.github.io/Snorktracker).  
+   [**DoxyGen generated documentation**](https://bastelschlumpf.github.io/SnorkTracker).  
    You can update the DoxyGen generated documentation by installing Doxygen (from http://www.doxygen.org) on your machine 
    and run the DoxyGen generation batch **Doxygen.bat** from the main folder.
 
