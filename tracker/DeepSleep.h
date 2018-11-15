@@ -111,7 +111,7 @@ bool MyDeepSleep::haveToSleep()
 /** Entering the DeepSleep mode. Be sure we have connected the RST pin to the D0 pin for wakup. */
 void MyDeepSleep::sleep()
 {
-   MyDbg("Entering DeepSleep: " + String(myOptions.powerCheckIntervalSec) + "Sec");
+   MyDbg("Entering DeepSleep for: " + String(myOptions.powerCheckIntervalSec) + "Sec");
 
    myData.rtcData.deepSleepCounter++;
    myData.rtcData.setCRC();
