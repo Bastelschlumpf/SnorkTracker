@@ -17,8 +17,68 @@
 /**
   * @file Utils.h
   * 
-  * A collection of util functions.
+  * A collection of utility functions.
   */
+
+
+/** This function has to be overwritten to return the seconds since power up (not since last deep sleep). */
+uint32_t secondsSincePowerOn();
+
+/** Checks if the intervalSec is from the last checkIntervalSec elapsed and if true it sets the lastCheckSec value */
+bool secondsElapsed(uint32_t &lastCheckSec, const uint32_t &intervalSec)
+{
+   uint32_t currentSec = secondsSincePowerOn();
+
+   if (lastCheckSec == 0 || (currentSec - lastCheckSec > intervalSec)) {
+      lastCheckSec = currentSec;
+      return true;
+   }
+   return false;
+}
+
+#define POLY 0xedb88320 //!< CRC-32 (Ethernet, ZIP, etc.) polynomial in reversed bit order.
+
+/** Simple crc function. Can multiple called but the first time crc should be 0.  */
+uint32_t crc32(uint32_t crc, const uint32_t &data, size_t len)
+{
+   unsigned char *buf = (unsigned char *) &data;
+   
+   crc = ~crc;
+   while (len--) {
+      crc ^= *buf++;
+      for (int k = 0; k < 8; k++)
+         crc = crc & 1 ? (crc >> 1) ^ POLY : crc >> 1;
+   }
+   return ~crc;
+}
+
+/** This function has to be overwritten to implement the handle of debug informations. */
+void myDebugInfo(String info, bool isWebServer, bool newline);
+
+/** Short version of myDebugInfo.
+  * fromWebServer prevents recursive calls when from WebServer
+  */
+void MyDbg(String info, bool fromWebServer = false, bool newline = true)
+{
+   myDebugInfo(info, fromWebServer, newline);
+}
+
+
+/** This function has to be overwritten to implement background delay calls. */
+void myDelayLoop();
+
+/** Replacement with background calls when we have to wait. Replace the delay function. */
+void myDelay(long millisDelay)
+{
+   long m = millis();
+
+   while (millis() - m < millisDelay) {
+      myDelayLoop();
+      yield();
+      delay(1);
+   }
+}
+
 
 /**
   * Conversion of the RSSI value to a quality value.
