@@ -65,10 +65,6 @@ protected:
    MyOptions &myOptions;            //!< Reference to the options. 
    MyData    &myData;               //!< Reference to the data.
 
-   long       mqttLastSendSec;      //!< Timestamp from the last send.
-   long       mqttLastReconnectSec; //!< Timestamp from the last server connection. 
-   long       lastGpsPublishedSec;  //!< The last timestamp of the sended gps data.
-
 protected:
    void reconnect();
    bool sendData(); 
@@ -92,9 +88,6 @@ MyMqtt::MyMqtt(MyGsmGps &gsmGps, MyOptions &options, MyData &data)
    , PubSubClient(gsmGps.gsmClient)
    , myOptions(options)
    , myData(data)
-   , mqttLastSendSec(0)
-   , mqttLastReconnectSec(0)
-   , lastGpsPublishedSec(0)
 {
    g_myOptions = &options;
 }
@@ -131,28 +124,25 @@ void MyMqtt::reconnect()
 /** Send the mqtt data if the gps values are new. */
 bool MyMqtt::sendData() 
 {
-   if (myData.lastGpsUpdateSec != lastGpsPublishedSec) {
-      MyDbg("Attempting MQTT publishing");
-      if (PubSubClient::connected()) {
-         publish(topic_voltage, String(myData.voltage).c_str(), true); 
+   MyDbg("Attempting MQTT publishing");
+   if (PubSubClient::connected()) {
+      publish(topic_voltage, String(myData.voltage).c_str(), true); 
 
-         publish(topic_temperature, String(myData.temperature).c_str(), true); 
-         publish(topic_humidity,    String(myData.humidity).c_str(),    true); 
-         publish(topic_pressure,    String(myData.pressure).c_str(),    true); 
+      publish(topic_temperature, String(myData.temperature).c_str(), true); 
+      publish(topic_humidity,    String(myData.humidity).c_str(),    true); 
+      publish(topic_pressure,    String(myData.pressure).c_str(),    true); 
          
-         publish(topic_csq,        myData.signalQuality.c_str(), true); 
-         publish(topic_batt_level, myData.batteryLevel.c_str(),  true); 
-         publish(topic_batt_volt,  myData.batteryVolt.c_str(),   true); 
+      publish(topic_csq,        myData.signalQuality.c_str(), true); 
+      publish(topic_batt_level, myData.batteryLevel.c_str(),  true); 
+      publish(topic_batt_volt,  myData.batteryVolt.c_str(),   true); 
          
-         publish(topic_lon,  myData.longitude.c_str(), true); 
-         publish(topic_lat,  myData.latitude.c_str(),  true); 
-         publish(topic_alt,  myData.altitude.c_str(),  true); 
-         publish(topic_kmph, myData.kmph.c_str(),      true); 
+      publish(topic_lon,  myData.longitude.c_str(), true); 
+      publish(topic_lat,  myData.latitude.c_str(),  true); 
+      publish(topic_alt,  myData.altitude.c_str(),  true); 
+      publish(topic_kmph, myData.kmph.c_str(),      true); 
          
-         lastGpsPublishedSec = myData.lastGpsUpdateSec;
-         MyDbg("mqtt published");
-         return true;
-      }
+      MyDbg("mqtt published");
+      return true;
    }
    return false;
 }
@@ -172,24 +162,20 @@ void MyMqtt::handleClient()
 {
    if (myGsmGps.isGsmActive) {
       if (!PubSubClient::connected()) {
-         long currSec = millis() / 1000;
-         
-         if (currSec - mqttLastReconnectSec > myOptions.mqttReconnectIntervalSec) {
-            mqttLastReconnectSec = currSec;
+         if (secondsElapsed(myData.rtcData.lastMqttReconnectSec, myOptions.mqttReconnectIntervalSec)) {
             reconnect();
          }
       }
       if (connected()) {
-         bool send       = false;
-         long currentSec = millis() / 1000;
+         bool send = false;
 
          if (myData.isMoving) {
-            send = currentSec - mqttLastSendSec > myOptions.mqttSendOnMoveEverySec;
+            send = secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnMoveEverySec);
          } else {
-            send = currentSec - mqttLastSendSec > myOptions.mqttSendOnNonMoveEverySec;
+            send = secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnNonMoveEverySec);
          }
-         if (send && sendData()) {
-            mqttLastSendSec = currentSec;
+         if (send) {
+            sendData();
          }
       }
    }

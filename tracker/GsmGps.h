@@ -38,7 +38,6 @@ public:
    bool             isSimActive;      //!< Is the sim808 modul started?
    bool             isGsmActive;      //!< Is the gsm part of the sim808 activated?
    bool             isGpsActive;      //!< Is the gs part of the sim808 activated?
-   long             gpsLastCheckSec;  //!< Timestamps of the last gps check.
 
    MyGps            gps;              //!< Last gps values.
    MyLocation       lastLocation;     //!< Last gps location to check for moving.
@@ -75,7 +74,6 @@ MyGsmGps::MyGsmGps(MyOptions &options, MyData &data, short pinRx, short pinTx)
    , isSimActive(false)
    , isGsmActive(false)
    , isGpsActive(false)
-   , gpsLastCheckSec(0)
    , myOptions(options)
    , myData(data)
 {
@@ -173,10 +171,7 @@ void MyGsmGps::handleClient()
       return;
    }
 
-   long currSec = millis() / 1000;
-
-   if (currSec - gpsLastCheckSec > myOptions.gpsCheckIntervalSec) {
-      gpsLastCheckSec = currSec;
+   if (secondsElapsed(myData.rtcData.lastGpsReadSec, myOptions.gpsCheckIntervalSec)) {
       if (myOptions.isGpsEnabled && !isGpsActive) {
          enableGps(true);
       }
@@ -311,7 +306,7 @@ bool MyGsmGps::getGps()
          myData.course           = String(gps.course); 
          myData.gpsDate          = String(gps.date.day())  + '-' + String(gps.date.month())  + '-' + String(gps.date.year());
          myData.gpsTime          = String(gps.time.hour()) + ':' + String(gps.time.minute()) + ':' + String(gps.time.second());
-         myData.lastGpsUpdateSec = millis() / 1000;
+         myData.lastGpsUpdateSec = secondsSincePowerOn();
    
          MyDbg("(sim808) signalQuality: " + myData.signalQuality);
          MyDbg("(sim808) batteryLevel: "  + myData.batteryLevel);

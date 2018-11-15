@@ -31,9 +31,8 @@
   #include "ConfigOverride.h"
 #endif
 
-#include "Debug.h"
-#include "StringList.h"
 #include "Utils.h"
+#include "StringList.h"
 #include "Options.h"
 #include "Data.h"
 #include "DeepSleep.h"
@@ -74,7 +73,7 @@ void myDebugInfo(String info, bool fromWebserver, bool newline)
    static bool lastNewLine = true;
    
    if (newline || lastNewLine != newline) {
-      String secs = String(millis() / 1000) + ": ";
+      String secs = String(secondsSincePowerOn()) + ": ";
 
       myData.logInfos.addTail(secs + info);
       if (!lastNewLine) {
@@ -103,6 +102,14 @@ void myDelayLoop()
    myWebServer.handleClient(); 
    delay(0);
    yield();
+}
+
+/** Returns the seconds since power up (not since last deep sleep). */
+uint32_t secondsSincePowerOn()
+{
+   return myData.rtcData.deepSleepCounter  * myOptions.deepSleepTimeSec      + 
+          myData.rtcData.powerCheckCounter * myOptions.powerCheckIntervalSec +
+          millis() / 1000;
 }
 
 /** Helper Function to read the power supply voltage from the voltage divider. */

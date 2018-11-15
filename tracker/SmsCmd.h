@@ -78,10 +78,8 @@ bool MySmsCmd::begin()
 /** Check the sms if the time from the options is elapsed. */
 void MySmsCmd::handleClient()
 {
-   long currSec = millis() / 1000;
-
-   if (currSec - smsLastCheckSec > myOptions.smsCheckIntervalSec) {
-      smsLastCheckSec = currSec;
+   if (secondsSincePowerOn() - smsLastCheckSec > myOptions.smsCheckIntervalSec) {
+      smsLastCheckSec = secondsSincePowerOn();
       checkSms();
    }
 }

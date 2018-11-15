@@ -27,6 +27,51 @@
 class MyData
 {
 public:
+   class RtcData {
+   public:
+      uint32_t powerCheckCounter;    //!< Counter of the power checks from last deepsleep.
+      uint32_t deepSleepCounter;     //!< Counter of the deepsleep cycles.
+      uint32_t lastBme280ReadSec;    //!< Timestamp of the last BME280 read.
+      uint32_t lastGpsReadSec;       //!< Timestamp of the last gps read.
+      uint32_t lastMqttReconnectSec; //!< Timestamp from the last server connection. 
+      uint32_t lastMqttSendSec;      //!< Timestamp from the last send.
+      uint32_t crcValue;             //!< CRC of the RtcData
+
+   public:
+      RtcData()
+         : powerCheckCounter(0)
+         , deepSleepCounter(0)
+         , lastBme280ReadSec(0)
+         , lastGpsReadSec(0)
+         , lastMqttReconnectSec(0)
+         , lastMqttSendSec(0)
+      {
+         crcValue = getCRC();
+      }
+
+      uint32_t getCRC()
+      {
+         uint32_t crc = 0;
+
+         crc = crc32(crc, powerCheckCounter,    sizeof(uint32_t));
+         crc = crc32(crc, deepSleepCounter,     sizeof(uint32_t));
+         crc = crc32(crc, lastBme280ReadSec,    sizeof(uint32_t));
+         crc = crc32(crc, lastGpsReadSec,       sizeof(uint32_t));
+         crc = crc32(crc, lastMqttReconnectSec, sizeof(uint32_t));
+         crc = crc32(crc, lastMqttSendSec,      sizeof(uint32_t));
+         return crc;
+      }
+
+      void setCRC()
+      {
+         crcValue = getCRC();
+      }
+      bool isValid()
+      {
+         return getCRC() == crcValue;
+      }
+   } rtcData;
+
    String status;             //!< Status information
    String restartInfo;        //!< Information on restart
    bool   isOtaActive;        //!< Is OverTheAir update active?

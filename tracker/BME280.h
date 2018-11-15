@@ -35,7 +35,6 @@ protected:
    MyData         &myData;       //!< Reference to global data
    int             pinPower;     //!< Pin connection to switch on the BME280 module
    Adafruit_BME280 bme280;       //!< Adafruit BME280 helper interface
-   long            lastReadSec;  //!< Elapsed time in sec for from the last read.
    
 public:
    MyBME280(MyOptions &options, MyData &data, int pin);
@@ -50,7 +49,6 @@ MyBME280::MyBME280(MyOptions &options, MyData &data, int pin)
    : pinPower(pin)
    , myOptions(options)
    , myData(data)
-   , lastReadSec(0)
 {
 }
 
@@ -67,11 +65,7 @@ bool MyBME280::begin()
   */
 bool MyBME280::readValues()
 {
-   long secs = millis() / 1000;
-
-   if (lastReadSec == 0 || (secs - lastReadSec > myOptions.bme280CheckIntervalSec)) {
-      lastReadSec = secs;
-      
+   if (secondsElapsed(myData.rtcData.lastBme280ReadSec, myOptions.bme280CheckIntervalSec)) {
       digitalWrite(pinPower, LOW); 
       if (bme280.begin()) {
          myData.temperature = bme280.readTemperature();
