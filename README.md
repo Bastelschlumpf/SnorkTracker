@@ -40,6 +40,19 @@
    I don't take any responsibility nor liability for using this software nor for the 
    installation or any tips, advice, videos, etc. given by any member of this site or any related site.
 
+### License
+   This program is licensed under GPL-3.0
+
+## Source Code
+   The easiest way to understand what the program does is to navigate by the main source modules via the Arduino IDE or 
+   to explore the source code via
+   [**DoxyGen generated documentation**](https://bastelschlumpf.github.io/SnorkTracker).  
+   You can update the DoxyGen generated documentation by installing Doxygen (from http://www.doxygen.org) on your machine 
+   and run the DoxyGen generation batch **Doxygen.bat** from the main folder.
+
+## User manual of the web interface
+  [See user-manual](USERMANUAL.md)
+
 ### Prerequisites
    * Arduino IDE
    * ESP8266 Board software
@@ -142,13 +155,6 @@
    * The Wemos chip can communicate with the SIM808 module via RX and TX signal and AT commands.
    * Via the GPRS module it can send the scanned data to a MQTT server and can communicate via SMS to a phone.
 
-## Source Code
-   The easiest way to understand what the program does is to navigate by the main source modules via the Arduino IDE or 
-   to explore the source code via
-   [**DoxyGen generated documentation**](https://bastelschlumpf.github.io/SnorkTracker).  
-   You can update the DoxyGen generated documentation by installing Doxygen (from http://www.doxygen.org) on your machine 
-   and run the DoxyGen generation batch **Doxygen.bat** from the main folder.
-
 ## Part-list
 |Label              |Part Type                |Properties        |
 |-------------------|-------------------------|------------------|
@@ -193,12 +199,6 @@ Here are some sample shopping items. Please check the details if everything is c
 
 Some of the items are sets for further projects. You can also buy cheaper single items.
 The material price should be between **50$** and **100$**.
-
-## User manual of the web interface
-  [See user-manual](USERMANUAL.md)
-
-### License
-   This program is licensed under GPL-3.0
 
 ### Thanks
    * https://www.arduino.cc
