@@ -44,6 +44,8 @@ public:
    bool readValues();
 };
 
+/* ******************************************** */
+
 /** Constructor */
 MyBME280::MyBME280(MyOptions &options, MyData &data, int pin)
    : pinPower(pin)
