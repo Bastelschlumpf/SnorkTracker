@@ -105,8 +105,10 @@ MyWebServer::~MyWebServer()
    myData    = NULL;      
 }
 
-/** Starts the Webserver in station and/or ap mode and sets all the callback 
-    functions for the specific urls. */
+/** Starts the Webserver in station and/or ap mode and sets all the callback functions for the specific urls. 
+  * If you use rtc yourself you have to switch off the automatic Wifi configuration with WiFi.persistent(false)
+  * (because it uses also the RTC memory) otherwise the WLAN won't start after a Deep Sleep.
+  */
 bool MyWebServer::begin()
 {
    if (!myOptions || !myData) {
