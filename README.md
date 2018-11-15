@@ -43,14 +43,14 @@
 ### License
    This program is licensed under GPL-3.0
 
-## Source Code
+### Source Code
    The easiest way to understand what the program does is to navigate by the main source modules via the Arduino IDE or 
    to explore the source code via
    [**DoxyGen generated documentation**](https://bastelschlumpf.github.io/SnorkTracker).  
    You can update the DoxyGen generated documentation by installing Doxygen (from http://www.doxygen.org) on your machine 
    and run the DoxyGen generation batch **Doxygen.bat** from the main folder.
 
-## User manual of the web interface
+### User manual of the web interface
   [See user-manual](USERMANUAL.md)
 
 ### Prerequisites
@@ -138,7 +138,7 @@
    * If the software works fine on the usb cable then you can plug the wemos into the board and connect a power supply.
      Check again the connectivity.
 
-## Function
+### Function
    * The software in the Wemos module creates a web-server in station and/or in access-point mode.
    * The analog input of the wemos is connected to the middle of the two voltage divider resistors.
      So it can read the power supply voltage of the system (for example the car battery voltage).
@@ -155,7 +155,7 @@
    * The Wemos chip can communicate with the SIM808 module via RX and TX signal and AT commands.
    * Via the GPRS module it can send the scanned data to a MQTT server and can communicate via SMS to a phone.
 
-## Part-list
+### Part-list
 |Label              |Part Type                |Properties        |
 |-------------------|-------------------------|------------------|
 |Breadboard         |Double sided PCB board   |24 x 18 holes     |
