@@ -199,6 +199,9 @@ void loop()
          myGsmGps.stop();
       }
       myGsmPower.off();
+      WiFi.disconnect();
+      WiFi.mode(WIFI_OFF);
+      WiFi.forceSleepBegin();
       myDeepSleep.sleep();
    }
    

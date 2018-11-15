@@ -114,6 +114,7 @@ bool MyWebServer::begin()
    }
 
    MyDbg("MyWebServer::begin");
+   WiFi.persistent(false);
    WiFi.mode(WIFI_AP_STA);
    WiFi.softAP("ESP8266AP", "");
    WiFi.softAPConfig(ip, ip, IPAddress(255, 255, 255, 0));  
