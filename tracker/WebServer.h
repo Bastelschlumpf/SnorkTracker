@@ -125,7 +125,7 @@ bool MyWebServer::begin()
    MyDbg("SoftAPIP mac address: " + myData->softAPmacAddress, true);
 
    WiFi.begin(myOptions->wlanAP.c_str(), myOptions->wlanPassword.c_str());
-   for (int i = 0; i < 20 && WiFi.status() != WL_CONNECTED; i++) { // 10 Sec versuchen
+   for (int i = 0; i < 30 && WiFi.status() != WL_CONNECTED; i++) { // 15 Sec versuchen
       MyDbg(".", true, false);
       myDelay(500);
    }
@@ -500,6 +500,9 @@ void MyWebServer::handleSaveSettings()
    GetOption("mqttSendOnMoveEverySec",    myOptions->mqttSendOnMoveEverySec);
    GetOption("mqttSendOnNonMoveEverySec", myOptions->mqttSendOnNonMoveEverySec);
 
+   // Reset the rtc data if something has changed.
+   myData->rtcData.reset(); 
+   myData->secondsAwakeTime = -1;
    myOptions->save();
 
    if (false /* reboot */) {
@@ -650,7 +653,7 @@ void MyWebServer::handleNotFound()
       return;
    }
    
-   String message = "File Not Found\n\n";
+   String message = "File Not Found\n";
    
    message += "URI: ";
    message += server.uri();
