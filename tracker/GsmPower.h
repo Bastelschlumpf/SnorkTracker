@@ -27,10 +27,13 @@
 class MyGsmPower
 {
 protected:
-   int pinPower; //!< esp8266 pin connected with pin 5 of the LM2596 modul. 
+   MyData   &myData;          //!< Reference to the data
+
+   int       pinPower;        //!< esp8266 pin connected with pin 5 of the LM2596 modul. 
+   uint32_t  powerOnStartSec; //!< Timestamp of power on.
       
 public:
-   MyGsmPower(int pin);
+   MyGsmPower(MyData &data, int pin);
    
    bool begin();
 
@@ -41,8 +44,10 @@ public:
 /* ******************************************** */
 
 /** Constructor */
-MyGsmPower::MyGsmPower(int pin)
-   : pinPower(pin)
+MyGsmPower::MyGsmPower(MyData &data, int pin)
+   : myData(data)
+   , pinPower(pin)
+   , powerOnStartSec(0)
 {
 }
 
@@ -60,6 +65,8 @@ void MyGsmPower::on()
    MyDbg("MyGsmPower::on");
    pinMode(pinPower, OUTPUT);
    digitalWrite(pinPower, LOW); 
+   myData.isPowerOn = true;
+   powerOnStartSec  = millis() / 1000;
    myDelay(1000);
 }
 
@@ -69,4 +76,7 @@ void MyGsmPower::off()
    MyDbg("MyGsmPower::off");
    pinMode(pinPower, INPUT);
    digitalWrite(pinPower, HIGH); 
+   myData.rtcData.powerOnTimeSec += millis() / 1000 - powerOnStartSec;
+   myData.isPowerOn = false;
+   powerOnStartSec = 0;
 }

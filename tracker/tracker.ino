@@ -54,7 +54,7 @@ MyOptions   myOptions;                                     //!< The global optio
 MyData      myData;                                        //!< The global collected data.
 MyDeepSleep myDeepSleep(myOptions, myData);                //!< Helper class for deep sleeps.
 MyWebServer myWebServer(myOptions, myData);                //!< The Webserver
-MyGsmPower  myGsmPower(PIN_POWER);                         //!< Helper class to switch on/off the sim808 power.
+MyGsmPower  myGsmPower(myData, PIN_POWER);                 //!< Helper class to switch on/off the sim808 power.
 MyGsmGps    myGsmGps(myOptions, myData, PIN_RX, PIN_TX);   //!< sim808 gsm/gps communication class.
 MySmsCmd    mySmsCmd(myGsmGps, myOptions, myData);         //!< sms controller class for the sms handling.
 MyMqtt      myMqtt(myGsmGps, myOptions, myData);           //!< Helper class for the mqtt communication.
@@ -107,9 +107,7 @@ void myDelayLoop()
 /** Returns the seconds since power up (not since last deep sleep). */
 uint32_t secondsSincePowerOn()
 {
-   return myData.rtcData.deepSleepCounter  * myOptions.deepSleepTimeSec      + 
-          myData.rtcData.powerCheckCounter * myOptions.powerCheckIntervalSec +
-          millis() / 1000;
+   return myData.secondsSincePowerOn();
 }
 
 /** Helper Function to read the power supply voltage from the voltage divider. */
@@ -201,7 +199,7 @@ void loop()
       myGsmPower.off();
       WiFi.disconnect();
       WiFi.mode(WIFI_OFF);
-      WiFi.forceSleepBegin();
+      yield();
       myDeepSleep.sleep();
    }
    

@@ -124,7 +124,7 @@ bool MyWebServer::begin()
    dnsServer.start(53, "*", ip);
    myData->softAPIP         = WiFi.softAPIP().toString();
    myData->softAPmacAddress =  WiFi.softAPmacAddress();
-   MyDbg("SoftAPIP address: " + myData->softAPIP, true);
+   MyDbg("SoftAPIP address: "     + myData->softAPIP, true);
    MyDbg("SoftAPIP mac address: " + myData->softAPmacAddress, true);
 
    WiFi.begin(myOptions->wlanAP.c_str(), myOptions->wlanPassword.c_str());
@@ -270,10 +270,14 @@ void MyWebServer::AddOption(String &info, String id, String name, String value, 
 {
    info += "<b>" + TextToXml(name) + "</b>";
    info += "<input id='" + id + "' name='" + id + "' ";
+   /*
+    * Autocomplete overwrites our password if the type is password :(
+    * So we show it actually in clear text.
    if (isPassword) {
-      info += " type='password' ";
+      info += " type='password' autocomplete='new-password' ";
    }
-   info += "placeholder='' value='" + TextToXml(value) + "'>";
+   */
+   info += "value='" + TextToXml(value) + "'>";
    if (addBr) {
       info += "<br />";
    }
@@ -504,8 +508,7 @@ void MyWebServer::handleSaveSettings()
    GetOption("mqttSendOnNonMoveEverySec", myOptions->mqttSendOnNonMoveEverySec);
 
    // Reset the rtc data if something has changed.
-   myData->rtcData.reset(); 
-   myData->secondsAwakeTime = -1;
+   myData->awakeTimeOffsetSec = millis() / 1000;
    myOptions->save();
 
    if (false /* reboot */) {
@@ -566,17 +569,22 @@ void MyWebServer::handleLoadInfoInfo()
       AddTableTr(info);
    }
    if (myData->isMoving || myData->movingDistance != 0.0) {
-      AddTableTr(info, "Moving",               myData->isMoving ? "Yes" : "No");
-      AddTableTr(info, "Distance (m)",         String(myData->movingDistance, 2));
+      AddTableTr(info, "Moving", myData->isMoving ? "Yes" : "No");
+      AddTableTr(info, "Distance (m)", String(myData->movingDistance, 2));
       AddTableTr(info);
    }
-   AddTableTr(info, "ESP Chip ID",            String(ESP.getChipId()));
-   AddTableTr(info, "Flash Chip ID",          String(ESP.getFlashChipId()));
-   AddTableTr(info, "Real Flash Memory",      String(ESP.getFlashChipRealSize() / 1024) + " kB");
-   AddTableTr(info, "Total Flash Memory",     String(ESP.getFlashChipSize()     / 1024) + " kB");
-   AddTableTr(info, "Used Flash Memory",      String(ESP.getSketchSize()        / 1024) + " kB");
-   AddTableTr(info, "Free Sketch Memory",     String(ESP.getFreeSketchSpace()   / 1024) + " kB");
-   AddTableTr(info, "Free Heap Memory",       String(ESP.getFreeHeap()          / 1024) + " kB");
+   AddTableTr(info, "Active Time",             formatSeconds(myData->getActiveTimeSec()));
+   AddTableTr(info, "PowerUpTime",             formatSeconds(myData->getPowerOnTimeSec()));
+   AddTableTr(info, "DeepSleepTime",           formatSeconds(myData->rtcData.deepSleepTimeSec));
+   AddTableTr(info, "Power Consumption (mAh)", String(myData->getPowerConsumption(), 2));
+   AddTableTr(info);
+   AddTableTr(info, "ESP Chip ID",             String(ESP.getChipId()));
+   AddTableTr(info, "Flash Chip ID",           String(ESP.getFlashChipId()));
+   AddTableTr(info, "Real Flash Memory",       String(ESP.getFlashChipRealSize() / 1024) + " kB");
+   AddTableTr(info, "Total Flash Memory",      String(ESP.getFlashChipSize()     / 1024) + " kB");
+   AddTableTr(info, "Used Flash Memory",       String(ESP.getSketchSize()        / 1024) + " kB");
+   AddTableTr(info, "Free Sketch Memory",      String(ESP.getFreeSketchSpace()   / 1024) + " kB");
+   AddTableTr(info, "Free Heap Memory",        String(ESP.getFreeHeap()          / 1024) + " kB");
    AddTableEnd(info);
    
    server.send(200,"text/html", info);
