@@ -122,6 +122,31 @@ String Trim(const String &data, const String &chars)
    return ret;
 }
 
+/** Helper function to format a int with two digits (with '0' if needed */
+String print2(int value) 
+{
+   if (value < 10) {
+      return "0" + String(value);
+   } else {
+      return String(value);
+   }
+}
+
+/** Helper function to format seconds to x days hours:minutes:seconds */
+String formatSeconds(uint32_t secs)
+{
+   int days    =  secs / 60 / 60 / 24;
+   int hours   = (secs / 60 / 60) % 24;
+   int minutes = (secs / 60) % 60;
+   int seconds =  secs % 60;
+
+   if (days <= 0) {
+      return print2(hours) + ":" + print2(minutes) + ":" + print2(seconds); 
+   } else {
+      return String(days) + " " + print2(hours) + ":" + print2(minutes) + ":" + print2(seconds); 
+   }
+}
+
 /**
   * Helper function to start the OTA functionality of the ESP.
   */
