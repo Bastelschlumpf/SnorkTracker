@@ -144,8 +144,6 @@ void loop()
    myVoltage.readVoltage();
    myBME280.readValues();
 
-   MyDbg("hfgdshgfhd fdfd sklfds hfdhsj fhdshfkd");
-
    if (!myData.consoleCmds.isEmpty()) {
       String cmd = myData.consoleCmds.removeHead();
       
