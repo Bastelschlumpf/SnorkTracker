@@ -33,6 +33,8 @@
    With the GSM chip, the system can receive SMS commands to set default values or send current
    information such as GPS or temperature.
 
+   The system estimates the current power consumption in mAh in energy saving mode and when the sim module is on. 
+
    You can also use the software on a esp8266 chip like the wemos d1 for having a serial console over HTTP if you connect
    to the D5 and D6 pin.
 
