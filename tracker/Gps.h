@@ -143,7 +143,16 @@ public:
    bool setVdop            (const String &data);
    bool setSatellitesInView(const String &data);
    bool setSatellitesUsed  (const String &data);
-}; 
+
+   String longitudeString  ();
+   String latitudeString   ();
+   String altitudeString   ();
+   String kmphString       ();
+   String satellitesString ();
+   String courseString     ();
+   String dateString       ();
+   String timeString       ();
+};
 
 /* ******************************************** */
 
@@ -430,4 +439,52 @@ bool MyGps::setSatellitesInView(const String &data)
 bool MyGps::setSatellitesUsed(const String &data)
 {
    return parse(satellitesUsed, data);
+}
+
+/** Returns the longitude as a string */
+String MyGps::longitudeString()
+{
+   return String(location.longitude(), 6);
+}
+
+/** Returns the latitude as a string */
+String MyGps::latitudeString()
+{
+   return String(location.latitude(), 6);
+}
+
+/** Returns the altitude as a string */
+String MyGps::altitudeString()
+{
+   return String(altitude, 2);
+}
+
+/** Returns the kmph as a string */
+String MyGps::kmphString()
+{
+   return String(speed, 2);
+}
+
+/** Returns the satellites as a string */
+String MyGps::satellitesString()
+{
+   return String(satellitesUsed);
+}
+
+/** Returns the course as a string */
+String MyGps::courseString()
+{
+   return String(course);
+}
+
+/** Returns the gps date as a string */
+String MyGps::dateString()
+{
+   return String(date.day()) + '-' + String(date.month()) + '-' + String(date.year());
+}
+
+/** Returns the gps time as a string */
+String MyGps::timeString()
+{
+   String(time.hour()) + ':' + String(time.minute()) + ':' + String(time.second());
 }

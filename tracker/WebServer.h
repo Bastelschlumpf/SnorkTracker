@@ -368,10 +368,10 @@ void MyWebServer::handleLoadMainInfo()
    AddTableTr(info, "Pressure",    String(myData->pressure,    1) + " hPa");
    if (myData->status != "") {
       AddTableTr(info, "Modem Info", myData->modemInfo);
-      AddTableTr(info, "Longitude",  myData->longitude);
-      AddTableTr(info, "Latitude",   myData->latitude);
-      AddTableTr(info, "Altitude",   myData->altitude);
-      AddTableTr(info, "Satellites", myData->satellites);
+      AddTableTr(info, "Longitude",  myData->gps.longitudeString());
+      AddTableTr(info, "Latitude",   myData->gps.latitudeString());
+      AddTableTr(info, "Altitude",   myData->gps.altitudeString());
+      AddTableTr(info, "Satellites", myData->gps.satellitesString());
    }
    if (myData->secondsToDeepSleep >= 0) {
       AddTableTr(info, "Power saving in ", String(myData->secondsToDeepSleep) + " Seconds");
@@ -556,16 +556,15 @@ void MyWebServer::handleLoadInfoInfo()
       AddTableTr(info, "Battery Volt",         myData->batteryVolt);
       AddTableTr(info);
    }
-   if (myData->longitude  != "" || myData->latitude != "" || myData->altitude != "" || myData->kmph    != "" || 
-       myData->satellites != "" || myData->course   != "" || myData->gpsDate  != "" || myData->gpsTime != "") {
-      AddTableTr(info, "Longitude",            myData->longitude);
-      AddTableTr(info, "Latitude",             myData->latitude);
-      AddTableTr(info, "Altitude",             myData->altitude);
-      AddTableTr(info, "Km/h",                 myData->kmph);
-      AddTableTr(info, "Satellite",            myData->satellites);
-      AddTableTr(info, "Course",               myData->course);
-      AddTableTr(info, "GPS Datum",            myData->gpsDate);
-      AddTableTr(info, "GPS Time",             myData->gpsTime);
+   if (myData->gps.fixStatus) {
+      AddTableTr(info, "Longitude",            myData->gps.longitudeString());
+      AddTableTr(info, "Latitude",             myData->gps.latitudeString());
+      AddTableTr(info, "Altitude",             myData->gps.altitudeString());
+      AddTableTr(info, "Km/h",                 myData->gps.kmphString());
+      AddTableTr(info, "Satellite",            myData->gps.satellitesString());
+      AddTableTr(info, "Course",               myData->gps.courseString());
+      AddTableTr(info, "GPS Datum",            myData->gps.dateString());
+      AddTableTr(info, "GPS Time",             myData->gps.timeString());
       AddTableTr(info);
    }
    if (myData->isMoving || myData->movingDistance != 0.0) {

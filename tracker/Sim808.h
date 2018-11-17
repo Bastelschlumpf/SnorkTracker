@@ -25,7 +25,6 @@
 #define TINY_GSM_DEBUG Serial //!< ???
 
 #include <TinyGsmClient.h>
-#include "Gps.h"
 
 /** 
   * Helper class for storing one SMS data. 

@@ -195,16 +195,16 @@ void MySmsCmd::cmdStatus(const SmsData &sms)
 {
    String status;
 
-   status += "Status:"       + myData.status              + '\n';
-   status += "Voltage:"      + String(myData.voltage, 1)  + "V\n";
-   status += "Temperature: " + String(myData.temperature) + "°C\n";
-   status += "Humidity: "    + String(myData.humidity)    + "%\n";
-   status += "Pressure: "    + String(myData.pressure)    + "hPa\n";
-   status += "Modem Info:"   + myData.modemInfo           + '\n';
-   status += "Longitude:"    + myData.longitude           + '\n';
-   status += "Latitude:"     + myData.latitude            + '\n';
-   status += "Altitude:"     + myData.altitude            + '\n';
-   status += "Satellites:"   + myData.satellites          + '\n';
+   status += "Status:"       + myData.status                 + '\n';
+   status += "Voltage:"      + String(myData.voltage, 1)     + "V\n";
+   status += "Temperature: " + String(myData.temperature)    + "ï¿½C\n";
+   status += "Humidity: "    + String(myData.humidity)       + "%\n";
+   status += "Pressure: "    + String(myData.pressure)       + "hPa\n";
+   status += "Modem Info:"   + myData.modemInfo              + '\n';
+   status += "Longitude:"    + myData.gps.longitudeString()  + '\n';
+   status += "Latitude:"     + myData.gps.latitudeString()   + '\n';
+   status += "Altitude:"     + myData.gps.altitudeString()   + '\n';
+   status += "Satellites:"   + myData.gps.satellitesString() + '\n';
    sendSms(status);
 }
 
@@ -214,7 +214,7 @@ void MySmsCmd::cmdGps(const SmsData &sms)
    if (sms.message.indexOf(":") == -1) {
       sendSms(
          "http://maps.google.com/maps?q=" + 
-         myData.latitude + "," + myData.longitude);
+         myData.gps.latitudeString() + "," + myData.gps.longitudeString());
    } else {
       if (readValues(myOptions.gpsCheckIntervalSec, sms.message)) {
          sendOk(sms);

@@ -33,6 +33,7 @@
 
 #include "Utils.h"
 #include "StringList.h"
+#include "Gps.h"
 #include "Options.h"
 #include "Data.h"
 #include "Voltage.h"

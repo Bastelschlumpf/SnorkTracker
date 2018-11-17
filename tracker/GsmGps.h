@@ -39,9 +39,6 @@ public:
    bool             isGsmActive;      //!< Is the gsm part of the sim808 activated?
    bool             isGpsActive;      //!< Is the gs part of the sim808 activated?
 
-   MyGps            gps;              //!< Last gps values.
-   MyLocation       lastLocation;     //!< Last gps location to check for moving.
-
    MyOptions       &myOptions;        //!< Reference to the options.
    MyData          &myData;           //!< Reference to the data.
 
@@ -293,37 +290,29 @@ bool MyGsmGps::getGps()
 
    if (isGpsActive) {
       MyDbg("getGPS");
-      if (gsmSim808.getGPS(gps)) {
+      if (gsmSim808.getGPS(myData.gps)) {
+         myData.lastGpsUpdateSec = secondsSincePowerOn();
+
          myData.signalQuality    = String(gsmSim808.getSignalQuality());
          myData.batteryLevel     = String(gsmSim808.getBattPercent());
          myData.batteryVolt      = String(gsmSim808.getBattVoltage() / 1000.0F, 6);
             
-         myData.longitude        = String(gps.location.longitude(), 6);
-         myData.latitude         = String(gps.location.latitude(),  6);
-         myData.altitude         = String(gps.altitude, 2); 
-         myData.kmph             = String(gps.speed,    2); 
-         myData.satellites       = String(gps.satellitesUsed); 
-         myData.course           = String(gps.course); 
-         myData.gpsDate          = String(gps.date.day())  + '-' + String(gps.date.month())  + '-' + String(gps.date.year());
-         myData.gpsTime          = String(gps.time.hour()) + ':' + String(gps.time.minute()) + ':' + String(gps.time.second());
-         myData.lastGpsUpdateSec = secondsSincePowerOn();
-   
          MyDbg("(sim808) signalQuality: " + myData.signalQuality);
          MyDbg("(sim808) batteryLevel: "  + myData.batteryLevel);
          MyDbg("(sim808) batteryVolt: "   + myData.batteryVolt);
-         MyDbg("(gps) longitude: "        + myData.longitude);
-         MyDbg("(gps) latitude: "         + myData.latitude);
-         MyDbg("(gps) altitude: "         + myData.altitude);
-         MyDbg("(gps) kmph: "             + myData.kmph);
-         MyDbg("(gps) satellites: "       + myData.satellites);
-         MyDbg("(gps) course: "           + myData.course);
-         MyDbg("(gps) gpsDate: "          + myData.gpsDate);
-         MyDbg("(gps) gpsTime: "          + myData.gpsTime);
+         MyDbg("(gps) longitude: "        + myData.gps.longitudeString());
+         MyDbg("(gps) latitude: "         + myData.gps.latitudeString());
+         MyDbg("(gps) altitude: "         + myData.gps.altitudeString());
+         MyDbg("(gps) kmph: "             + myData.gps.kmphString());
+         MyDbg("(gps) satellites: "       + myData.gps.satellitesString());
+         MyDbg("(gps) course: "           + myData.gps.courseString());
+         MyDbg("(gps) gpsDate: "          + myData.gps.dateString());
+         MyDbg("(gps) gpsTime: "          + myData.gps.timeString());
     
-         if (lastLocation.latitude() != 0) {
-            myData.movingDistance = gps.location.distanceTo(lastLocation);
-            myData.isMoving       = myData.movingDistance > myOptions.minMovingDistance;
-            lastLocation          = gps.location;
+         if (myData.rtcData.lastLocation.latitude() != 0) {
+            myData.movingDistance       = myData.gps.location.distanceTo(myData.rtcData.lastLocation);
+            myData.isMoving             = myData.movingDistance > myOptions.minMovingDistance;
+            myData.rtcData.lastLocation = myData.gps.location;
             ret = true;
          }
       }

@@ -39,10 +39,8 @@ bool secondsElapsed(uint32_t &lastCheckSec, const uint32_t &intervalSec)
 #define POLY 0xedb88320 //!< CRC-32 (Ethernet, ZIP, etc.) polynomial in reversed bit order.
 
 /** Simple crc function. Can multiple called but the first time crc should be 0.  */
-uint32_t crc32(uint32_t crc, const uint32_t &data, size_t len)
+uint32_t crc32(uint32_t crc, unsigned char *buf, size_t len)
 {
-   unsigned char *buf = (unsigned char *) &data;
-   
    crc = ~crc;
    while (len--) {
       crc ^= *buf++;

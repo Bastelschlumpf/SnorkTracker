@@ -29,20 +29,22 @@ class MyData
 public:
    class RtcData {
    public:
-      uint32_t aktiveTimeSec;          //!< Time in active mode without current millis().
-      uint32_t powerOnTimeSec;         //!< Time the sim808 is on power without current millis..
-      uint32_t deepSleepTimeSec;       //!< Time in deep sleep mode. 
-      uint32_t deepSleepStartSec;      //!< Timestamp of the last deep sleep start.
+      MyLocation lastLocation;           //!< Last known GPS position. 
 
-      uint32_t lowPowerActiveTimeSec;  //!< Timestamp of the last deep sleep start.
-      uint32_t lowPowerPowerOnTimeSec; //!< Timestamp of the last deep sleep start.
-
-      uint32_t lastBme280ReadSec;      //!< Timestamp of the last BME280 read.
-      uint32_t lastGpsReadSec;         //!< Timestamp of the last gps read.
-      uint32_t lastMqttReconnectSec;   //!< Timestamp from the last server connection. 
-      uint32_t lastMqttSendSec;        //!< Timestamp from the last send.
-
-      uint32_t crcValue;               //!< CRC of the RtcData
+      uint32_t   aktiveTimeSec;          //!< Time in active mode without current millis().
+      uint32_t   powerOnTimeSec;         //!< Time the sim808 is on power without current millis..
+      uint32_t   deepSleepTimeSec;       //!< Time in deep sleep mode. 
+      uint32_t   deepSleepStartSec;      //!< Timestamp of the last deep sleep start.
+                 
+      uint32_t   lowPowerActiveTimeSec;  //!< Timestamp of the last deep sleep start.
+      uint32_t   lowPowerPowerOnTimeSec; //!< Timestamp of the last deep sleep start.
+                 
+      uint32_t   lastBme280ReadSec;      //!< Timestamp of the last BME280 read.
+      uint32_t   lastGpsReadSec;         //!< Timestamp of the last gps read.
+      uint32_t   lastMqttReconnectSec;   //!< Timestamp from the last server connection. 
+      uint32_t   lastMqttSendSec;        //!< Timestamp from the last send.
+                 
+      uint32_t   crcValue;               //!< CRC of the RtcData
 
    public:
       RtcData();
@@ -79,14 +81,7 @@ public:
    String   batteryLevel;        //!< Battery level of the sim808 module
    String   batteryVolt;         //!< Battery volt of the sim808 module
    
-   String   longitude;           //!< Current GPS longitude
-   String   latitude;            //!< Current GPS latitude
-   String   altitude;            //!< Current GPS altitude
-   String   kmph;                //!< Current speed in km/h
-   String   satellites;          //!< number of connected satellites
-   String   course;              //!< course of movement
-   String   gpsDate;             //!< Date from GPS (UTC)
-   String   gpsTime;             //!< Time from GPS (UTC)
+   MyGps    gps;                 //!< Current GPS data. 
    uint32_t lastGpsUpdateSec;    //!< Elapsed Time of last read
    
    bool     isMoving;            //!< Is moving recognized
@@ -142,16 +137,17 @@ uint32_t MyData::RtcData::getCRC()
 {
    uint32_t crc = 0;
 
-   crc = crc32(crc, aktiveTimeSec,          sizeof(uint32_t));
-   crc = crc32(crc, powerOnTimeSec,         sizeof(uint32_t));
-   crc = crc32(crc, deepSleepTimeSec,       sizeof(uint32_t));
-   crc = crc32(crc, deepSleepStartSec,      sizeof(uint32_t));
-   crc = crc32(crc, lowPowerActiveTimeSec,  sizeof(uint32_t));
-   crc = crc32(crc, lowPowerPowerOnTimeSec, sizeof(uint32_t));
-   crc = crc32(crc, lastBme280ReadSec,      sizeof(uint32_t));
-   crc = crc32(crc, lastGpsReadSec,         sizeof(uint32_t));
-   crc = crc32(crc, lastMqttReconnectSec,   sizeof(uint32_t));
-   crc = crc32(crc, lastMqttSendSec,        sizeof(uint32_t));
+   crc = crc32(crc, (unsigned char *) &lastLocation,           sizeof(MyLocation));
+   crc = crc32(crc, (unsigned char *) &aktiveTimeSec,          sizeof(uint32_t));
+   crc = crc32(crc, (unsigned char *) &powerOnTimeSec,         sizeof(uint32_t));
+   crc = crc32(crc, (unsigned char *) &deepSleepTimeSec,       sizeof(uint32_t));
+   crc = crc32(crc, (unsigned char *) &deepSleepStartSec,      sizeof(uint32_t));
+   crc = crc32(crc, (unsigned char *) &lowPowerActiveTimeSec,  sizeof(uint32_t));
+   crc = crc32(crc, (unsigned char *) &lowPowerPowerOnTimeSec, sizeof(uint32_t));
+   crc = crc32(crc, (unsigned char *) &lastBme280ReadSec,      sizeof(uint32_t));
+   crc = crc32(crc, (unsigned char *) &lastGpsReadSec,         sizeof(uint32_t));
+   crc = crc32(crc, (unsigned char *) &lastMqttReconnectSec,   sizeof(uint32_t));
+   crc = crc32(crc, (unsigned char *) &lastMqttSendSec,        sizeof(uint32_t));
    return crc;
 }
 

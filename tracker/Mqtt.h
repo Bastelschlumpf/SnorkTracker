@@ -136,10 +136,10 @@ bool MyMqtt::sendData()
       publish(topic_batt_level, myData.batteryLevel.c_str(),  true); 
       publish(topic_batt_volt,  myData.batteryVolt.c_str(),   true); 
          
-      publish(topic_lon,  myData.longitude.c_str(), true); 
-      publish(topic_lat,  myData.latitude.c_str(),  true); 
-      publish(topic_alt,  myData.altitude.c_str(),  true); 
-      publish(topic_kmph, myData.kmph.c_str(),      true); 
+      publish(topic_lon,  myData.gps.longitudeString().c_str(), true); 
+      publish(topic_lat,  myData.gps.latitudeString().c_str(),  true); 
+      publish(topic_alt,  myData.gps.altitudeString().c_str(),  true); 
+      publish(topic_kmph, myData.gps.kmphString().c_str(),      true); 
          
       MyDbg("mqtt published");
       return true;
