@@ -98,7 +98,7 @@ String WifiGetRssiAsQuality(int rssi)
 }
 
 /**
-  * Trims the data string on the left and right side every occurence of a char from chars.
+  * Trims the data string on the left and right side every occurrence of a char from chars.
   */
 String Trim(const String &data, const String &chars)
 {
