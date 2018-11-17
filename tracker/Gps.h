@@ -314,8 +314,8 @@ int MyTime::second()
 
 /** Constructor */
 MyGps::MyGps()
-   : runStatus(0)
-   , fixStatus(0)
+   : runStatus(false)
+   , fixStatus(false)
    , altitude(0)
    , speed(0)
    , course(0)
