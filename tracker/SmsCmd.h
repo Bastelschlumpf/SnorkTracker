@@ -44,6 +44,7 @@ protected:
    void cmdOn      (const SmsData &sms);
    void cmdOff     (const SmsData &sms);
    void cmdStatus  (const SmsData &sms);
+   void cmdPsm     (const SmsData &sms);
    void cmdGps     (const SmsData &sms);
    void cmdSms     (const SmsData &sms);
    void cmdMqtt    (const SmsData &sms);
@@ -107,6 +108,8 @@ void MySmsCmd::checkSms()
          cmdOff(sms);
       } else if (messageLower == "status") {
          cmdStatus(sms);
+      } else if (messageLower == "psm") {
+         cmdPsm(sms);
       } else if (messageLower == "gps") {
          cmdGps(sms);
       } else if (messageLower == "sms") {
@@ -208,6 +211,24 @@ void MySmsCmd::cmdStatus(const SmsData &sms)
    sendSms(status);
 }
 
+/** Command: switch the power saving mode on or off. */
+void MySmsCmd::cmdPsm(const SmsData &sms)
+{
+   if (sms.message.indexOf(":") == -1) {
+      myOptions.isDeepSleepEnabled = true;
+      sendOk(sms);
+   } else {
+      String off;
+
+      if (readValues(off, sms.message) && off == "off") {
+         myOptions.isDeepSleepEnabled = true;
+         sendOk(sms);
+      } else {
+         cmdDefault(sms);
+      }
+   }
+}
+
 /** Command: send the gps position as an google map URL. */
 void MySmsCmd::cmdGps(const SmsData &sms)
 {
@@ -254,7 +275,7 @@ void MySmsCmd::cmdPhone(const SmsData &sms)
    }
 }
 
-/** Default sms response if anything is wrong */
+/** Default sms response if something is wrong */
 void MySmsCmd::cmdDefault(const SmsData &sms)
 {
    String info;
@@ -263,6 +284,7 @@ void MySmsCmd::cmdDefault(const SmsData &sms)
    info += "on\n";
    info += "off\n";
    info += "status\n";
+   info += "psm[:off] - power saving mode\n";
    info += "gps[:15] - check every (sec)\n";
    info += "sms[:15] - check every (sec)\n";
    info += "mqtt[30:60] - (moving:standing (sec)\n";
