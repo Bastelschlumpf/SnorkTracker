@@ -8,3 +8,8 @@ ConfigOverride.h
 ## Doxygen generated files ######
 html
 
+## Visual Studio temp files ##
+.vs
+tracker.vcxproj.filters
+tracker.vcxproj.user
+
