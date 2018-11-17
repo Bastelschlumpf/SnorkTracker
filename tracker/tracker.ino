@@ -35,6 +35,7 @@
 #include "StringList.h"
 #include "Options.h"
 #include "Data.h"
+#include "Voltage.h"
 #include "DeepSleep.h"
 #include "WebServer.h"
 #include "GsmPower.h"
@@ -48,10 +49,10 @@
 #define     PIN_RX        12                               //!< receive-pin to the sim808
 #define     PIN_POWER     0                                //!< power on/off to DC-DC LM2596
 #define     PIN_BME_POWER 2                                //!< power pin to the BME280 module
-#define     ANALOG_FACTOR 0.03                             //!< Factor to the analog voltage divider
 
 MyOptions   myOptions;                                     //!< The global options.
 MyData      myData;                                        //!< The global collected data.
+MyVoltage   myVoltage(myOptions, myData);                  //!< Helper class for deep sleeps.
 MyDeepSleep myDeepSleep(myOptions, myData);                //!< Helper class for deep sleeps.
 MyWebServer myWebServer(myOptions, myData);                //!< The Webserver
 MyGsmPower  myGsmPower(myData, PIN_POWER);                 //!< Helper class to switch on/off the sim808 power.
@@ -110,15 +111,6 @@ uint32_t secondsSincePowerOn()
    return myData.secondsSincePowerOn();
 }
 
-/** Helper Function to read the power supply voltage from the voltage divider. */
-void readVoltage(bool dbg = false)
-{
-   myData.voltage = ANALOG_FACTOR * analogRead(A0); // Volt
-   if (dbg) {
-      MyDbg("Voltage: " + String(myData.voltage, 1));
-   }
-}
-
 /** Main setup function. This is also called after every deep sleep. 
   * Do the initialization of every sub-component. */
 void setup() 
@@ -129,7 +121,7 @@ void setup()
    myGsmPower.begin();
    SPIFFS.begin();
    myOptions.load();
-   readVoltage(true);
+   myVoltage.begin();
    myDeepSleep.begin();
    
    myWebServer.begin();
@@ -149,8 +141,10 @@ void setup()
   */
 void loop() 
 {
-   readVoltage();
+   myVoltage.readVoltage();
    myBME280.readValues();
+
+   MyDbg("hfgdshgfhd fdfd sklfds hfdhsj fhdshfkd");
 
    if (!myData.consoleCmds.isEmpty()) {
       String cmd = myData.consoleCmds.removeHead();

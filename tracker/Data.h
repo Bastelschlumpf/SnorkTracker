@@ -29,17 +29,20 @@ class MyData
 public:
    class RtcData {
    public:
-      uint32_t aktiveTimeSec;        //!< Time in active mode without current millis().
-      uint32_t powerOnTimeSec;       //!< Time the sim808 is on power without current millis..
-      uint32_t deepSleepTimeSec;     //!< Time in deep sleep mode. 
-      uint32_t deepSleepStartSec;    //!< Timestamp of the last deep sleep start.
+      uint32_t aktiveTimeSec;          //!< Time in active mode without current millis().
+      uint32_t powerOnTimeSec;         //!< Time the sim808 is on power without current millis..
+      uint32_t deepSleepTimeSec;       //!< Time in deep sleep mode. 
+      uint32_t deepSleepStartSec;      //!< Timestamp of the last deep sleep start.
 
-      uint32_t lastBme280ReadSec;    //!< Timestamp of the last BME280 read.
-      uint32_t lastGpsReadSec;       //!< Timestamp of the last gps read.
-      uint32_t lastMqttReconnectSec; //!< Timestamp from the last server connection. 
-      uint32_t lastMqttSendSec;      //!< Timestamp from the last send.
+      uint32_t lowPowerActiveTimeSec;  //!< Timestamp of the last deep sleep start.
+      uint32_t lowPowerPowerOnTimeSec; //!< Timestamp of the last deep sleep start.
 
-      uint32_t crcValue;             //!< CRC of the RtcData
+      uint32_t lastBme280ReadSec;      //!< Timestamp of the last BME280 read.
+      uint32_t lastGpsReadSec;         //!< Timestamp of the last gps read.
+      uint32_t lastMqttReconnectSec;   //!< Timestamp from the last server connection. 
+      uint32_t lastMqttSendSec;        //!< Timestamp from the last send.
+
+      uint32_t crcValue;               //!< CRC of the RtcData
 
    public:
       RtcData();
@@ -54,6 +57,7 @@ public:
    String   restartInfo;         //!< Information on restart
    bool     isOtaActive;         //!< Is OverTheAir update active?
    bool     isPowerOn;           //!< Is the power of the sim808 switched on?
+   bool     isLowPower;          //!< Is the power below min voltage?
 
    int32_t  secondsToDeepSleep;  //!< Time until next deepsleep. -1 = disabled
    uint32_t awakeTimeOffsetSec;  //!< Awake time offset for SaveSettings.
@@ -96,9 +100,12 @@ public:
 
    uint32_t secondsSincePowerOn();
    uint32_t getActiveTimeSec();
+   uint32_t getLowPowerActiveTimeSec();
    uint32_t getPowerOnTimeSec();
+   uint32_t getLowPowerPowerOnTimeSec();
 
    double   getPowerConsumption();
+   double   getLowPowerPowerConsumption();
 };
 
 /* ******************************************** */
@@ -108,6 +115,8 @@ MyData::RtcData::RtcData()
    , powerOnTimeSec(0)
    , deepSleepTimeSec(0)
    , deepSleepStartSec(0)
+   , lowPowerActiveTimeSec(0)
+   , lowPowerPowerOnTimeSec(0)
    , lastBme280ReadSec(0)
    , lastGpsReadSec(0)
    , lastMqttReconnectSec(0)
@@ -133,14 +142,16 @@ uint32_t MyData::RtcData::getCRC()
 {
    uint32_t crc = 0;
 
-   crc = crc32(crc, aktiveTimeSec,        sizeof(uint32_t));
-   crc = crc32(crc, powerOnTimeSec,       sizeof(uint32_t));
-   crc = crc32(crc, deepSleepTimeSec,     sizeof(uint32_t));
-   crc = crc32(crc, deepSleepStartSec,    sizeof(uint32_t));
-   crc = crc32(crc, lastBme280ReadSec,    sizeof(uint32_t));
-   crc = crc32(crc, lastGpsReadSec,       sizeof(uint32_t));
-   crc = crc32(crc, lastMqttReconnectSec, sizeof(uint32_t));
-   crc = crc32(crc, lastMqttSendSec,      sizeof(uint32_t));
+   crc = crc32(crc, aktiveTimeSec,          sizeof(uint32_t));
+   crc = crc32(crc, powerOnTimeSec,         sizeof(uint32_t));
+   crc = crc32(crc, deepSleepTimeSec,       sizeof(uint32_t));
+   crc = crc32(crc, deepSleepStartSec,      sizeof(uint32_t));
+   crc = crc32(crc, lowPowerActiveTimeSec,  sizeof(uint32_t));
+   crc = crc32(crc, lowPowerPowerOnTimeSec, sizeof(uint32_t));
+   crc = crc32(crc, lastBme280ReadSec,      sizeof(uint32_t));
+   crc = crc32(crc, lastGpsReadSec,         sizeof(uint32_t));
+   crc = crc32(crc, lastMqttReconnectSec,   sizeof(uint32_t));
+   crc = crc32(crc, lastMqttSendSec,        sizeof(uint32_t));
    return crc;
 }
 
@@ -148,6 +159,7 @@ uint32_t MyData::RtcData::getCRC()
 MyData::MyData()
    : isOtaActive(false)
    , isPowerOn(false)
+   , isLowPower(false)
    , secondsToDeepSleep(-1)
    , awakeTimeOffsetSec(0)
    , voltage(0.0)
@@ -163,13 +175,23 @@ MyData::MyData()
 /** Returns the seconds since power up (not since last deep sleep). */
 uint32_t MyData::secondsSincePowerOn()
 {
-   return rtcData.deepSleepTimeSec + rtcData.aktiveTimeSec + millis() / 1000;
+   return rtcData.deepSleepTimeSec + getActiveTimeSec();
 }
 
 /** Return all the active over all deep sleeps plus the current active time. */
 uint32_t MyData::getActiveTimeSec()
 {
    return rtcData.aktiveTimeSec + millis() / 1000;
+}
+
+/** Return all the active over all deep sleeps plus the current active time. */
+uint32_t MyData::getLowPowerActiveTimeSec()
+{
+   if (!isLowPower) {
+      return rtcData.lowPowerActiveTimeSec;
+   } else {
+      return rtcData.lowPowerActiveTimeSec + millis() / 1000;
+   }
 }
 
 /** Returns the power on time over all deep sleeps plus the current active time if power is on. */
@@ -182,12 +204,32 @@ uint32_t MyData::getPowerOnTimeSec()
    }
 }
 
-/** Calculates the power consumption from power on. 
+/** Return all the time with power on on low power supply. */
+uint32_t MyData::getLowPowerPowerOnTimeSec()
+{
+   if (!isLowPower || !isPowerOn) {
+      return rtcData.lowPowerPowerOnTimeSec;
+   } else {
+      return rtcData.lowPowerPowerOnTimeSec + millis() / 1000;
+   }
+}
+
+/** Calculates the power consumption from power on.
   * In mA/h
   */
 double MyData::getPowerConsumption()
 {
    return (POWER_CONSUMPTION_ACTIVE     * (getActiveTimeSec() - getPowerOnTimeSec()) +
            POWER_CONSUMPTION_POWER_ON   * getPowerOnTimeSec() +
+           POWER_CONSUMPTION_DEEP_SLEEP * rtcData.deepSleepTimeSec) / 3600.0;
+}
+
+/** Calculates the power consumption on low power from power on.
+  * In mA/h
+  */
+double MyData::getLowPowerPowerConsumption()
+{
+   return (POWER_CONSUMPTION_ACTIVE     * (getLowPowerActiveTimeSec() - getLowPowerPowerOnTimeSec()) +
+           POWER_CONSUMPTION_POWER_ON   * getLowPowerPowerOnTimeSec() +
            POWER_CONSUMPTION_DEEP_SLEEP * rtcData.deepSleepTimeSec) / 3600.0;
 }

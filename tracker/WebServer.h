@@ -576,7 +576,8 @@ void MyWebServer::handleLoadInfoInfo()
    AddTableTr(info, "Active Time",             formatSeconds(myData->getActiveTimeSec()));
    AddTableTr(info, "PowerUpTime",             formatSeconds(myData->getPowerOnTimeSec()));
    AddTableTr(info, "DeepSleepTime",           formatSeconds(myData->rtcData.deepSleepTimeSec));
-   AddTableTr(info, "Power Consumption (mAh)", String(myData->getPowerConsumption(), 2));
+   AddTableTr(info, "mAh",                     String(myData->getPowerConsumption(), 2));
+   AddTableTr(info, "Low power mAh",           String(myData->getLowPowerPowerConsumption(), 2));
    AddTableTr(info);
    AddTableTr(info, "ESP Chip ID",             String(ESP.getChipId()));
    AddTableTr(info, "Flash Chip ID",           String(ESP.getFlashChipId()));
