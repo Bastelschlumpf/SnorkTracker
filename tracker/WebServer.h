@@ -362,12 +362,13 @@ void MyWebServer::handleLoadMainInfo()
    if (myData->status != "") {
       AddTableTr(info, "Status", myData->status);
    }
+   AddTableTr(info, "Modem Info",  myData->modemInfo);
+   
    AddTableTr(info, "Battery",     String(myData->voltage,     1) + " V");
    AddTableTr(info, "Temperature", String(myData->temperature, 1) + " °C");
    AddTableTr(info, "Humidity",    String(myData->humidity,    1) + " %");
    AddTableTr(info, "Pressure",    String(myData->pressure,    1) + " hPa");
-   if (myData->status != "") {
-      AddTableTr(info, "Modem Info", myData->modemInfo);
+   if (myData->gps.fixStatus) {
       AddTableTr(info, "Longitude",  myData->gps.longitudeString());
       AddTableTr(info, "Latitude",   myData->gps.latitudeString());
       AddTableTr(info, "Altitude",   myData->gps.altitudeString());
