@@ -185,7 +185,7 @@ void loop()
       }
    }
 
-   if (!myData.deepSleepLocked && myDeepSleep.haveToSleep()) {
+   if (myDeepSleep.haveToSleep()) {
       if (myGsmGps.isGsmActive) {
          myGsmGps.stop();
       }

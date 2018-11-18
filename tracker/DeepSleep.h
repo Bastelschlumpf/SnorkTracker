@@ -20,6 +20,8 @@
   * DeepSleep functions.
   */
 
+#define NO_DEEP_SLEEP_STARTUP_TIME 60000 //!< No deep sleep for the first minute.
+
 
 /**
   * Class to read/save a deepsleep counter and start the deepsleep mode
@@ -95,8 +97,10 @@ bool MyDeepSleep::haveToSleep()
    }
 
    return (myOptions.isDeepSleepEnabled && 
-           myData.voltage  <  myOptions.powerSaveModeVoltage && 
-           awakeTimeSec    >= myOptions.wakeTimeSec);
+           myData.deepSleepLocked == false &&
+           millis()               > NO_DEEP_SLEEP_STARTUP_TIME &&
+           myData.voltage         <  myOptions.powerSaveModeVoltage && 
+           awakeTimeSec           >= myOptions.wakeTimeSec);
 }
 
 /** Entering the DeepSleep mode. Be sure we have connected the RST pin to the D0 pin for wakeup. */
