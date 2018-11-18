@@ -26,13 +26,14 @@
 class MySmsCmd
 {
 protected:
-   MyGsmGps  &myGsmGps;       //!< Reference to the gsm/gps instance.
-   MyOptions &myOptions;      //!< Reference to the options.
-   MyData    &myData;         //!< Reference to the data.
-   long      smsLastCheckSec; //!< Timestamps of the last sms check.
+   MyGsmGps  &myGsmGps;  //!< Reference to the gsm/gps instance.
+   MyOptions &myOptions; //!< Reference to the options.
+   MyData    &myData;    //!< Reference to the data.
 
 protected:   
-   void checkSms();   
+   void checkSms   ();   
+
+   String getGoogleMapGpsUrl();
 
    void sendSms    (const String &message);
    void sendOk     (const SmsData &sms);
@@ -65,7 +66,6 @@ MySmsCmd::MySmsCmd(MyGsmGps &gsmGps, MyOptions &options, MyData &data)
    : myGsmGps(gsmGps)
    , myOptions(options)
    , myData(data)
-   , smsLastCheckSec(0)
 {
 }
 
@@ -79,9 +79,31 @@ bool MySmsCmd::begin()
 /** Check the sms if the time from the options is elapsed. */
 void MySmsCmd::handleClient()
 {
-   if (secondsSincePowerOn() - smsLastCheckSec > myOptions.smsCheckIntervalSec) {
-      smsLastCheckSec = secondsSincePowerOn();
+   if (secondsElapsed(myData.rtcData.lastSmsCheckSec, myOptions.smsCheckIntervalSec)) {
       checkSms();
+      if (myData.receivedCall) {
+         SmsData sms;
+         
+         cmdStatus(sms);
+         myData.receivedCall = false;
+      }
+   }
+}
+
+/** Returns the gps position as an google map url. */
+String MySmsCmd::getGoogleMapGpsUrl()
+{
+   if (myData.gps.fixStatus) {
+      return "https://maps.google.com/maps?q=" + 
+             myData.rtcData.lastLocation.latitudeString() + 
+             "," + 
+             myData.rtcData.lastLocation.longitudeString();
+   } else {
+      if (myOptions.isGpsEnabled) {
+         return "No Gps position.\n";
+      } else {
+         return "Gps not enabled.\n";
+      }
    }
 }
 
@@ -198,16 +220,23 @@ void MySmsCmd::cmdStatus(const SmsData &sms)
 {
    String status;
 
-   status += "Status:"       + myData.status                 + '\n';
-   status += "Voltage:"      + String(myData.voltage, 1)     + "V\n";
-   status += "Temperature: " + String(myData.temperature)    + "�C\n";
-   status += "Humidity: "    + String(myData.humidity)       + "%\n";
-   status += "Pressure: "    + String(myData.pressure)       + "hPa\n";
-   status += "Modem Info:"   + myData.modemInfo              + '\n';
-   status += "Longitude:"    + myData.gps.longitudeString()  + '\n';
-   status += "Latitude:"     + myData.gps.latitudeString()   + '\n';
-   status += "Altitude:"     + myData.gps.altitudeString()   + '\n';
-   status += "Satellites:"   + myData.gps.satellitesString() + '\n';
+   status += "Status: "       + myData.status              + '\n';
+   status += "Voltage: "      + String(myData.voltage, 1)  + " V\n";
+   status += "Temperature: "  + String(myData.temperature) + " C\n";
+   status += "Humidity: "     + String(myData.humidity)    + " %\n";
+   status += "Pressure: "     + String(myData.pressure)    + " hPa\n";
+   if (!myData.gps.fixStatus) {
+      if (myOptions.isGpsEnabled) {
+         status += "No Gps positions.\n";
+      } else {
+         status += "Gps not enabled.\n";
+      }
+   } else {
+      status += "Altitude: "   + myData.gps.altitudeString()   + " m\n";
+      status += "Speed: "      + myData.gps.kmphString()       + " kmph\n";
+      status += "Satellites: " + myData.gps.satellitesString() + '\n';
+      status += getGoogleMapGpsUrl() + '\n';
+   }
    sendSms(status);
 }
 
@@ -233,9 +262,7 @@ void MySmsCmd::cmdPsm(const SmsData &sms)
 void MySmsCmd::cmdGps(const SmsData &sms)
 {
    if (sms.message.indexOf(":") == -1) {
-      sendSms(
-         "http://maps.google.com/maps?q=" + 
-         myData.gps.latitudeString() + "," + myData.gps.longitudeString());
+      sendSms(getGoogleMapGpsUrl());
    } else {
       if (readValues(myOptions.gpsCheckIntervalSec, sms.message)) {
          sendOk(sms);

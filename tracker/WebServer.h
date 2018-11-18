@@ -172,12 +172,22 @@ void MyWebServer::handleClient()
    }
 }
 
-/** Helper HTML text conversation function for special character. */
+/** Helper HTML text conversation function for special character. 
+  * And replace every invalid xml char with '?'.
+  */
 String MyWebServer::TextToXml(String data)
 {
    data.replace(F("&"), F("%26"));
    data.replace(F("<"), F("%3C"));
    data.replace(F(">"), F("%3E"));
+
+   for (int i = 0; i < data.length(); i++) {
+      bool validChar = (data[i] == 0x09 || data[i] == 0x0A || data[i] == 0x0D || (data[i] >= 0x20 && data[i] <= 0xFF));
+
+      if (!validChar) {
+         data[i] = '?';
+      }
+   }
    return data;
 } 
 
@@ -372,6 +382,7 @@ void MyWebServer::handleLoadMainInfo()
       AddTableTr(info, "Longitude",  myData->gps.longitudeString());
       AddTableTr(info, "Latitude",   myData->gps.latitudeString());
       AddTableTr(info, "Altitude",   myData->gps.altitudeString());
+      AddTableTr(info, "Speed",      myData->gps.kmphString() + " kmph");
       AddTableTr(info, "Satellites", myData->gps.satellitesString());
    }
    if (myData->secondsToDeepSleep >= 0) {

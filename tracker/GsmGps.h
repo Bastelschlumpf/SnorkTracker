@@ -65,7 +65,7 @@ public:
 
 /** Constructor */
 MyGsmGps::MyGsmGps(MyOptions &options, MyData &data, short pinRx, short pinTx)
-   : gsmSerial(data.logInfos, options.isDebugActive, pinRx, pinTx)
+   : gsmSerial(data.logInfos, options.isDebugActive, data.receivedCall, pinRx, pinTx)
    , gsmSim808(gsmSerial)
    , gsmClient(gsmSim808)
    , isSimActive(false)

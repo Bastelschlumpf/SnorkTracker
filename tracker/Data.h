@@ -40,6 +40,7 @@ public:
       uint32_t   lowPowerPowerOnTimeSec; //!< Timestamp of the last deep sleep start.
                  
       uint32_t   lastBme280ReadSec;      //!< Timestamp of the last BME280 read.
+      uint32_t   lastSmsCheckSec;        //!< Timestamp of the last sms check.
       uint32_t   lastGpsReadSec;         //!< Timestamp of the last gps read.
       uint32_t   lastMqttReconnectSec;   //!< Timestamp from the last server connection. 
       uint32_t   lastMqttSendSec;        //!< Timestamp from the last send.
@@ -89,6 +90,7 @@ public:
    
    StringList consoleCmds;       //!< open commands to send to the sim808 module
    StringList logInfos;          //!< received sim808 answers or other logs
+   bool       receivedCall;      //!< Did we receive a call?
 
 public:
    MyData();
@@ -113,6 +115,7 @@ MyData::RtcData::RtcData()
    , lowPowerActiveTimeSec(0)
    , lowPowerPowerOnTimeSec(0)
    , lastBme280ReadSec(0)
+   , lastSmsCheckSec(0)
    , lastGpsReadSec(0)
    , lastMqttReconnectSec(0)
    , lastMqttSendSec(0)
@@ -145,6 +148,7 @@ uint32_t MyData::RtcData::getCRC()
    crc = crc32(crc, (unsigned char *) &lowPowerActiveTimeSec,  sizeof(uint32_t));
    crc = crc32(crc, (unsigned char *) &lowPowerPowerOnTimeSec, sizeof(uint32_t));
    crc = crc32(crc, (unsigned char *) &lastBme280ReadSec,      sizeof(uint32_t));
+   crc = crc32(crc, (unsigned char *) &lastSmsCheckSec,        sizeof(uint32_t));
    crc = crc32(crc, (unsigned char *) &lastGpsReadSec,         sizeof(uint32_t));
    crc = crc32(crc, (unsigned char *) &lastMqttReconnectSec,   sizeof(uint32_t));
    crc = crc32(crc, (unsigned char *) &lastMqttSendSec,        sizeof(uint32_t));
@@ -165,6 +169,7 @@ MyData::MyData()
    , isMoving(false)
    , movingDistance(0.0)
    , lastGpsUpdateSec(0)
+   , receivedCall(false)
 {
 }
 

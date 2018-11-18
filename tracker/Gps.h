@@ -56,6 +56,9 @@ public:
    double latitude();
    double longitude();
 
+   String longitudeString();
+   String latitudeString();
+
    double distanceTo(MyLocation &location);
    double courseTo  (MyLocation &location);
 };
@@ -263,6 +266,18 @@ double MyLocation::longitude()
    return longitude_.value();
 }
 
+/** Returns the longitude as a string */
+String MyLocation::longitudeString()
+{
+   return String(longitude(), 6);
+}
+
+/** Returns the latitude as a string */
+String MyLocation::latitudeString()
+{
+   return String(latitude(), 6);
+}
+
 /** Calculate the distance between to another gps location */
 double MyLocation::distanceTo(MyLocation &to)
 {
@@ -444,25 +459,25 @@ bool MyGps::setSatellitesUsed(const String &data)
 /** Returns the longitude as a string */
 String MyGps::longitudeString()
 {
-   return String(location.longitude(), 6);
+   return location.longitudeString();
 }
 
 /** Returns the latitude as a string */
 String MyGps::latitudeString()
 {
-   return String(location.latitude(), 6);
+   return location.latitudeString();
 }
 
 /** Returns the altitude as a string */
 String MyGps::altitudeString()
 {
-   return String(altitude, 2);
+   return String(altitude, 0);
 }
 
 /** Returns the kmph as a string */
 String MyGps::kmphString()
 {
-   return String(speed, 2);
+   return String(speed, 0);
 }
 
 /** Returns the satellites as a string */
