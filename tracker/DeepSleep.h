@@ -20,7 +20,7 @@
   * DeepSleep functions.
   */
 
-#define NO_DEEP_SLEEP_STARTUP_TIME 60000 //!< No deep sleep for the first minute.
+#define NO_DEEP_SLEEP_STARTUP_TIME 60 //!< No deep sleep for the first minute.
 
 
 /**
@@ -70,7 +70,7 @@ bool MyDeepSleep::begin()
       myData.rtcData = rtcData;
    }
 
-   if (myOptions.isDeepSleepEnabled) {
+   if (myOptions.isDeepSleepEnabled && secondsSincePowerOn() > NO_DEEP_SLEEP_STARTUP_TIME) {
       if (myData.voltage < myOptions.powerSaveModeVoltage) {
          uint32_t checkTimeElapsed = secondsSincePowerOn() - myData.rtcData.deepSleepStartSec;
 
@@ -98,7 +98,7 @@ bool MyDeepSleep::haveToSleep()
 
    return (myOptions.isDeepSleepEnabled && 
            myData.deepSleepLocked == false &&
-           millis()               > NO_DEEP_SLEEP_STARTUP_TIME &&
+           secondsSincePowerOn()  > NO_DEEP_SLEEP_STARTUP_TIME &&
            myData.voltage         <  myOptions.powerSaveModeVoltage && 
            awakeTimeSec           >= myOptions.wakeTimeSec);
 }
