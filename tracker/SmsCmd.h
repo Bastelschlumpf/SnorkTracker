@@ -94,10 +94,7 @@ void MySmsCmd::handleClient()
 String MySmsCmd::getGoogleMapGpsUrl()
 {
    if (myData.gps.fixStatus) {
-      return "https://maps.google.com/maps?q=" + 
-             myData.rtcData.lastLocation.latitudeString() + 
-             "," + 
-             myData.rtcData.lastLocation.longitudeString();
+      return "https://maps.google.com/maps?q=" + myData.gps.latitudeString() + "," + myData.gps.longitudeString();   
    } else {
       if (myOptions.isGpsEnabled) {
          return "No Gps position.\n";
@@ -117,6 +114,7 @@ void MySmsCmd::checkSms()
    SmsData sms;
 
    MyDbg("checkSMS");
+   myData.deepSleepLocked = true;
    while (myGsmGps.getSMS(sms)) {
       String messageLower = sms.message;
 
@@ -144,6 +142,7 @@ void MySmsCmd::checkSms()
          cmdDefault(sms);
       }
    }
+   myData.deepSleepLocked = false;
 }
 
 /** Helper function to send one sms */

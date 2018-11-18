@@ -124,7 +124,10 @@ void MyMqtt::reconnect()
 /** Send the mqtt data if the gps values are new. */
 bool MyMqtt::sendData() 
 {
+   bool ret = false;
+
    MyDbg("Attempting MQTT publishing");
+   myData.deepSleepLocked = true;
    if (PubSubClient::connected()) {
       publish(topic_voltage, String(myData.voltage).c_str(), true); 
 
@@ -142,9 +145,10 @@ bool MyMqtt::sendData()
       publish(topic_kmph, myData.gps.kmphString().c_str(),      true); 
          
       MyDbg("mqtt published");
-      return true;
+      ret = true;
    }
-   return false;
+   myData.deepSleepLocked = false;
+   return ret;
 }
 
 /** Sets the MQTT server settings */

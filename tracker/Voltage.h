@@ -68,6 +68,7 @@ void MyVoltage::readVoltage()
    bool     isLowPower = false;
    uint32_t currSec    = millis() / 1000;
    
+   myData.deepSleepLocked = true;
    myData.voltage = ANALOG_FACTOR * analogRead(A0); // Volt
    isLowPower     = myData.voltage < myOptions.powerSaveModeVoltage;
 
@@ -85,4 +86,5 @@ void MyVoltage::readVoltage()
       MyDbg("Change to low power (V): " + String(myData.voltage, 1));
    }
    myData.isLowPower = isLowPower;
+   myData.deepSleepLocked = false;
 }

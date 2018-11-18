@@ -68,12 +68,14 @@ bool MyBME280::begin()
 bool MyBME280::readValues()
 {
    if (secondsElapsed(myData.rtcData.lastBme280ReadSec, myOptions.bme280CheckIntervalSec)) {
-      digitalWrite(pinPower, LOW); 
+      myData.deepSleepLocked = true;
+      digitalWrite(pinPower, LOW);
       if (bme280.begin()) {
          myData.temperature = bme280.readTemperature();
          myData.humidity    = bme280.readHumidity();
          myData.pressure    = (bme280.readPressure() / 100.0F) + BARO_CORR_HPA;
       }
       digitalWrite(pinPower, HIGH); 
+      myData.deepSleepLocked = false;
    }
 }

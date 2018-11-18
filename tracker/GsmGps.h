@@ -290,6 +290,7 @@ bool MyGsmGps::getGps()
 
    if (isGpsActive) {
       MyDbg("getGPS");
+      myData.deepSleepLocked = true;
       if (gsmSim808.getGPS(myData.gps)) {
          myData.lastGpsUpdateSec = secondsSincePowerOn();
 
@@ -316,6 +317,7 @@ bool MyGsmGps::getGps()
             ret = true;
          }
       }
+      myData.deepSleepLocked = false;
    }
    return ret;
 }

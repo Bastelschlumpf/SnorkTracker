@@ -62,6 +62,7 @@ public:
    bool     isPowerOn;           //!< Is the power of the sim808 switched on?
    bool     isLowPower;          //!< Is the power below min voltage?
 
+   bool     deepSleepLocked;     //!< We should not go into deep sleep. 
    int32_t  secondsToDeepSleep;  //!< Time until next deepsleep. -1 = disabled
    uint32_t awakeTimeOffsetSec;  //!< Awake time offset for SaveSettings.
 
@@ -160,6 +161,7 @@ MyData::MyData()
    : isOtaActive(false)
    , isPowerOn(false)
    , isLowPower(false)
+   , deepSleepLocked(false)
    , secondsToDeepSleep(-1)
    , awakeTimeOffsetSec(0)
    , voltage(0.0)

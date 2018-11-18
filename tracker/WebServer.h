@@ -381,8 +381,8 @@ void MyWebServer::handleLoadMainInfo()
    if (myData->gps.fixStatus) {
       AddTableTr(info, "Longitude",  myData->gps.longitudeString());
       AddTableTr(info, "Latitude",   myData->gps.latitudeString());
-      AddTableTr(info, "Altitude",   myData->gps.altitudeString());
-      AddTableTr(info, "Speed",      myData->gps.kmphString() + " kmph");
+      AddTableTr(info, "Altitude",   myData->gps.altitudeString() + " m");
+      AddTableTr(info, "Speed",      myData->gps.kmphString()     + " kmph");
       AddTableTr(info, "Satellites", myData->gps.satellitesString());
    }
    if (myData->secondsToDeepSleep >= 0) {
