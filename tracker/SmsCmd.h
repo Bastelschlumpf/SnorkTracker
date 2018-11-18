@@ -164,6 +164,7 @@ bool MySmsCmd::readValues(String &value, const String message)
 
    if (idx != -1) {
       value = message.substring(idx + 1);
+      value.toLowerCase();
       return true;
    }
    return false;
