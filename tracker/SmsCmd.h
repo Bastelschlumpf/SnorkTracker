@@ -122,21 +122,21 @@ void MySmsCmd::checkSms()
       myGsmGps.deleteSMS(sms.index);
 
       MyDbg("SMS: " + sms.message + " ["+ sms.phoneNumber + "]");
-      if (messageLower == "on") {
+      if (messageLower.indexOf("on") == 0) {
          cmdOn(sms);
-      } else if (messageLower == "off") {
+      } else if (messageLower.indexOf("off") == 0) {
          cmdOff(sms);
-      } else if (messageLower == "status") {
+      } else if (messageLower.indexOf("status") == 0) {
          cmdStatus(sms);
-      } else if (messageLower == "psm") {
+      } else if (messageLower.indexOf("psm") == 0) {
          cmdPsm(sms);
-      } else if (messageLower == "gps") {
+      } else if (messageLower.indexOf("gps") == 0) {
          cmdGps(sms);
-      } else if (messageLower == "sms") {
+      } else if (messageLower.indexOf("sms") == 0) {
          cmdSms(sms);
-      } else if (messageLower == "mqtt") {
+      } else if (messageLower.indexOf("mqtt") == 0) {
          cmdMqtt(sms);
-      } else if (messageLower == "phone") {
+      } else if (messageLower.indexOf("phone") == 0) {
          cmdPhone(sms);
       } else {
          cmdDefault(sms);
@@ -205,6 +205,7 @@ void MySmsCmd::cmdOn(const SmsData &sms)
    myOptions.gsmPower     = true;
    myOptions.isGsmEnabled = true;
    myOptions.isGpsEnabled = true;
+   myOptions.save();
    sendOk(sms);
 }
 
@@ -212,6 +213,7 @@ void MySmsCmd::cmdOn(const SmsData &sms)
 void MySmsCmd::cmdOff(const SmsData &sms)
 {
    myOptions.gsmPower = false;
+   myOptions.save();
    sendOk(sms);
 }
 
@@ -245,14 +247,17 @@ void MySmsCmd::cmdPsm(const SmsData &sms)
 {
    if (sms.message.indexOf(":") == -1) {
       myOptions.isDeepSleepEnabled = true;
+      myOptions.save();
       sendOk(sms);
    } else {
       String off;
 
       if (readValues(off, sms.message) && off == "off") {
          myOptions.isDeepSleepEnabled = true;
+         myOptions.save();
          sendOk(sms);
       } else {
+         MyDbg("psm:[" + off + "]");
          cmdDefault(sms);
       }
    }
