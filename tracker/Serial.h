@@ -32,10 +32,9 @@ protected:
    int         outIdx;       //!< How many bytes are read.
    StringList &logInfos;     //!< Hook pointer for the data logging.
    bool       &debug;        //!< Enable or disable the hooking.
-   bool       &receivedCall; //!< Did we receive a call?
 
 public:
-   MySerial(StringList &li, bool &dbg, bool &call, uint8_t receivePin, uint8_t transmitPin, bool inverse_logic = false);
+   MySerial(StringList &li, bool &dbg, uint8_t receivePin, uint8_t transmitPin, bool inverse_logic = false);
 
    virtual int    read();
    virtual size_t write(uint8_t byte);
@@ -44,13 +43,12 @@ public:
 /* ******************************************** */
 
 /** Constructor */
-MySerial::MySerial(StringList &li, bool &dbg, bool &call, uint8_t receivePin, uint8_t transmitPin, bool inverse_logic /*= false*/)
+MySerial::MySerial(StringList &li, bool &dbg, uint8_t receivePin, uint8_t transmitPin, bool inverse_logic /*= false*/)
    : SoftwareSerial(receivePin, transmitPin, inverse_logic)
    , inIdx(0)
    , outIdx(0)
    , logInfos(li)
    , debug(dbg)
-   , receivedCall(call)
 {
 }
 
@@ -69,14 +67,9 @@ int MySerial::read()
             inData[inIdx++] = c;
          }
       } else {
-         if (inIdx > 0) {
-            if (inIdx >= 3 && strncmp(inData, "RING", 4) == 0) {
-               receivedCall = true;
-            }
-            if (debug) {
-               inData[inIdx] = 0;
-               logInfos.addTail("< " + (String)inData);
-            }
+         if (inIdx > 0 && debug) {
+            inData[inIdx] = 0;
+            logInfos.addTail("< " + (String) inData);
          }
          inIdx = 0;
       }

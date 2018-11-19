@@ -21,7 +21,7 @@
   */
 
 
-#define  TINY_GSM_YIELD() { myDelay(1); } //!< Overwrite the yield macro with our own delay function.
+#define  TINY_GSM_YIELD() { MyDelay(1); } //!< Overwrite the yield macro with our own delay function.
 #include "Sim808.h"
 #include "Serial.h"
 
@@ -65,7 +65,7 @@ public:
 
 /** Constructor */
 MyGsmGps::MyGsmGps(MyOptions &options, MyData &data, short pinRx, short pinTx)
-   : gsmSerial(data.logInfos, options.isDebugActive, data.receivedCall, pinRx, pinTx)
+   : gsmSerial(data.logInfos, options.isDebugActive, pinRx, pinTx)
    , gsmSim808(gsmSerial)
    , gsmClient(gsmSim808)
    , isSimActive(false)
@@ -100,7 +100,7 @@ bool MyGsmGps::begin()
             return false;
          }
          MyDbg(".", false, false);
-         myDelay(500);
+         MyDelay(500);
       }
       myData.status = "Sim808 connected";
       MyDbg(myData.status);
@@ -128,7 +128,7 @@ bool MyGsmGps::begin()
             return false;
          }
          MyDbg(".", false, false);
-         myDelay(500);
+         MyDelay(500);
       }
       if (!gsmSim808.isNetworkConnected()) {
          myData.status = "Sim808 network failed";
@@ -290,7 +290,6 @@ bool MyGsmGps::getGps()
 
    if (isGpsActive) {
       MyDbg("getGPS");
-      myData.deepSleepLocked = true;
       if (gsmSim808.getGPS(myData.gps)) {
          myData.lastGpsUpdateSec = secondsSincePowerOn();
 
@@ -317,7 +316,6 @@ bool MyGsmGps::getGps()
             ret = true;
          }
       }
-      myData.deepSleepLocked = false;
    }
    return ret;
 }

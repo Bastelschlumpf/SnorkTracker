@@ -130,7 +130,7 @@ bool MyWebServer::begin()
    WiFi.begin(myOptions->wlanAP.c_str(), myOptions->wlanPassword.c_str());
    for (int i = 0; i < 30 && WiFi.status() != WL_CONNECTED; i++) { // 15 Sec versuchen
       MyDbg(".", true, false);
-      myDelay(500);
+      MyDelay(500);
    }
    if (WiFi.status() == WL_CONNECTED) {
       myData->stationIP = WiFi.localIP().toString();
@@ -650,7 +650,7 @@ void MyWebServer::loadRestart()
 {
    if (loadFromSpiffs("/Restart.html")) {
       MyDbg("Load File /Restart.html", true);
-      myDelay(2000);
+      MyDelay(2000);
       MyDbg("Restart", true);
       ESP.restart();
       return;

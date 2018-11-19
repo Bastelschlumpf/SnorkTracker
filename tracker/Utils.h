@@ -66,7 +66,7 @@ void MyDbg(String info, bool fromWebServer = false, bool newline = true)
 void myDelayLoop();
 
 /** Replacement with background calls when we have to wait. Replace the delay function. */
-void myDelay(long millisDelay)
+void MyDelay(long millisDelay)
 {
    long m = millis();
 

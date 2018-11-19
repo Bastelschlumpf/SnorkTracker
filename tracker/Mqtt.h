@@ -115,7 +115,7 @@ void MyMqtt::reconnect()
          MyDbg(" Failed (" + String(i+1) + ") rc =" + String(state()));
          MyDbg(" Try again in 5 seconds");
          // Wait 5 seconds before retrying
-         myDelay(5000);
+         MyDelay(5000);
          MyDbg(".", false, false);
       }
    }
@@ -127,7 +127,6 @@ bool MyMqtt::sendData()
    bool ret = false;
 
    MyDbg("Attempting MQTT publishing");
-   myData.deepSleepLocked = true;
    if (PubSubClient::connected()) {
       publish(topic_voltage, String(myData.voltage).c_str(), true); 
 
@@ -147,7 +146,6 @@ bool MyMqtt::sendData()
       MyDbg("mqtt published");
       ret = true;
    }
-   myData.deepSleepLocked = false;
    return ret;
 }
 

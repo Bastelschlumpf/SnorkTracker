@@ -81,12 +81,6 @@ void MySmsCmd::handleClient()
 {
    if (secondsElapsed(myData.rtcData.lastSmsCheckSec, myOptions.smsCheckIntervalSec)) {
       checkSms();
-      if (myData.receivedCall) {
-         SmsData sms;
-         
-         cmdStatus(sms);
-         myData.receivedCall = false;
-      }
    }
 }
 
@@ -114,7 +108,6 @@ void MySmsCmd::checkSms()
    SmsData sms;
 
    MyDbg("checkSMS");
-   myData.deepSleepLocked = true;
    while (myGsmGps.getSMS(sms)) {
       String messageLower = sms.message;
 
@@ -142,7 +135,6 @@ void MySmsCmd::checkSms()
          cmdDefault(sms);
       }
    }
-   myData.deepSleepLocked = false;
 }
 
 /** Helper function to send one sms */

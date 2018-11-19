@@ -157,6 +157,7 @@ void loop()
       ArduinoOTA.handle();    
    }
 
+   // Starting gsm ?
    if (myOptions.gsmPower && !gsmHasPower) {
       if (!isStarting && !isStopping) {
          isStarting = true;
@@ -168,6 +169,8 @@ void loop()
          isStarting = false;
       }
    }
+
+   // Stopping gsm ?
    if (!myOptions.gsmPower && gsmHasPower) {
       if (!isStarting && !isStopping) {
          isStopping = true;
@@ -177,6 +180,8 @@ void loop()
          isStopping  = false;   
       }
    }
+
+   // Do gsm processing.
    if (gsmHasPower && !isStarting && !isStopping) {
       myGsmGps.handleClient();
       mySmsCmd.handleClient();
@@ -185,15 +190,19 @@ void loop()
       }
    }
 
-   if (myDeepSleep.haveToSleep()) {
-      if (myGsmGps.isGsmActive) {
-         myGsmGps.stop();
+   // Deep Sleep?
+   // (No deep sleep if we are waiting for a valid gps position).
+   if (!myGsmGps.isGpsActive || myData.gps.fixStatus) {
+      if (myDeepSleep.haveToSleep()) {
+         if (myGsmGps.isGsmActive) {
+            myGsmGps.stop();
+         }
+         myGsmPower.off();
+         WiFi.disconnect();
+         WiFi.mode(WIFI_OFF);
+         yield();
+         myDeepSleep.sleep();
       }
-      myGsmPower.off();
-      WiFi.disconnect();
-      WiFi.mode(WIFI_OFF);
-      yield();
-      myDeepSleep.sleep();
    }
    
    yield();

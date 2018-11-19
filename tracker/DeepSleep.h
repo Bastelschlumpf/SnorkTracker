@@ -97,10 +97,9 @@ bool MyDeepSleep::haveToSleep()
    }
 
    return (myOptions.isDeepSleepEnabled && 
-           myData.deepSleepLocked == false &&
-           secondsSincePowerOn()  > NO_DEEP_SLEEP_STARTUP_TIME &&
-           myData.voltage         <  myOptions.powerSaveModeVoltage && 
-           awakeTimeSec           >= myOptions.wakeTimeSec);
+           secondsSincePowerOn() > NO_DEEP_SLEEP_STARTUP_TIME &&
+           myData.voltage        <  myOptions.powerSaveModeVoltage && 
+           awakeTimeSec          >= myOptions.wakeTimeSec);
 }
 
 /** Entering the DeepSleep mode. Be sure we have connected the RST pin to the D0 pin for wakeup. */

@@ -67,7 +67,7 @@ void MyGsmPower::on()
    digitalWrite(pinPower, LOW); 
    myData.isPowerOn = true;
    powerOnStartSec  = millis() / 1000;
-   myDelay(1000);
+   MyDelay(1000);
 }
 
 /** Switch off the DC-DC module */
