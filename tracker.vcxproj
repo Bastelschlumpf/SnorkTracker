@@ -138,13 +138,13 @@
   <ItemGroup>
     <None Include="README.md" />
     <None Include="tracker\data\Console.html" />
-    <None Include="tracker\data\FirmwareUpdate.html" />
     <None Include="tracker\data\Infos.html" />
     <None Include="tracker\data\JavaScript.js" />
     <None Include="tracker\data\Main.html" />
     <None Include="tracker\data\Restart.html" />
     <None Include="tracker\data\Settings.html" />
     <None Include="tracker\data\Style.css" />
+    <None Include="tracker\data\Update.html" />
     <None Include="tracker\tracker.ino" />
     <None Include="USERMANUAL.md" />
   </ItemGroup>

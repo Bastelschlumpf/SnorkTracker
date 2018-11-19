@@ -60,7 +60,7 @@ public:
    static void handleRoot();
    static void loadMain();
    static void handleLoadMainInfo();
-   static void loadFirmwareUpdate();
+   static void loadUpdate();
    static void loadSettings();
    static void handleLoadSettingsInfo();
    static void handleSaveSettings();
@@ -145,7 +145,7 @@ bool MyWebServer::begin()
    server.on("/",                    handleRoot);
    server.on("/Main.html",           loadMain);
    server.on("/MainInfo",            handleLoadMainInfo);
-   server.on("/FirmwareUpdate.html", loadFirmwareUpdate);
+   server.on("/Update.html",         loadUpdate);
    server.on("/Settings.html",       loadSettings);
    server.on("/SettingsInfo",        handleLoadSettingsInfo);
    server.on("/SaveSettings",        handleSaveSettings);
@@ -404,8 +404,8 @@ void MyWebServer::handleLoadMainInfo()
    server.send(200,"text/html", info);
 }
 
-/** Load the FirmwareUpdate page after starting OTA. */
-void MyWebServer::loadFirmwareUpdate()
+/** Load the firmware update page after starting OTA. */
+void MyWebServer::loadUpdate()
 {
    if (!myOptions || !myData) {
       return;
@@ -416,7 +416,7 @@ void MyWebServer::loadFirmwareUpdate()
       myData->isOtaActive = true;
    }
 
-   if (loadFromSpiffs("/FirmwareUpdate.html")) {
+   if (loadFromSpiffs("/Update.html")) {
       return;
    }
    handleNotFound();
