@@ -184,15 +184,20 @@ void loop()
    // Do gsm processing.
    if (gsmHasPower && !isStarting && !isStopping) {
       myGsmGps.handleClient();
-      mySmsCmd.handleClient();
-      if (myOptions.isMqttEnabled) {
-         myMqtt.handleClient();
+
+      // No sms or mqtt when if we are waiting for a gps position.
+      // Otherwise we are sending invalid gps values.
+      if (!myGsmGps.waitingForGps()) {
+         mySmsCmd.handleClient();
+         if (myOptions.isMqttEnabled) {
+            myMqtt.handleClient();
+         }
       }
    }
 
    // Deep Sleep?
    // (No deep sleep if we are waiting for a valid gps position).
-   if (!myGsmGps.isGpsActive || myData.gps.fixStatus) {
+   if (!myGsmGps.waitingForGps()) {
       if (myDeepSleep.haveToSleep()) {
          if (myGsmGps.isGsmActive) {
             myGsmGps.stop();

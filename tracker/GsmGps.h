@@ -53,6 +53,7 @@ public:
    bool begin();
    void handleClient();
    bool stop();
+   bool waitingForGps();
 
    bool sendAT(String cmd);
 
@@ -195,6 +196,12 @@ bool MyGsmGps::stop()
       sleepMode2();
    }
    return ret;
+}
+
+/** Is the gps enabled but we don't have a valid gps position. */
+bool MyGsmGps::waitingForGps()
+{
+   return isGpsActive && !myData.gps.fixStatus;
 }
 
 /** Send one AT command to the sim modul and log the result for the console window. */
