@@ -32,6 +32,8 @@
 #define topic_cmd                    "SIM808/" MQTT_ID "/Cmd"                    //!< mqtt command for modul.
 
 #define topic_voltage                "SIM808/" MQTT_ID "/Voltage"                //!< Power supply voltage
+#define topic_mAh                    "SIM808/" MQTT_ID "/mAh"                    //!< Power consumption
+#define topic_mAhLowPower            "SIM808/" MQTT_ID "/mAhLowPower"            //!< Power consumption in low power
 
 #define topic_temperature            "SIM808/" MQTT_ID "/BME280/temperature"     //!< Temperature
 #define topic_humidity               "SIM808/" MQTT_ID "/BME280/humidity"        //!< Humidity
@@ -128,20 +130,24 @@ bool MyMqtt::sendData()
 
    MyDbg("Attempting MQTT publishing");
    if (PubSubClient::connected()) {
-      publish(topic_voltage, String(myData.voltage).c_str(), true); 
+      publish(topic_voltage,     String(myData.voltage).c_str(), true); 
+      publish(topic_mAh,         String(myData.getPowerConsumption()).c_str(), true);
+      publish(topic_mAhLowPower, String(myData.getLowPowerPowerConsumption()).c_str(), true);
 
       publish(topic_temperature, String(myData.temperature).c_str(), true); 
       publish(topic_humidity,    String(myData.humidity).c_str(),    true); 
       publish(topic_pressure,    String(myData.pressure).c_str(),    true); 
          
-      publish(topic_csq,        myData.signalQuality.c_str(), true); 
-      publish(topic_batt_level, myData.batteryLevel.c_str(),  true); 
-      publish(topic_batt_volt,  myData.batteryVolt.c_str(),   true); 
+      publish(topic_csq,         myData.signalQuality.c_str(), true); 
+      publish(topic_batt_level,  myData.batteryLevel.c_str(),  true); 
+      publish(topic_batt_volt,   myData.batteryVolt.c_str(),   true); 
          
-      publish(topic_lon,  myData.gps.longitudeString().c_str(), true); 
-      publish(topic_lat,  myData.gps.latitudeString().c_str(),  true); 
-      publish(topic_alt,  myData.gps.altitudeString().c_str(),  true); 
-      publish(topic_kmph, myData.gps.kmphString().c_str(),      true); 
+      if (myData.gps.fixStatus) {
+         publish(topic_lon,  myData.gps.longitudeString().c_str(), true);
+         publish(topic_lat,  myData.gps.latitudeString().c_str(), true);
+         publish(topic_alt,  myData.gps.altitudeString().c_str(), true);
+         publish(topic_kmph, myData.gps.kmphString().c_str(), true);
+      }
          
       MyDbg("mqtt published");
       ret = true;
