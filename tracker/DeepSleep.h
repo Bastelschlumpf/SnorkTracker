@@ -89,17 +89,17 @@ bool MyDeepSleep::begin()
 /** Check if the configured time has elapsed and the voltage is too low then go into deep sleep. */
 bool MyDeepSleep::haveToSleep()
 {
-   uint32_t awakeTimeSec = millis() / 1000 - myData.awakeTimeOffsetSec;
+   uint32_t activeTimeSec = millis() / 1000 - myData.awakeTimeOffsetSec;
 
    myData.secondsToDeepSleep = -1;
    if (myOptions.isDeepSleepEnabled && myData.voltage < myOptions.powerSaveModeVoltage) {
-      myData.secondsToDeepSleep = myOptions.wakeTimeSec - awakeTimeSec;
+      myData.secondsToDeepSleep = myOptions.activeTimeSec - activeTimeSec;
    }
 
    return (myOptions.isDeepSleepEnabled && 
            secondsSincePowerOn() > NO_DEEP_SLEEP_STARTUP_TIME &&
            myData.voltage        <  myOptions.powerSaveModeVoltage && 
-           awakeTimeSec          >= myOptions.wakeTimeSec);
+           activeTimeSec         >= myOptions.activeTimeSec);
 }
 
 /** Entering the DeepSleep mode. Be sure we have connected the RST pin to the D0 pin for wakeup. */

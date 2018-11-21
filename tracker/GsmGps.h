@@ -30,10 +30,13 @@
   */
 class MyGsmGps
 {
+protected:
+   uint32_t         lastGsmChecSec;   //!< Check intervall for signal and battery quality.
+
 public:
-   MySerial         gsmSerial;         //!< Serial interface to the sim808 modul.
-   MyGsmSim808      gsmSim808;         //!< SIM808 interface class 
-   TinyGsmClient    gsmClient;         //!< Gsm client interface
+   MySerial         gsmSerial;        //!< Serial interface to the sim808 modul.
+   MyGsmSim808      gsmSim808;        //!< SIM808 interface class 
+   TinyGsmClient    gsmClient;        //!< Gsm client interface
    
    bool             isSimActive;      //!< Is the sim808 modul started?
    bool             isGsmActive;      //!< Is the gsm part of the sim808 activated?
@@ -74,6 +77,7 @@ MyGsmGps::MyGsmGps(MyOptions &options, MyData &data, short pinRx, short pinTx)
    , isGpsActive(false)
    , myOptions(options)
    , myData(data)
+   , lastGsmChecSec(0)
 {
    gsmSerial.begin(9600);
 }
@@ -167,6 +171,16 @@ void MyGsmGps::handleClient()
 {
    if (!isSimActive) {
       return;
+   }
+
+   if (secondsElapsed(lastGsmChecSec, 60000)) { // Check every minute
+      myData.signalQuality = String(gsmSim808.getSignalQuality());
+      myData.batteryLevel  = String(gsmSim808.getBattPercent());
+      myData.batteryVolt   = String(gsmSim808.getBattVoltage() / 1000.0F, 2);
+
+      MyDbg("(sim808) signalQuality: " + myData.signalQuality);
+      MyDbg("(sim808) batteryLevel: "  + myData.batteryLevel);
+      MyDbg("(sim808) batteryVolt: "   + myData.batteryVolt);
    }
 
    if (secondsElapsed(myData.rtcData.lastGpsReadSec, myOptions.gpsCheckIntervalSec)) {
@@ -300,21 +314,14 @@ bool MyGsmGps::getGps()
       if (gsmSim808.getGPS(myData.gps)) {
          myData.lastGpsUpdateSec = secondsSincePowerOn();
 
-         myData.signalQuality    = String(gsmSim808.getSignalQuality());
-         myData.batteryLevel     = String(gsmSim808.getBattPercent());
-         myData.batteryVolt      = String(gsmSim808.getBattVoltage() / 1000.0F, 6);
-            
-         MyDbg("(sim808) signalQuality: " + myData.signalQuality);
-         MyDbg("(sim808) batteryLevel: "  + myData.batteryLevel);
-         MyDbg("(sim808) batteryVolt: "   + myData.batteryVolt);
-         MyDbg("(gps) longitude: "        + myData.gps.longitudeString());
-         MyDbg("(gps) latitude: "         + myData.gps.latitudeString());
-         MyDbg("(gps) altitude: "         + myData.gps.altitudeString());
-         MyDbg("(gps) kmph: "             + myData.gps.kmphString());
-         MyDbg("(gps) satellites: "       + myData.gps.satellitesString());
-         MyDbg("(gps) course: "           + myData.gps.courseString());
-         MyDbg("(gps) gpsDate: "          + myData.gps.dateString());
-         MyDbg("(gps) gpsTime: "          + myData.gps.timeString());
+         MyDbg("(gps) longitude: "  + myData.gps.longitudeString());
+         MyDbg("(gps) latitude: "   + myData.gps.latitudeString());
+         MyDbg("(gps) altitude: "   + myData.gps.altitudeString());
+         MyDbg("(gps) kmph: "       + myData.gps.kmphString());
+         MyDbg("(gps) satellites: " + myData.gps.satellitesString());
+         MyDbg("(gps) course: "     + myData.gps.courseString());
+         MyDbg("(gps) gpsDate: "    + myData.gps.dateString());
+         MyDbg("(gps) gpsTime: "    + myData.gps.timeString());
     
          if (myData.rtcData.lastLocation.latitude() != 0) {
             myData.movingDistance       = myData.gps.location.distanceTo(myData.rtcData.lastLocation);

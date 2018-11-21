@@ -462,7 +462,7 @@ void MyWebServer::handleLoadSettingsInfo()
       AddOption(info, "powerSaveModeVoltage",  "Power saving mode under (Volt)", String(myOptions->powerSaveModeVoltage, 1));
       AddOption(info, "powerCheckIntervalSec", "Check power every (Seconds)",    String(myOptions->powerCheckIntervalSec));
       
-      AddOption(info, "wakeTimeSec",          "Active time (Seconds)",           String(myOptions->wakeTimeSec));
+      AddOption(info, "activeTimeSec",        "Active time (Seconds)",           String(myOptions->activeTimeSec));
       AddOption(info, "deepSleepTimeSec",     "DeepSleep time (Seconds)",        String(myOptions->deepSleepTimeSec));
    }
    AddBr(info);
@@ -474,6 +474,7 @@ void MyWebServer::handleLoadSettingsInfo()
          AddOption(info, "isMqttEnabled", "MQTT Active", myOptions->isMqttEnabled, false);
       }
       AddOption(info, "mqttName",                  "MQTT Name",                             myOptions->mqttName);
+      AddOption(info, "mqttId",                    "MQTT Id",                               myOptions->mqttId);
       AddOption(info, "mqttServer",                "MQTT Server",                           myOptions->mqttServer);
       AddOption(info, "mqttPort",                  "MQTT Port",                             String(myOptions->mqttPort));
       AddOption(info, "mqttUser",                  "MQTT User",                             myOptions->mqttUser);
@@ -507,10 +508,11 @@ void MyWebServer::handleSaveSettings()
    GetOption("isDeepSleepEnabled",        myOptions->isDeepSleepEnabled);
    GetOption("powerSaveModeVoltage",      myOptions->powerSaveModeVoltage);
    GetOption("powerCheckIntervalSec",     myOptions->powerCheckIntervalSec);
-   GetOption("wakeTimeSec",               myOptions->wakeTimeSec);
+   GetOption("activeTimeSec",             myOptions->activeTimeSec);
    GetOption("deepSleepTimeSec",          myOptions->deepSleepTimeSec);
    GetOption("isMqttEnabled",             myOptions->isMqttEnabled);
    GetOption("mqttName",                  myOptions->mqttName);
+   GetOption("mqttId",                    myOptions->mqttId);
    GetOption("mqttServer",                myOptions->mqttServer);
    GetOption("mqttPort",                  myOptions->mqttPort);
    GetOption("mqttUser",                  myOptions->mqttUser);

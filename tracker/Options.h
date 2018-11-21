@@ -45,10 +45,11 @@ public:
    bool   isDeepSleepEnabled;            //!< Should the system go into deepsleep if needed.
    double powerSaveModeVoltage;          //!< Minimum voltage to stay always alive.
    long   powerCheckIntervalSec;         //!< Time interval to check the power supply.
-   long   wakeTimeSec;                   //!< Maximum alive time after deepsleep.
+   long   activeTimeSec;                 //!< Maximum alive time after deepsleep.
    long   deepSleepTimeSec;              //!< Time to stay in deep sleep (without check interrupts)
    bool   isMqttEnabled;                 //!< Should the system connect to a MQTT server?
    String mqttName;                      //!< MQTT server name.
+   String mqttId;                        //!< MQTT ID.
    String mqttServer;                    //!< MQTT server url.
    long   mqttPort;                      //!< MQTT server port.
    String mqttUser;                      //!< MQTT user.
@@ -80,19 +81,20 @@ MyOptions::MyOptions()
    , phoneNumber(PHONE_NUMBER)
    , smsCheckIntervalSec(60)
    , isDeepSleepEnabled(true)
-   , powerSaveModeVoltage(12.0)
+   , powerSaveModeVoltage(15.0)
    , powerCheckIntervalSec(60)
-   , wakeTimeSec(60)
+   , activeTimeSec(10)
    , deepSleepTimeSec(600)
    , isMqttEnabled(false)
    , mqttName(MQTT_NAME)
-   , mqttServer(MQTT_SERVER)  
+   , mqttId(MQTT_ID)
+   , mqttServer(MQTT_SERVER)
    , mqttPort(MQTT_PORT)
    , mqttUser(MQTT_USER)
    , mqttPassword(MQTT_PASSWORD)
    , mqttReconnectIntervalSec(10)
-   , mqttSendOnMoveEverySec(10)
-   , mqttSendOnNonMoveEverySec(15)
+   , mqttSendOnMoveEverySec(600)
+   , mqttSendOnNonMoveEverySec(600)
 {
 }
 
@@ -153,14 +155,16 @@ bool MyOptions::load()
                powerSaveModeVoltage = fValue;
             } else if (key == "powerCheckIntervalSec") {
                powerCheckIntervalSec = lValue;
-            } else if (key == "wakeTimeSec") {
-               wakeTimeSec = lValue;
+            } else if (key == "activeTimeSec") {
+               activeTimeSec = lValue;
             } else if (key == "deepSleepTimeSec") {
                deepSleepTimeSec = lValue;
             } else if (key == "isMqttEnabled") {
                isMqttEnabled = lValue;
             } else if (key == "mqttName") {
                mqttName = value;
+            } else if (key == "mqttId") {
+               mqttId = value;
             } else if (key == "mqttServer") {
                mqttServer = value;
             } else if (key == "mqttPort") {
@@ -210,10 +214,11 @@ bool MyOptions::save()
      file.println("isDeepSleepEnabled="        + String(isDeepSleepEnabled));
      file.println("powerSaveModeVoltage="      + String(powerSaveModeVoltage, 1));
      file.println("powerCheckIntervalSec="     + String(powerCheckIntervalSec));
-     file.println("wakeTimeSec="               + String(wakeTimeSec));
+     file.println("activeTimeSec="             + String(activeTimeSec));
      file.println("deepSleepTimeSec="          + String(deepSleepTimeSec));
      file.println("isMqttEnabled="             + String(isMqttEnabled));
      file.println("mqttName="                  + mqttName);
+     file.println("mqttId="                    + mqttId);
      file.println("mqttServer="                + mqttServer);
      file.println("mqttPort="                  + String(mqttPort));
      file.println("mqttUser="                  + mqttUser);

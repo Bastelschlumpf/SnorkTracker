@@ -103,20 +103,21 @@ bool MyGsmSim808::getSMS(SmsData &sms)
    
    // Read unread sms
    sendAT(GF("+CMGL=\"REC UNREAD\""));
-   if (waitResponse(GF(GSM_NL "+CMGL:")) != 1) {
-      return false;
-   }
+   int status = waitResponse(GFP(GSM_OK), GF("+CMGL:"));
 
-   sms.index           = atoi(stream.readStringUntil(',').c_str());
-   sms.status          = stream.readStringUntil(',');
-   sms.phoneNumber     = stream.readStringUntil(',');
-   sms.referenceNumber = stream.readStringUntil(',');
-   sms.dateTime        = stream.readStringUntil('\n');
-   sms.message         = stream.readStringUntil('\n');
-   sms.message         = Trim(sms.message, "\r\n");
-   waitResponse(); 
+   if (status == 2) {
+      sms.index           = atoi(stream.readStringUntil(',').c_str());
+      sms.status          = stream.readStringUntil(',');
+      sms.phoneNumber     = stream.readStringUntil(',');
+      sms.referenceNumber = stream.readStringUntil(',');
+      sms.dateTime        = stream.readStringUntil('\n');
+      sms.message         = stream.readStringUntil('\n');
+      sms.message         = Trim(sms.message, "\r\n");
+      waitResponse(); 
+      return true;
+   }
        
-   return true;
+   return false;
 }
 
 /** Delete a specific sms from the sim card. */

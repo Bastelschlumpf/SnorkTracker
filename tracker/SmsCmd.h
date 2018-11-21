@@ -221,15 +221,15 @@ void MySmsCmd::cmdStatus(const SmsData &sms)
    status += "Pressure: "     + String(myData.pressure)    + " hPa\n";
    if (!myData.gps.fixStatus) {
       if (myOptions.isGpsEnabled) {
-         status += "No Gps positions.\n";
+         status += "No Gps positions.";
       } else {
-         status += "Gps not enabled.\n";
+         status += "Gps not enabled.";
       }
    } else {
       status += "Altitude: "   + myData.gps.altitudeString()   + " m\n";
       status += "Speed: "      + myData.gps.kmphString()       + " kmph\n";
       status += "Satellites: " + myData.gps.satellitesString() + '\n';
-      status += getGoogleMapGpsUrl() + '\n';
+      status += getGoogleMapGpsUrl();
    }
    sendSms(status);
 }

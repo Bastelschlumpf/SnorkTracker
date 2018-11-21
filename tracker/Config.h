@@ -18,21 +18,21 @@
   * @file Config.h
   *
   * Public configuration information. 
-  * Could be set before starting the programm or via web interface.
+  * Could be set before starting the program or via web interface.
   */
 
 
-#define WLAN_SID      "sid"        //!< WLAN SID
-#define WLAN_PW       "password"   //!< WLAN password
-#define GPRS_AP       "internet"   //!< gprs access point name
-#define PHONE_NUMBER  "0123456789" //!< my phone number for sms communication
+#define WLAN_SID      "sid"                    //!< WLAN SID
+#define WLAN_PW       "password"               //!< WLAN password
+#define GPRS_AP       "internet"               //!< gprs access point name
+#define PHONE_NUMBER  "0123456789"             //!< my phone number for sms communication
 
-#define MQTT_NAME     "SIM808"     //!< MQTT name
-#define MQTT_SERVER   "server"     //!< MQTT Server URL
-#define MQTT_PORT     1883         //!< MQTT Port (Default is 1883)
-#define MQTT_USER     "user"       //!< MQTT connection user
-#define MQTT_PASSWORD "password"   //!< MQTT connection password
-#define MQTT_ID       "01"         //!< MQTT Modul id
+#define MQTT_NAME     "SnorkTracker"           //!< MQTT name
+#define MQTT_ID       "01"                     //!< MQTT ID
+#define MQTT_SERVER   "server"                 //!< MQTT Server URL
+#define MQTT_PORT     1883                     //!< MQTT Port (Default is 1883)
+#define MQTT_USER     "user"                   //!< MQTT connection user
+#define MQTT_PASSWORD "password"               //!< MQTT connection password
 
 #define POWER_CONSUMPTION_ACTIVE       70.0    //!< Power consumption if Active in mA
 #define POWER_CONSUMPTION_POWER_ON    140.0    //!< Power consumption if SIM808 Active in mA

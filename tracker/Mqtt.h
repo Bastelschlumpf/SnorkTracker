@@ -23,38 +23,35 @@
 
 #include <PubSubClient.h>
 
-#define topic_gsm_power              "SIM808/" MQTT_ID "/GsmPower"               //!< switch power on/off
-#define topic_gsm_enabled            "SIM808/" MQTT_ID "/GsmEnabled"             //!< switch gsm on/off
-#define topic_gps_enabled            "SIM808/" MQTT_ID "/GpsEnabled"             //!< switch gps on/off
-#define topic_send_on_move_every     "SIM808/" MQTT_ID "/SendOnMoveEverySec"     //!< mqtt send interval on moving
-#define topic_send_on_non_move_every "SIM808/" MQTT_ID "/SendOnNonMoveEverySec"  //!< mqtt sending interval on non moving
-#define topic_msg                    "SIM808/" MQTT_ID "/Msg"                    //!< Last message
-#define topic_cmd                    "SIM808/" MQTT_ID "/Cmd"                    //!< mqtt command for modul.
+#define topic_deep_sleep             "/DeepSleep"              //!< Deep sleep on/off
 
-#define topic_voltage                "SIM808/" MQTT_ID "/Voltage"                //!< Power supply voltage
-#define topic_mAh                    "SIM808/" MQTT_ID "/mAh"                    //!< Power consumption
-#define topic_mAhLowPower            "SIM808/" MQTT_ID "/mAhLowPower"            //!< Power consumption in low power
+#define topic_voltage                "/Voltage"                //!< Power supply voltage
+#define topic_mAh                    "/mAh"                    //!< Power consumption
+#define topic_mAhLowPower            "/mAhLowPower"            //!< Power consumption in low power
 
-#define topic_temperature            "SIM808/" MQTT_ID "/BME280/temperature"     //!< Temperature
-#define topic_humidity               "SIM808/" MQTT_ID "/BME280/humidity"        //!< Humidity
-#define topic_pressure               "SIM808/" MQTT_ID "/BME280/pressure"        //!< Pressure
+#define topic_gsm_power              "/GsmPower"               //!< switch power on/off
+#define topic_gsm_enabled            "/GsmEnabled"             //!< switch gsm on/off
+#define topic_gps_enabled            "/GpsEnabled"             //!< switch gps on/off
+#define topic_send_on_move_every     "/SendOnMoveEverySec"     //!< mqtt send interval on moving
+#define topic_send_on_non_move_every "/SendOnNonMoveEverySec"  //!< mqtt sending interval on non moving
 
-#define topic_imei                   "SIM808/" MQTT_ID "/Imei"                   //!< IMEI of the sim card
-#define topic_cop                    "SIM808/" MQTT_ID "/Cop"                    //!< Operator selection
-#define topic_csq                    "SIM808/" MQTT_ID "/Csq"                    //!< Signal quality
-#define topic_batt_level             "SIM808/" MQTT_ID "/BattLevel"              //!< Batterie level on SIM808
-#define topic_batt_volt              "SIM808/" MQTT_ID "/BattVolt"               //!< Batterie volt on SIM808
-#define topic_gsm_loc                "SIM808/" MQTT_ID "/GsmLoc"                 //!< Location from the gsm message
+#define topic_temperature            "/BME280/Temperature"     //!< Temperature
+#define topic_humidity               "/BME280/Humidity"        //!< Humidity
+#define topic_pressure               "/BME280/Pressure"        //!< Pressure
 
-#define topic_lon                    "SIM808/" MQTT_ID "/Gps/Longitude"          //!< Gps longitude
-#define topic_lat                    "SIM808/" MQTT_ID "/Gps/Latitude"           //!< Gps latitude
-#define topic_alt                    "SIM808/" MQTT_ID "/Gps/Altitude"           //!< Gps altitude
-#define topic_kmph                   "SIM808/" MQTT_ID "/Gps/Kmh"                //!< Gps moving speed
+#define topic_signal_quality         "/Gsm/SignalQuality"      //!< Signal quality
+#define topic_batt_level             "/Gsm/BattLevel"          //!< Battery level of the gsm modul
+#define topic_batt_volt              "/Gsm/BattVolt"           //!< Battery volt of the gsm modul
+
+#define topic_lon                    "/Gps/Longitude"          //!< Gps longitude
+#define topic_lat                    "/Gps/Latitude"           //!< Gps latitude
+#define topic_alt                    "/Gps/Altitude"           //!< Gps altitude
+#define topic_kmph                   "/Gps/Kmh"                //!< Gps moving speed
 
 /**
   * MQTT client for sending the collected data to a MQTT server
   */
-class MyMqtt : protected PubSubClient 
+class MyMqtt : protected PubSubClient
 {
 protected:
    static MyOptions *g_myOptions;   //!< Static option pointer for the callback function.
@@ -63,16 +60,16 @@ public:
    static void mqttCallback(char* topic, byte* payload, unsigned int len);
    
 protected:
-   MyGsmGps  &myGsmGps;             //!< Reference to the Gsmgps instnces.
+   MyGsmGps  &myGsmGps;             //!< Reference to the Gsmgps instance.
    MyOptions &myOptions;            //!< Reference to the options. 
    MyData    &myData;               //!< Reference to the data.
 
 protected:
-   void reconnect();
-   bool sendData(); 
+   bool mySubscribe(String subTopic);
+   bool myPublish(String subTopic, String value);
 
-   using PubSubClient::connected;
-   using PubSubClient::publish;
+   void reconnect();
+   bool sendData();
 
 public:
    MyMqtt(MyGsmGps &gsmGps, MyOptions &options, MyData &data);
@@ -98,6 +95,35 @@ MyMqtt::~MyMqtt()
    g_myOptions = NULL;
 }
 
+/** Helper function to subscrbe on mqtt 
+ *  It put the mqttName and id from options before the topic.
+*/
+bool MyMqtt::mySubscribe(String subTopic)
+{
+   String topic;
+
+   topic = myOptions.mqttName + "/" + myOptions.mqttId + subTopic;
+   MyDbg("MyMqtt::subscribe: [" + topic + "]");
+   return PubSubClient::subscribe(topic.c_str());
+}
+
+/** Helper function to publish on mqtt 
+ *  It put the mqttName from optione before the topic.
+*/
+bool MyMqtt::myPublish(String subTopic, String value)
+{
+   bool ret = false;
+
+   if (value.length() > 0) {
+      String topic;
+
+      topic = myOptions.mqttName + "/" + myOptions.mqttId + subTopic;
+      MyDbg("MyMqtt::publish: [" + topic + "]=[" + value + "]");
+      ret = PubSubClient::publish(topic.c_str(), value.c_str(), true);
+   }
+   return ret;
+}
+
 /** Connects or reconnect to the MQTT server and subscribes the topics. */
 void MyMqtt::reconnect()
 {
@@ -105,16 +131,16 @@ void MyMqtt::reconnect()
    // Try 5 times to reconnected
    for (int i = 0; !PubSubClient::connected() && i < 5; i++) {
       // Attempt to connect
-      if (PubSubClient::connect(MQTT_NAME, MQTT_USER, MQTT_PASSWORD)) {
-         subscribe(topic_cmd);
-         subscribe(topic_gsm_power);
-         subscribe(topic_gsm_enabled);
-         subscribe(topic_gps_enabled);
-         subscribe(topic_send_on_move_every);
-         subscribe(topic_send_on_non_move_every);
+      if (PubSubClient::connect(myOptions.mqttName.c_str(), myOptions.mqttUser.c_str(), myOptions.mqttPassword.c_str())) {
+         mySubscribe(topic_deep_sleep);
+         mySubscribe(topic_gsm_power);
+         mySubscribe(topic_gsm_enabled);
+         mySubscribe(topic_gps_enabled);
+         mySubscribe(topic_send_on_move_every);
+         mySubscribe(topic_send_on_non_move_every);
          MyDbg(" connected");
       } else {
-         MyDbg(" Failed (" + String(i+1) + ") rc =" + String(state()));
+         MyDbg(" Failed (" + String(i+1) + ") rc =" + String(PubSubClient::state()));
          MyDbg(" Try again in 5 seconds");
          // Wait 5 seconds before retrying
          MyDelay(5000);
@@ -130,23 +156,23 @@ bool MyMqtt::sendData()
 
    MyDbg("Attempting MQTT publishing");
    if (PubSubClient::connected()) {
-      publish(topic_voltage,     String(myData.voltage).c_str(), true); 
-      publish(topic_mAh,         String(myData.getPowerConsumption()).c_str(), true);
-      publish(topic_mAhLowPower, String(myData.getLowPowerPowerConsumption()).c_str(), true);
+      myPublish(topic_voltage,        String(myData.voltage)); 
+      myPublish(topic_mAh,            String(myData.getPowerConsumption()));
+      myPublish(topic_mAhLowPower,    String(myData.getLowPowerPowerConsumption()));
 
-      publish(topic_temperature, String(myData.temperature).c_str(), true); 
-      publish(topic_humidity,    String(myData.humidity).c_str(),    true); 
-      publish(topic_pressure,    String(myData.pressure).c_str(),    true); 
+      myPublish(topic_temperature,    String(myData.temperature)); 
+      myPublish(topic_humidity,       String(myData.humidity)); 
+      myPublish(topic_pressure,       String(myData.pressure)); 
          
-      publish(topic_csq,         myData.signalQuality.c_str(), true); 
-      publish(topic_batt_level,  myData.batteryLevel.c_str(),  true); 
-      publish(topic_batt_volt,   myData.batteryVolt.c_str(),   true); 
+      myPublish(topic_signal_quality, myData.signalQuality); 
+      myPublish(topic_batt_level,     myData.batteryLevel); 
+      myPublish(topic_batt_volt,      myData.batteryVolt); 
          
       if (myData.gps.fixStatus) {
-         publish(topic_lon,  myData.gps.longitudeString().c_str(), true);
-         publish(topic_lat,  myData.gps.latitudeString().c_str(), true);
-         publish(topic_alt,  myData.gps.altitudeString().c_str(), true);
-         publish(topic_kmph, myData.gps.kmphString().c_str(), true);
+         myPublish(topic_lon,  myData.gps.longitudeString());
+         myPublish(topic_lat,  myData.gps.latitudeString());
+         myPublish(topic_alt,  myData.gps.altitudeString());
+         myPublish(topic_kmph, myData.gps.kmphString());
       }
          
       MyDbg("mqtt published");
@@ -159,9 +185,8 @@ bool MyMqtt::sendData()
 bool MyMqtt::begin()
 {
    MyDbg("MQTT:begin");
-   setServer(MQTT_SERVER, MQTT_PORT);
-   setCallback(mqttCallback);
-
+   PubSubClient::setServer(myOptions.mqttServer.c_str(), myOptions.mqttPort);
+   PubSubClient::setCallback(mqttCallback);
    return true;
 }
 
@@ -174,7 +199,7 @@ void MyMqtt::handleClient()
             reconnect();
          }
       }
-      if (connected()) {
+      if (PubSubClient::connected()) {
          bool send = false;
 
          if (myData.isMoving) {
@@ -202,23 +227,27 @@ void MyMqtt::mqttCallback(char* topic, byte* payload, unsigned int len)
    MyDbg("]");
 
    if (MyMqtt::g_myOptions) {
-      if (strTopic == topic_gsm_power) {
+      if (strTopic == g_myOptions->mqttName + topic_deep_sleep) {
+         g_myOptions->isDeepSleepEnabled = atoi((char *) payload);
+         MyDbg(strTopic + g_myOptions->isDeepSleepEnabled ? " - On" : " - Off");
+      }
+      if (strTopic == g_myOptions->mqttName + topic_gsm_power) {
          g_myOptions->gsmPower = atoi((char *) payload);
          MyDbg(strTopic + g_myOptions->gsmPower ? " - On" : " - Off");
       }
-      if (strTopic == topic_gsm_enabled) {
+      if (strTopic == g_myOptions->mqttName + topic_gsm_enabled) {
          g_myOptions->isGsmEnabled = atoi((char *) payload);
          MyDbg(strTopic + g_myOptions->isGsmEnabled ? " - Enabled" : " - Disabled");
       }
-      if (strTopic == topic_gps_enabled) {
+      if (strTopic == g_myOptions->mqttName + topic_gps_enabled) {
          g_myOptions->isGpsEnabled = atoi((char *) payload);
          MyDbg(strTopic + g_myOptions->isGpsEnabled ? " - Enabled" : " - Disabled");
       }
-      if (strTopic == topic_send_on_move_every) {
+      if (strTopic == g_myOptions->mqttName + topic_send_on_move_every) {
          g_myOptions->mqttSendOnMoveEverySec = atoi((char *) payload);
          MyDbg(strTopic + " - " + String(g_myOptions->mqttSendOnMoveEverySec));
       }
-      if (strTopic == topic_send_on_non_move_every) {
+      if (strTopic == g_myOptions->mqttName + topic_send_on_non_move_every) {
          g_myOptions->mqttSendOnNonMoveEverySec = atoi((char *) payload);
          MyDbg(strTopic + " - " + String(g_myOptions->mqttSendOnNonMoveEverySec));
       }
