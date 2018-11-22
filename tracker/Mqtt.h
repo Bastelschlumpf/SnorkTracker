@@ -134,10 +134,15 @@ bool MyMqtt::begin()
 void MyMqtt::handleClient()
 {
    if (myGsmGps.isGsmActive) {
-      PubSubClient::loop();
-      // Connection?
-      if (!PubSubClient::connected()) {
-         if (secondsElapsed(myData.rtcData.lastMqttReconnectSec, myOptions.mqttReconnectIntervalSec)) {
+      bool isTimeToSend = false;
+
+      if (myData.isMoving) {
+         isTimeToSend = secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnMoveEverySec);
+      } else {
+         isTimeToSend = secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnNonMoveEverySec);
+      }
+      if (isTimeToSend) {
+         if (!PubSubClient::connected()) {
             MyDbg("Attempting MQTT connection...", true);
             for (int i = 0; !PubSubClient::connected() && i < 5; i++) {  
                MyDbg("Attempting MQTT connection...");  
@@ -157,37 +162,27 @@ void MyMqtt::handleClient()
                }  
             }  
          }
-      }
-      // Sending?
-      if (PubSubClient::connected()) {
-         bool send = false;
-
-         if (myData.isMoving) {
-            send = secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnMoveEverySec);
-         } else {
-            send = secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnNonMoveEverySec);
-         }
-         if (send) {
+         if (PubSubClient::connected()) {
             MyDbg("Attempting MQTT publishing", true);
-            myPublish(topic_voltage,        String(myData.voltage)); 
-            myPublish(topic_mAh,            String(myData.getPowerConsumption()));
-            myPublish(topic_mAhLowPower,    String(myData.getLowPowerPowerConsumption()));
-      
-            myPublish(topic_temperature,    String(myData.temperature)); 
-            myPublish(topic_humidity,       String(myData.humidity)); 
-            myPublish(topic_pressure,       String(myData.pressure)); 
-               
-            myPublish(topic_signal_quality, myData.signalQuality); 
-            myPublish(topic_batt_level,     myData.batteryLevel); 
-            myPublish(topic_batt_volt,      myData.batteryVolt); 
-               
+            myPublish(topic_voltage, String(myData.voltage));
+            myPublish(topic_mAh, String(myData.getPowerConsumption()));
+            myPublish(topic_mAhLowPower, String(myData.getLowPowerPowerConsumption()));
+
+            myPublish(topic_temperature, String(myData.temperature));
+            myPublish(topic_humidity, String(myData.humidity));
+            myPublish(topic_pressure, String(myData.pressure));
+
+            myPublish(topic_signal_quality, myData.signalQuality);
+            myPublish(topic_batt_level, myData.batteryLevel);
+            myPublish(topic_batt_volt, myData.batteryVolt);
+
             if (myData.gps.fixStatus) {
-               myPublish(topic_lon,  myData.gps.longitudeString());
-               myPublish(topic_lat,  myData.gps.latitudeString());
-               myPublish(topic_alt,  myData.gps.altitudeString());
+               myPublish(topic_lon, myData.gps.longitudeString());
+               myPublish(topic_lat, myData.gps.latitudeString());
+               myPublish(topic_alt, myData.gps.altitudeString());
                myPublish(topic_kmph, myData.gps.kmphString());
             }
-               
+
             MyDbg("mqtt published", true);
          }
       }

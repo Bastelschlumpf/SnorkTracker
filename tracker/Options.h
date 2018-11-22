@@ -54,7 +54,6 @@ public:
    long   mqttPort;                  //!< MQTT server port.
    String mqttUser;                  //!< MQTT user.
    String mqttPassword;              //!< MQTT password.
-   long   mqttReconnectIntervalSec;  //!< Reconnect interval on disconnection.
    long   mqttSendOnMoveEverySec;    //!< Send data interval to MQTT server on moving.
    long   mqttSendOnNonMoveEverySec; //!< Send data interval to MQTT server on non moving.
 
@@ -92,7 +91,6 @@ MyOptions::MyOptions()
    , mqttPort(MQTT_PORT)
    , mqttUser(MQTT_USER)
    , mqttPassword(MQTT_PASSWORD)
-   , mqttReconnectIntervalSec(10)
    , mqttSendOnMoveEverySec(600)
    , mqttSendOnNonMoveEverySec(600)
 {

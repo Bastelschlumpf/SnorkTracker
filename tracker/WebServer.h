@@ -492,7 +492,6 @@ void MyWebServer::handleLoadSettingsInfo()
       AddOption(info, "mqttPort",                  "MQTT Port",                              String(myOptions->mqttPort));
       AddOption(info, "mqttUser",                  "MQTT User",                              myOptions->mqttUser);
       AddOption(info, "mqttPassword",              "MQTT Password",                          myOptions->mqttPassword, true, true);
-      AddOption(info, "mqttReconnectIntervalSec",  "MQTT Reconnect every (Interval)",        formatInterval(myOptions->mqttReconnectIntervalSec));
       AddOption(info, "mqttSendOnMoveEverySec",    "MQTT Send on moving every (Interval)",   formatInterval(myOptions->mqttSendOnMoveEverySec));
       AddOption(info, "mqttSendOnNonMoveEverySec", "MQTT Send on standing every (Interval)", formatInterval(myOptions->mqttSendOnNonMoveEverySec), false);
    }
@@ -532,7 +531,6 @@ void MyWebServer::handleSaveSettings()
    GetOption("mqttPort",                  myOptions->mqttPort);
    GetOption("mqttUser",                  myOptions->mqttUser);
    GetOption("mqttPassword",              myOptions->mqttPassword);
-   GetOption("mqttReconnectIntervalSec",  myOptions->mqttReconnectIntervalSec);
    GetOption("mqttSendOnMoveEverySec",    myOptions->mqttSendOnMoveEverySec);
    GetOption("mqttSendOnNonMoveEverySec", myOptions->mqttSendOnNonMoveEverySec);
 
