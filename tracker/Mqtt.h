@@ -68,9 +68,6 @@ protected:
    bool mySubscribe(String subTopic);
    bool myPublish(String subTopic, String value);
 
-   void reconnect();
-   bool sendData();
-
 public:
    MyMqtt(MyGsmGps &gsmGps, MyOptions &options, MyData &data);
    ~MyMqtt();
@@ -103,7 +100,7 @@ bool MyMqtt::mySubscribe(String subTopic)
    String topic;
 
    topic = myOptions.mqttName + "/" + myOptions.mqttId + subTopic;
-   MyDbg("MyMqtt::subscribe: [" + topic + "]");
+   MyDbg("MyMqtt::subscribe: [" + topic + "]", true);
    return PubSubClient::subscribe(topic.c_str());
 }
 
@@ -118,67 +115,8 @@ bool MyMqtt::myPublish(String subTopic, String value)
       String topic;
 
       topic = myOptions.mqttName + "/" + myOptions.mqttId + subTopic;
-      MyDbg("MyMqtt::publish: [" + topic + "]=[" + value + "]");
+      MyDbg("MyMqtt::publish: [" + topic + "]=[" + value + "]", true);
       ret = PubSubClient::publish(topic.c_str(), value.c_str(), true);
-   }
-   return ret;
-}
-
-/** Connects or reconnect to the MQTT server and subscribes the topics. */
-void MyMqtt::reconnect()
-{
-   MyDbg("Attempting MQTT connection...");
-   // Try 5 times to reconnected
-   for (int i = 0; !PubSubClient::connected() && i < 5; i++) {
-      // Attempt to connect
-      PubSubClient::loop();
-      if (PubSubClient::connect(myOptions.mqttName.c_str(), myOptions.mqttUser.c_str(), myOptions.mqttPassword.c_str())) {
-         mySubscribe(topic_deep_sleep);
-         mySubscribe(topic_gsm_power);
-         mySubscribe(topic_gsm_enabled);
-         mySubscribe(topic_gps_enabled);
-         mySubscribe(topic_send_on_move_every);
-         mySubscribe(topic_send_on_non_move_every);
-         MyDbg(" connected");
-      } else {
-         break;
-         MyDbg(" Failed (" + String(i+1) + ") rc =" + String(PubSubClient::state()));
-         MyDbg(" Try again in 5 seconds");
-         // Wait 5 seconds before retrying
-         MyDelay(5000);
-         MyDbg(".", false, false);
-      }
-   }
-}
-
-/** Send the mqtt data if the gps values are new. */
-bool MyMqtt::sendData() 
-{
-   bool ret = false;
-
-   MyDbg("Attempting MQTT publishing");
-   if (PubSubClient::connected()) {
-      myPublish(topic_voltage,        String(myData.voltage)); 
-      myPublish(topic_mAh,            String(myData.getPowerConsumption()));
-      myPublish(topic_mAhLowPower,    String(myData.getLowPowerPowerConsumption()));
-
-      myPublish(topic_temperature,    String(myData.temperature)); 
-      myPublish(topic_humidity,       String(myData.humidity)); 
-      myPublish(topic_pressure,       String(myData.pressure)); 
-         
-      myPublish(topic_signal_quality, myData.signalQuality); 
-      myPublish(topic_batt_level,     myData.batteryLevel); 
-      myPublish(topic_batt_volt,      myData.batteryVolt); 
-         
-      if (myData.gps.fixStatus) {
-         myPublish(topic_lon,  myData.gps.longitudeString());
-         myPublish(topic_lat,  myData.gps.latitudeString());
-         myPublish(topic_alt,  myData.gps.altitudeString());
-         myPublish(topic_kmph, myData.gps.kmphString());
-      }
-         
-      MyDbg("mqtt published");
-      ret = true;
    }
    return ret;
 }
@@ -186,7 +124,7 @@ bool MyMqtt::sendData()
 /** Sets the MQTT server settings */
 bool MyMqtt::begin()
 {
-   MyDbg("MQTT:begin");
+   MyDbg("MQTT:begin", true);
    PubSubClient::setServer(myOptions.mqttServer.c_str(), myOptions.mqttPort);
    PubSubClient::setCallback(mqttCallback);
    return true;
@@ -195,13 +133,32 @@ bool MyMqtt::begin()
 /** Connect To the MQTT server and send the data when the time is right. */
 void MyMqtt::handleClient()
 {
-   PubSubClient::loop();
    if (myGsmGps.isGsmActive) {
+      PubSubClient::loop();
+      // Connection?
       if (!PubSubClient::connected()) {
          if (secondsElapsed(myData.rtcData.lastMqttReconnectSec, myOptions.mqttReconnectIntervalSec)) {
-            reconnect();
+            MyDbg("Attempting MQTT connection...", true);
+            for (int i = 0; !PubSubClient::connected() && i < 5; i++) {  
+               MyDbg("Attempting MQTT connection...");  
+               if (PubSubClient::connect(myOptions.mqttName.c_str(), myOptions.mqttUser.c_str(), myOptions.mqttPassword.c_str())) {  
+                  mySubscribe(topic_deep_sleep);
+                  mySubscribe(topic_gsm_power);
+                  mySubscribe(topic_gsm_enabled);
+                  mySubscribe(topic_gps_enabled);
+                  mySubscribe(topic_send_on_move_every);
+                  mySubscribe(topic_send_on_non_move_every);
+                  MyDbg(" connected", true);
+               } else {  
+                  MyDbg("   Mqtt failed, rc = " + String(PubSubClient::state()), true);
+                  MyDbg(" Try again in 5 seconds", true);
+                  MyDelay(5000);
+                  MyDbg(".", true, false);
+               }  
+            }  
          }
       }
+      // Sending?
       if (PubSubClient::connected()) {
          bool send = false;
 
@@ -211,7 +168,27 @@ void MyMqtt::handleClient()
             send = secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnNonMoveEverySec);
          }
          if (send) {
-            sendData();
+            MyDbg("Attempting MQTT publishing", true);
+            myPublish(topic_voltage,        String(myData.voltage)); 
+            myPublish(topic_mAh,            String(myData.getPowerConsumption()));
+            myPublish(topic_mAhLowPower,    String(myData.getLowPowerPowerConsumption()));
+      
+            myPublish(topic_temperature,    String(myData.temperature)); 
+            myPublish(topic_humidity,       String(myData.humidity)); 
+            myPublish(topic_pressure,       String(myData.pressure)); 
+               
+            myPublish(topic_signal_quality, myData.signalQuality); 
+            myPublish(topic_batt_level,     myData.batteryLevel); 
+            myPublish(topic_batt_volt,      myData.batteryVolt); 
+               
+            if (myData.gps.fixStatus) {
+               myPublish(topic_lon,  myData.gps.longitudeString());
+               myPublish(topic_lat,  myData.gps.latitudeString());
+               myPublish(topic_alt,  myData.gps.altitudeString());
+               myPublish(topic_kmph, myData.gps.kmphString());
+            }
+               
+            MyDbg("mqtt published", true);
          }
       }
    }
@@ -222,37 +199,41 @@ MyOptions *MyMqtt::g_myOptions = NULL;
 /** Static function for MQTT callback on registered topics. */
 void MyMqtt::mqttCallback(char* topic, byte* payload, unsigned int len) 
 {
+   if (topic == NULL || payload == NULL || len <= 0 || len > 200) {
+      return;
+   }
+
    String strTopic = String((char*)topic);
 
    payload[len] = '\0';
-   MyDbg("Message arrived [" + strTopic + "]:[ ");
-   if (len) MyDbg((char *) payload);
-   MyDbg("]");
+   MyDbg("Message arrived [" + strTopic + "]:[ ", true);
+   if (len) MyDbg((char *) payload, true);
+   MyDbg("]", true);
 
    if (MyMqtt::g_myOptions) {
       if (strTopic == g_myOptions->mqttName + topic_deep_sleep) {
          g_myOptions->isDeepSleepEnabled = atoi((char *) payload);
-         MyDbg(strTopic + g_myOptions->isDeepSleepEnabled ? " - On" : " - Off");
+         MyDbg(strTopic + g_myOptions->isDeepSleepEnabled ? " - On" : " - Off", true);
       }
       if (strTopic == g_myOptions->mqttName + topic_gsm_power) {
          g_myOptions->gsmPower = atoi((char *) payload);
-         MyDbg(strTopic + g_myOptions->gsmPower ? " - On" : " - Off");
+         MyDbg(strTopic + g_myOptions->gsmPower ? " - On" : " - Off", true);
       }
       if (strTopic == g_myOptions->mqttName + topic_gsm_enabled) {
          g_myOptions->isGsmEnabled = atoi((char *) payload);
-         MyDbg(strTopic + g_myOptions->isGsmEnabled ? " - Enabled" : " - Disabled");
+         MyDbg(strTopic + g_myOptions->isGsmEnabled ? " - Enabled" : " - Disabled", true);
       }
       if (strTopic == g_myOptions->mqttName + topic_gps_enabled) {
          g_myOptions->isGpsEnabled = atoi((char *) payload);
-         MyDbg(strTopic + g_myOptions->isGpsEnabled ? " - Enabled" : " - Disabled");
+         MyDbg(strTopic + g_myOptions->isGpsEnabled ? " - Enabled" : " - Disabled", true);
       }
       if (strTopic == g_myOptions->mqttName + topic_send_on_move_every) {
          g_myOptions->mqttSendOnMoveEverySec = atoi((char *) payload);
-         MyDbg(strTopic + " - " + String(g_myOptions->mqttSendOnMoveEverySec));
+         MyDbg(strTopic + " - " + String(g_myOptions->mqttSendOnMoveEverySec), true);
       }
       if (strTopic == g_myOptions->mqttName + topic_send_on_non_move_every) {
          g_myOptions->mqttSendOnNonMoveEverySec = atoi((char *) payload);
-         MyDbg(strTopic + " - " + String(g_myOptions->mqttSendOnNonMoveEverySec));
+         MyDbg(strTopic + " - " + String(g_myOptions->mqttSendOnNonMoveEverySec), true);
       }
    }
 }
