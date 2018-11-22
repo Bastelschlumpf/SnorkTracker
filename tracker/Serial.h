@@ -59,7 +59,7 @@ int MySerial::read()
 {
    int ret = SoftwareSerial::read();
 
-   if (ret >= 0) {
+   if (ret >= 0 && debug) {
       char c = (char) ret;
 
       if (c != '\r' && c != '\n') {
@@ -67,7 +67,7 @@ int MySerial::read()
             inData[inIdx++] = c;
          }
       } else {
-         if (inIdx > 0 && debug) {
+         if (inIdx > 0) {
             inData[inIdx] = 0;
             logInfos.addTail("< " + (String) inData);
          }
@@ -81,19 +81,22 @@ int MySerial::read()
 /** Virtual function call on write operations */
 size_t MySerial::write(uint8_t byte)
 {
-   char   c   = (char) byte;
    size_t ret = SoftwareSerial::write(byte);
 
-   if (c != '\r' && c != '\n') {
-      if (outIdx < 250) {
-         outData[outIdx++] = c;
+   if (debug) {
+      char c = (char)byte;
+
+      if (c != '\r' && c != '\n') {
+         if (outIdx < 250) {
+            outData[outIdx++] = c;
+         }
+      } else {
+         if (outIdx > 0) {
+            outData[outIdx] = 0;
+            logInfos.addTail("> " + (String)outData);
+         }
+         outIdx = 0;
       }
-   } else {
-      if (outIdx > 0 && debug) {
-         outData[outIdx] = 0;
-         logInfos.addTail("> " + (String) outData);
-      }
-      outIdx = 0;
    }
    return ret;
 }
