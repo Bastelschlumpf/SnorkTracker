@@ -22,7 +22,7 @@
   */
 
 
-#define MAX_LOG_INFOS_SIZE 10000 //!< Maximum bytes of the complete list items + separators.
+#define MAX_LOG_INFOS_SIZE 1000 //!< Maximum bytes of the complete list items + separators.
 
 /**
   * String List class. 
@@ -101,7 +101,7 @@ String StringList::getAt(int idx)
   */
 void StringList::addTail(String newInfo)
 {
-   while (infos.length() + newInfo.length() > MAX_LOG_INFOS_SIZE) {
+   while (infos.length() + newInfo.length() + 1 > MAX_LOG_INFOS_SIZE) {
       removeHead();
    }
    infos += newInfo;
@@ -116,7 +116,7 @@ String StringList::removeHead()
    int    idx = infos.indexOf('\1');
 
    if (idx != -1) {
-      ret = infos.substring(0, idx);
+      ret   = infos.substring(0, idx);
       infos = infos.substring(idx + 1);
       infosCount--;
    }
@@ -130,7 +130,7 @@ String StringList::removeTail()
 
    for (int i = infos.length() - 1; i >= 0; i--) {
       if (infos[i] == '\1') {
-         ret = infos.substring(i + 1);
+         ret   = infos.substring(i + 1);
          infos = infos.substring(0, i);
          infosCount--;
          break;
