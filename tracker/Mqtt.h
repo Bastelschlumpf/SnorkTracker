@@ -131,6 +131,7 @@ void MyMqtt::reconnect()
    // Try 5 times to reconnected
    for (int i = 0; !PubSubClient::connected() && i < 5; i++) {
       // Attempt to connect
+      PubSubClient::loop();
       if (PubSubClient::connect(myOptions.mqttName.c_str(), myOptions.mqttUser.c_str(), myOptions.mqttPassword.c_str())) {
          mySubscribe(topic_deep_sleep);
          mySubscribe(topic_gsm_power);
@@ -140,6 +141,7 @@ void MyMqtt::reconnect()
          mySubscribe(topic_send_on_non_move_every);
          MyDbg(" connected");
       } else {
+         break;
          MyDbg(" Failed (" + String(i+1) + ") rc =" + String(PubSubClient::state()));
          MyDbg(" Try again in 5 seconds");
          // Wait 5 seconds before retrying
@@ -193,6 +195,7 @@ bool MyMqtt::begin()
 /** Connect To the MQTT server and send the data when the time is right. */
 void MyMqtt::handleClient()
 {
+   PubSubClient::loop();
    if (myGsmGps.isGsmActive) {
       if (!PubSubClient::connected()) {
          if (secondsElapsed(myData.rtcData.lastMqttReconnectSec, myOptions.mqttReconnectIntervalSec)) {

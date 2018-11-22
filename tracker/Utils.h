@@ -22,12 +22,12 @@
 
 
 /** This function has to be overwritten to return the seconds since power up (not since last deep sleep). */
-uint32_t secondsSincePowerOn();
+long secondsSincePowerOn();
 
 /** Checks if the intervalSec is from the last checkIntervalSec elapsed and if true it sets the lastCheckSec value */
-bool secondsElapsed(uint32_t &lastCheckSec, const uint32_t &intervalSec)
+bool secondsElapsed(long &lastCheckSec, const long &intervalSec)
 {
-   uint32_t currentSec = secondsSincePowerOn();
+   long currentSec = secondsSincePowerOn();
 
    if (lastCheckSec == 0 || (currentSec - lastCheckSec > intervalSec)) {
       lastCheckSec = currentSec;
@@ -39,7 +39,7 @@ bool secondsElapsed(uint32_t &lastCheckSec, const uint32_t &intervalSec)
 #define POLY 0xedb88320 //!< CRC-32 (Ethernet, ZIP, etc.) polynomial in reversed bit order.
 
 /** Simple crc function. Can multiple called but the first time crc should be 0.  */
-uint32_t crc32(uint32_t crc, unsigned char *buf, size_t len)
+long crc32(long crc, unsigned char *buf, size_t len)
 {
    crc = ~crc;
    while (len--) {
@@ -131,7 +131,7 @@ String print2(int value)
 }
 
 /** Helper function to format seconds to x days hours:minutes:seconds */
-String formatSeconds(uint32_t secs)
+String formatInterval(long secs)
 {
    int days    =  secs / 60 / 60 / 24;
    int hours   = (secs / 60 / 60) % 24;
@@ -143,6 +143,57 @@ String formatSeconds(uint32_t secs)
    } else {
       return String(days) + " " + print2(hours) + ":" + print2(minutes) + ":" + print2(seconds); 
    }
+}
+
+/** Helper function to scan a interval information '[days] hours:minutes:seconds' */
+bool scanInterval(String interval, long &secs)
+{
+   int first = interval.indexOf(":");
+
+   interval = Trim(interval, " ");
+   if (first != -1) {
+      String daysString;
+      String hoursString;
+      String minutesString;
+      String secondsString;
+      long   days    = 0;
+      long   hours   = 0;
+      long   minutes = 0;
+      long   seconds = 0;
+
+      int second = interval.indexOf(":", first + 1);
+
+      if (second != -1) {
+         int space = interval.indexOf(" ");
+
+         if (space != -1 && space < first) {
+            daysString  = interval.substring(0, space);
+            hoursString = interval.substring(space + 1, first);
+         } else {
+            hoursString = interval.substring(0, first);
+         }
+         minutesString = interval.substring(first + 1, second);
+         secondsString = interval.substring(second + 1);
+
+         days    = atol(daysString.c_str());
+         hours   = atol(hoursString.c_str());
+         minutes = atol(minutesString.c_str());
+         seconds = atol(secondsString.c_str());
+
+         if (days    >= 0 && 
+             hours   <= 0 && hours   <= 23 && 
+             minutes >= 0 && minutes <= 59 && 
+             seconds >= 0 && seconds <= 59) {
+            secs = 0;
+            secs += days    * 24 * 60 * 60;
+            secs += hours   * 60 * 60;
+            secs += minutes * 60;
+            secs += seconds;
+            return true;
+         }
+      }
+   }
+   return false;
 }
 
 /**

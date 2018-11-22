@@ -31,77 +31,77 @@ public:
    public:
       MyLocation lastLocation;           //!< Last known GPS position. 
 
-      uint32_t   aktiveTimeSec;          //!< Time in active mode without current millis().
-      uint32_t   powerOnTimeSec;         //!< Time the sim808 is on power without current millis..
-      uint32_t   deepSleepTimeSec;       //!< Time in deep sleep mode. 
-      uint32_t   deepSleepStartSec;      //!< Timestamp of the last deep sleep start.
+      long       aktiveTimeSec;          //!< Time in active mode without current millis().
+      long       powerOnTimeSec;         //!< Time the sim808 is on power without current millis..
+      long       deepSleepTimeSec;       //!< Time in deep sleep mode. 
+      long       deepSleepStartSec;      //!< Timestamp of the last deep sleep start.
                  
-      uint32_t   lowPowerActiveTimeSec;  //!< Timestamp of the last deep sleep start.
-      uint32_t   lowPowerPowerOnTimeSec; //!< Timestamp of the last deep sleep start.
+      long       lowPowerActiveTimeSec;  //!< Timestamp of the last deep sleep start.
+      long       lowPowerPowerOnTimeSec; //!< Timestamp of the last deep sleep start.
                  
-      uint32_t   lastBme280ReadSec;      //!< Timestamp of the last BME280 read.
-      uint32_t   lastSmsCheckSec;        //!< Timestamp of the last sms check.
-      uint32_t   lastGpsReadSec;         //!< Timestamp of the last gps read.
-      uint32_t   lastMqttReconnectSec;   //!< Timestamp from the last server connection. 
-      uint32_t   lastMqttSendSec;        //!< Timestamp from the last send.
+      long       lastBme280ReadSec;      //!< Timestamp of the last BME280 read.
+      long       lastSmsCheckSec;        //!< Timestamp of the last sms check.
+      long       lastGpsReadSec;         //!< Timestamp of the last gps read.
+      long       lastMqttReconnectSec;   //!< Timestamp from the last server connection. 
+      long       lastMqttSendSec;        //!< Timestamp from the last send.
                  
-      uint32_t   crcValue;               //!< CRC of the RtcData
+      long       crcValue;               //!< CRC of the RtcData
 
    public:
       RtcData();
 
-      bool     isValid();
-      void     reset();
-      void     setCRC();
-      uint32_t getCRC();
+      bool isValid();
+      void reset();
+      void setCRC();
+      long getCRC();
    } rtcData;
 
-   String   status;              //!< Status information
-   String   restartInfo;         //!< Information on restart
-   bool     isOtaActive;         //!< Is OverTheAir update active?
-   bool     isPowerOn;           //!< Is the power of the sim808 switched on?
-   bool     isLowPower;          //!< Is the power below min voltage?
+   String status;              //!< Status information
+   String restartInfo;         //!< Information on restart
+   bool   isOtaActive;         //!< Is OverTheAir update active?
+   bool   isPowerOn;           //!< Is the power of the sim808 switched on?
+   bool   isLowPower;          //!< Is the power below min voltage?
 
-   int32_t  secondsToDeepSleep;  //!< Time until next deepsleep. -1 = disabled
-   uint32_t awakeTimeOffsetSec;  //!< Awake time offset for SaveSettings.
+   long   secondsToDeepSleep;  //!< Time until next deepsleep. -1 = disabled
+   long   awakeTimeOffsetSec;  //!< Awake time offset for SaveSettings.
 
-   double   voltage;             //!< Current supply voltage
-   double   temperature;         //!< Current BME280 temperature
-   double   humidity;            //!< Current BME280 humidity
-   double   pressure;            //!< Current BME280 pressure
+   double voltage;             //!< Current supply voltage
+   double temperature;         //!< Current BME280 temperature
+   double humidity;            //!< Current BME280 humidity
+   double pressure;            //!< Current BME280 pressure
 
-   String   softAPIP;            //!< registered ip of the access point
-   String   softAPmacAddress;    //!< module mac address
-   String   stationIP;           //!< registered station ip
+   String softAPIP;            //!< registered ip of the access point
+   String softAPmacAddress;    //!< module mac address
+   String stationIP;           //!< registered station ip
    
-   String   modemInfo;           //!< Information from SIM808
-   String   modemIP;             //!< registered modem ip
-   String   imei;                //!< IMEI of the sim card
-   String   cop;                 //!< Operator selection
-   String   signalQuality;       //!< Quality of the signal
-   String   batteryLevel;        //!< Battery level of the sim808 module
-   String   batteryVolt;         //!< Battery volt of the sim808 module
+   String modemInfo;           //!< Information from SIM808
+   String modemIP;             //!< registered modem ip
+   String imei;                //!< IMEI of the sim card
+   String cop;                 //!< Operator selection
+   String signalQuality;       //!< Quality of the signal
+   String batteryLevel;        //!< Battery level of the sim808 module
+   String batteryVolt;         //!< Battery volt of the sim808 module
    
-   MyGps    gps;                 //!< Current GPS data. 
-   uint32_t lastGpsUpdateSec;    //!< Elapsed Time of last read
+   MyGps  gps;                 //!< Current GPS data. 
+   long   lastGpsUpdateSec;    //!< Elapsed Time of last read
    
-   bool     isMoving;            //!< Is moving recognized
-   double   movingDistance;      //!< Minimum distance for moving flag
+   bool   isMoving;            //!< Is moving recognized
+   double movingDistance;      //!< Minimum distance for moving flag
    
-   StringList consoleCmds;       //!< open commands to send to the sim808 module
-   StringList logInfos;          //!< received sim808 answers or other logs
+   StringList consoleCmds;     //!< open commands to send to the sim808 module
+   StringList logInfos;        //!< received sim808 answers or other logs
 
 public:
    MyData();
 
-   uint32_t secondsSincePowerOn();
-   uint32_t getActiveTimeSec();
-   uint32_t getLowPowerActiveTimeSec();
-   uint32_t getPowerOnTimeSec();
-   uint32_t getLowPowerPowerOnTimeSec();
+   long   secondsSincePowerOn();
+   long   getActiveTimeSec();
+   long   getLowPowerActiveTimeSec();
+   long   getPowerOnTimeSec();
+   long   getLowPowerPowerOnTimeSec();
 
-   double   getPowerConsumption();
-   double   getLowPowerPowerConsumption();
+   double getPowerConsumption();
+   double getLowPowerPowerConsumption();
 };
 
 /* ******************************************** */
@@ -135,22 +135,22 @@ void MyData::RtcData::setCRC()
 }
 
 /** Creates a CRC of all the member variables. */
-uint32_t MyData::RtcData::getCRC()
+long MyData::RtcData::getCRC()
 {
-   uint32_t crc = 0;
+   long crc = 0;
 
    crc = crc32(crc, (unsigned char *) &lastLocation,           sizeof(MyLocation));
-   crc = crc32(crc, (unsigned char *) &aktiveTimeSec,          sizeof(uint32_t));
-   crc = crc32(crc, (unsigned char *) &powerOnTimeSec,         sizeof(uint32_t));
-   crc = crc32(crc, (unsigned char *) &deepSleepTimeSec,       sizeof(uint32_t));
-   crc = crc32(crc, (unsigned char *) &deepSleepStartSec,      sizeof(uint32_t));
-   crc = crc32(crc, (unsigned char *) &lowPowerActiveTimeSec,  sizeof(uint32_t));
-   crc = crc32(crc, (unsigned char *) &lowPowerPowerOnTimeSec, sizeof(uint32_t));
-   crc = crc32(crc, (unsigned char *) &lastBme280ReadSec,      sizeof(uint32_t));
-   crc = crc32(crc, (unsigned char *) &lastSmsCheckSec,        sizeof(uint32_t));
-   crc = crc32(crc, (unsigned char *) &lastGpsReadSec,         sizeof(uint32_t));
-   crc = crc32(crc, (unsigned char *) &lastMqttReconnectSec,   sizeof(uint32_t));
-   crc = crc32(crc, (unsigned char *) &lastMqttSendSec,        sizeof(uint32_t));
+   crc = crc32(crc, (unsigned char *) &aktiveTimeSec,          sizeof(long));
+   crc = crc32(crc, (unsigned char *) &powerOnTimeSec,         sizeof(long));
+   crc = crc32(crc, (unsigned char *) &deepSleepTimeSec,       sizeof(long));
+   crc = crc32(crc, (unsigned char *) &deepSleepStartSec,      sizeof(long));
+   crc = crc32(crc, (unsigned char *) &lowPowerActiveTimeSec,  sizeof(long));
+   crc = crc32(crc, (unsigned char *) &lowPowerPowerOnTimeSec, sizeof(long));
+   crc = crc32(crc, (unsigned char *) &lastBme280ReadSec,      sizeof(long));
+   crc = crc32(crc, (unsigned char *) &lastSmsCheckSec,        sizeof(long));
+   crc = crc32(crc, (unsigned char *) &lastGpsReadSec,         sizeof(long));
+   crc = crc32(crc, (unsigned char *) &lastMqttReconnectSec,   sizeof(long));
+   crc = crc32(crc, (unsigned char *) &lastMqttSendSec,        sizeof(long));
    return crc;
 }
 
@@ -172,19 +172,19 @@ MyData::MyData()
 }
 
 /** Returns the seconds since power up (not since last deep sleep). */
-uint32_t MyData::secondsSincePowerOn()
+long MyData::secondsSincePowerOn()
 {
    return rtcData.deepSleepTimeSec + getActiveTimeSec();
 }
 
 /** Return all the active over all deep sleeps plus the current active time. */
-uint32_t MyData::getActiveTimeSec()
+long MyData::getActiveTimeSec()
 {
    return rtcData.aktiveTimeSec + millis() / 1000;
 }
 
 /** Return all the active over all deep sleeps plus the current active time. */
-uint32_t MyData::getLowPowerActiveTimeSec()
+long MyData::getLowPowerActiveTimeSec()
 {
    if (!isLowPower) {
       return rtcData.lowPowerActiveTimeSec;
@@ -194,7 +194,7 @@ uint32_t MyData::getLowPowerActiveTimeSec()
 }
 
 /** Returns the power on time over all deep sleeps plus the current active time if power is on. */
-uint32_t MyData::getPowerOnTimeSec()
+long MyData::getPowerOnTimeSec()
 {
    if (!isPowerOn) {
       return rtcData.powerOnTimeSec;
@@ -204,7 +204,7 @@ uint32_t MyData::getPowerOnTimeSec()
 }
 
 /** Return all the time with power on on low power supply. */
-uint32_t MyData::getLowPowerPowerOnTimeSec()
+long MyData::getLowPowerPowerOnTimeSec()
 {
    if (!isLowPower || !isPowerOn) {
       return rtcData.lowPowerPowerOnTimeSec;

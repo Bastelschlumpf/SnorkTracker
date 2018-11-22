@@ -72,7 +72,7 @@ bool MyDeepSleep::begin()
 
    if (myOptions.isDeepSleepEnabled && secondsSincePowerOn() > NO_DEEP_SLEEP_STARTUP_TIME) {
       if (myData.voltage < myOptions.powerSaveModeVoltage) {
-         uint32_t checkTimeElapsed = secondsSincePowerOn() - myData.rtcData.deepSleepStartSec;
+         long checkTimeElapsed = secondsSincePowerOn() - myData.rtcData.deepSleepStartSec;
 
          // Check from time to time the power and return to deep sleep if the 
          // power is too low until the deep sleep time is over.
@@ -89,7 +89,7 @@ bool MyDeepSleep::begin()
 /** Check if the configured time has elapsed and the voltage is too low then go into deep sleep. */
 bool MyDeepSleep::haveToSleep()
 {
-   uint32_t activeTimeSec = millis() / 1000 - myData.awakeTimeOffsetSec;
+   long activeTimeSec = millis() / 1000 - myData.awakeTimeOffsetSec;
 
    myData.secondsToDeepSleep = -1;
    if (myOptions.isDeepSleepEnabled && myData.voltage < myOptions.powerSaveModeVoltage) {

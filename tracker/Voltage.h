@@ -28,10 +28,10 @@
 class MyVoltage
 {
 protected:
-   MyOptions      &myOptions;        //!< Reference to global options
-   MyData         &myData;           //!< Reference to global data
+   MyOptions &myOptions;        //!< Reference to global options
+   MyData    &myData;           //!< Reference to global data
 
-   uint32_t       lowPowerStartSec;  //!< Switch off timestamp
+   long       lowPowerStartSec; //!< Switch off timestamp
 
 public:
    MyVoltage(MyOptions &options, MyData &data);
@@ -65,14 +65,14 @@ bool MyVoltage::begin()
   */
 void MyVoltage::readVoltage()
 {
-   bool     isLowPower = false;
-   uint32_t currSec    = millis() / 1000;
+   bool isLowPower = false;
+   long currSec    = millis() / 1000;
    
    myData.voltage = ANALOG_FACTOR * analogRead(A0); // Volt
    isLowPower     = myData.voltage < myOptions.powerSaveModeVoltage;
 
    if (myData.isLowPower && !isLowPower) { // Change to high power
-      uint32_t lowPowerSec = currSec - lowPowerStartSec;
+      long lowPowerSec = currSec - lowPowerStartSec;
 
       myData.rtcData.lowPowerActiveTimeSec += lowPowerSec;
       if (myData.isPowerOn) {

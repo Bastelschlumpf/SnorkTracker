@@ -94,6 +94,8 @@ void myDebugInfo(String info, bool fromWebserver, bool newline)
       myWebServer.handleClient();   
       myWebServer.handleClient();   
    } 
+   delay(1);
+   yield();
 }
 
 /** Overwritten delay loop for refreshing the webserver on waiting processes. */
@@ -102,12 +104,12 @@ void myDelayLoop()
    myWebServer.handleClient();   
    myWebServer.handleClient();   
    myWebServer.handleClient(); 
-   delay(0);
+   delay(1);
    yield();
 }
 
 /** Returns the seconds since power up (not since last deep sleep). */
-uint32_t secondsSincePowerOn()
+long secondsSincePowerOn()
 {
    return myData.secondsSincePowerOn();
 }

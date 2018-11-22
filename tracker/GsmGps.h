@@ -31,19 +31,19 @@
 class MyGsmGps
 {
 protected:
-   uint32_t         lastGsmChecSec;   //!< Check intervall for signal and battery quality.
+   long          lastGsmChecSec;   //!< Check intervall for signal and battery quality.
 
 public:
-   MySerial         gsmSerial;        //!< Serial interface to the sim808 modul.
-   MyGsmSim808      gsmSim808;        //!< SIM808 interface class 
-   TinyGsmClient    gsmClient;        //!< Gsm client interface
+   MySerial      gsmSerial;        //!< Serial interface to the sim808 modul.
+   MyGsmSim808   gsmSim808;        //!< SIM808 interface class 
+   TinyGsmClient gsmClient;        //!< Gsm client interface
    
-   bool             isSimActive;      //!< Is the sim808 modul started?
-   bool             isGsmActive;      //!< Is the gsm part of the sim808 activated?
-   bool             isGpsActive;      //!< Is the gs part of the sim808 activated?
+   bool          isSimActive;      //!< Is the sim808 modul started?
+   bool          isGsmActive;      //!< Is the gsm part of the sim808 activated?
+   bool          isGpsActive;      //!< Is the gs part of the sim808 activated?
 
-   MyOptions       &myOptions;        //!< Reference to the options.
-   MyData          &myData;           //!< Reference to the data.
+   MyOptions    &myOptions;        //!< Reference to the options.
+   MyData       &myData;           //!< Reference to the data.
 
 protected:
    void enableGps(bool enable);

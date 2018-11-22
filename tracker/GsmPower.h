@@ -27,10 +27,10 @@
 class MyGsmPower
 {
 protected:
-   MyData   &myData;          //!< Reference to the data
+   MyData &myData;          //!< Reference to the data
 
-   int       pinPower;        //!< esp8266 pin connected with pin 5 of the LM2596 modul. 
-   uint32_t  powerOnStartSec; //!< Timestamp of power on.
+   int     pinPower;        //!< esp8266 pin connected with pin 5 of the LM2596 modul. 
+   long    powerOnStartSec; //!< Timestamp of power on.
       
 public:
    MyGsmPower(MyData &data, int pin);

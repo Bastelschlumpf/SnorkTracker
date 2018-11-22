@@ -30,33 +30,33 @@
 class MyOptions
 {
 public:
-   String gprsAP;                        //!< GRPS access point of the sim card supplier.
-   String wlanAP;                        //!< WLAN AP name.
-   String wlanPassword;                  //!< WLAN AR password.
-   bool   isDebugActive;                 //!< Is detailed debugging enabled?
-   long   bme280CheckIntervalSec;        //!< Time interval to read the temp, hum and pressure.
-   bool   gsmPower;                      //!< Is the GSM power from the DC-DC modul switched on? 
-   bool   isGsmEnabled;                  //!< Is the gsm part of the sim808 active?
-   bool   isGpsEnabled;                  //!< Is the gps part of the sim808 active?
-   long   gpsCheckIntervalSec;           //!< Time interval to check the gps position.
-   long   minMovingDistance;             //!< Minimum distance to accept as moving or not.
-   String phoneNumber;                   //!< Pone number for sms answers.
-   long   smsCheckIntervalSec;           //!< SMS check intervall.
-   bool   isDeepSleepEnabled;            //!< Should the system go into deepsleep if needed.
-   double powerSaveModeVoltage;          //!< Minimum voltage to stay always alive.
-   long   powerCheckIntervalSec;         //!< Time interval to check the power supply.
-   long   activeTimeSec;                 //!< Maximum alive time after deepsleep.
-   long   deepSleepTimeSec;              //!< Time to stay in deep sleep (without check interrupts)
-   bool   isMqttEnabled;                 //!< Should the system connect to a MQTT server?
-   String mqttName;                      //!< MQTT server name.
-   String mqttId;                        //!< MQTT ID.
-   String mqttServer;                    //!< MQTT server url.
-   long   mqttPort;                      //!< MQTT server port.
-   String mqttUser;                      //!< MQTT user.
-   String mqttPassword;                  //!< MQTT password.
-   long   mqttReconnectIntervalSec;      //!< Reconnect interval on disconnection.
-   long   mqttSendOnMoveEverySec;        //!< Send data interval to MQTT server on moving.
-   long   mqttSendOnNonMoveEverySec;     //!< Send data interval to MQTT server on non moving.
+   String gprsAP;                    //!< GRPS access point of the sim card supplier.
+   String wlanAP;                    //!< WLAN AP name.
+   String wlanPassword;              //!< WLAN AR password.
+   bool   isDebugActive;             //!< Is detailed debugging enabled?
+   long   bme280CheckIntervalSec;    //!< Time interval to read the temp, hum and pressure.
+   bool   gsmPower;                  //!< Is the GSM power from the DC-DC modul switched on? 
+   bool   isGsmEnabled;              //!< Is the gsm part of the sim808 active?
+   bool   isGpsEnabled;              //!< Is the gps part of the sim808 active?
+   long   gpsCheckIntervalSec;       //!< Time interval to check the gps position.
+   long   minMovingDistance;         //!< Minimum distance to accept as moving or not.
+   String phoneNumber;               //!< Pone number for sms answers.
+   long   smsCheckIntervalSec;       //!< SMS check intervall.
+   bool   isDeepSleepEnabled;        //!< Should the system go into deepsleep if needed.
+   double powerSaveModeVoltage;      //!< Minimum voltage to stay always alive.
+   long   powerCheckIntervalSec;     //!< Time interval to check the power supply.
+   long   activeTimeSec;             //!< Maximum alive time after deepsleep.
+   long   deepSleepTimeSec;          //!< Time to stay in deep sleep (without check interrupts)
+   bool   isMqttEnabled;             //!< Should the system connect to a MQTT server?
+   String mqttName;                  //!< MQTT server name.
+   String mqttId;                    //!< MQTT ID.
+   String mqttServer;                //!< MQTT server url.
+   long   mqttPort;                  //!< MQTT server port.
+   String mqttUser;                  //!< MQTT user.
+   String mqttPassword;              //!< MQTT password.
+   long   mqttReconnectIntervalSec;  //!< Reconnect interval on disconnection.
+   long   mqttSendOnMoveEverySec;    //!< Send data interval to MQTT server on moving.
+   long   mqttSendOnNonMoveEverySec; //!< Send data interval to MQTT server on non moving.
 
 public:
    MyOptions();
@@ -73,14 +73,14 @@ MyOptions::MyOptions()
    , wlanPassword(WLAN_PW)
    , isDebugActive(false)
    , bme280CheckIntervalSec(60)
-   , gsmPower(true)
+   , gsmPower(false)
    , isGsmEnabled(true)
    , isGpsEnabled(true)
    , gpsCheckIntervalSec(60)
    , minMovingDistance(100)
    , phoneNumber(PHONE_NUMBER)
    , smsCheckIntervalSec(60)
-   , isDeepSleepEnabled(true)
+   , isDeepSleepEnabled(false)
    , powerSaveModeVoltage(15.0)
    , powerCheckIntervalSec(60)
    , activeTimeSec(10)
@@ -118,7 +118,7 @@ bool MyOptions::load()
          } else {
             String key    = line.substring(0, idx);
             String value  = line.substring(idx + 1);
-            long   lValue = atoi(value.c_str());
+            long   lValue = atol(value.c_str());
             double fValue = atof(value.c_str());
 
             value.replace("\r", "");

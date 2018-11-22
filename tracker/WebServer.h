@@ -55,6 +55,7 @@ protected:
    static void   AddBr(String &info);
    static void   AddOption(String &info, String id, String name, bool value, bool addBr = true);
    static void   AddOption(String &info, String id, String name, String value, bool addBr = true, bool isPassword = false);
+   static void   AddIntervalInfo(String &info);
 
 public:
    static void handleRoot();
@@ -233,13 +234,18 @@ bool MyWebServer::GetOption(String id, String &option)
 /** Reads one long option from the URL args. */
 bool MyWebServer::GetOption(String id, long &option)
 {
+   bool   ret = false;
    String opt = server.arg(id);
 
    if (opt != "") {
-      option = atoi(opt.c_str());
-      return true;
+      if (opt.indexOf(":") != -1) {
+         ret = scanInterval(opt, option);
+      }  else {
+         option = atoi(opt.c_str());
+         ret    = true;
+      }
    }
-   return false;
+   return ret;
 }
 
 /** Reads one double option from the URL args. */
@@ -301,6 +307,13 @@ void MyWebServer::AddOption(String &info, String id, String name, bool value, bo
    if (addBr) {
       info += "<br />";
    }
+}
+
+/** Add the format information of the intervall in 'dd hh:mm:ss' */
+void MyWebServer::AddIntervalInfo(String &info)
+{
+   info += "<p>" + TextToXml("Interval in '[days] hours:minutes:seconds' or just 'seconds'") + "</p>";
+   info += "<br />";
 }
 
 /** Helper function to load a file from the SPIFFS. */
@@ -441,17 +454,17 @@ void MyWebServer::handleLoadSettingsInfo()
    String info;
 
    MyDbg("LoadSettings", true);
-   AddOption(info, "wlanAP",                 "WLAN SSID",                         myOptions->wlanAP);
-   AddOption(info, "wlanPassword",           "WLAN Password",                     myOptions->wlanPassword, true, true);
-   AddOption(info, "gprsAP",                 "GPRS AP",                           myOptions->gprsAP);
-   AddOption(info, "isDebugActive",          "Debug Active",                      myOptions->isDebugActive);
+   AddOption(info, "wlanAP",                 "WLAN SSID",     myOptions->wlanAP);
+   AddOption(info, "wlanPassword",           "WLAN Password", myOptions->wlanPassword, true, true);
+   AddOption(info, "gprsAP",                 "GPRS AP",       myOptions->gprsAP);
+   AddOption(info, "isDebugActive",          "Debug Active",  myOptions->isDebugActive);
    
-   AddOption(info, "bme280CheckIntervalSec", "Temperature check every (Seconds)", String(myOptions->bme280CheckIntervalSec));
-   AddOption(info, "isGsmEnabled",           "GSM Enabled",                       myOptions->isGsmEnabled);
-   AddOption(info, "isGpsEnabled",           "GPS Enabled",                       myOptions->isGpsEnabled);
-   AddOption(info, "gpsCheckIntervalSec",    "GPS check every (Seconds)",         String(myOptions->gpsCheckIntervalSec));
-   AddOption(info, "phoneNumber",            "Information send to",               myOptions->phoneNumber);
-   AddOption(info, "smsCheckIntervalSec",    "SMS check every (Seconds)",         String(myOptions->smsCheckIntervalSec));
+   AddOption(info, "bme280CheckIntervalSec", "Temperature check every (Interval)", formatInterval(myOptions->bme280CheckIntervalSec));
+   AddOption(info, "isGsmEnabled",           "GSM Enabled",                        myOptions->isGsmEnabled);
+   AddOption(info, "isGpsEnabled",           "GPS Enabled",                        myOptions->isGpsEnabled);
+   AddOption(info, "gpsCheckIntervalSec",    "GPS check every (Interval)",         formatInterval(myOptions->gpsCheckIntervalSec));
+   AddOption(info, "phoneNumber",            "Information send to",                myOptions->phoneNumber);
+   AddOption(info, "smsCheckIntervalSec",    "SMS check every (Interval)",         formatInterval(myOptions->smsCheckIntervalSec));
    {
       HtmlTag fieldset(info, "fieldset");
       {
@@ -459,11 +472,11 @@ void MyWebServer::handleLoadSettingsInfo()
          
          AddOption(info, "isDeepSleepEnabled", "Power saving mode active", myOptions->isDeepSleepEnabled, false);
       }
-      AddOption(info, "powerSaveModeVoltage",  "Power saving mode under (Volt)", String(myOptions->powerSaveModeVoltage, 1));
-      AddOption(info, "powerCheckIntervalSec", "Check power every (Seconds)",    String(myOptions->powerCheckIntervalSec));
+      AddOption(info, "powerSaveModeVoltage",  "Power saving mode under (Volt)",  String(myOptions->powerSaveModeVoltage, 1));
+      AddOption(info, "powerCheckIntervalSec", "Check power every (Interval)",    formatInterval(myOptions->powerCheckIntervalSec));
       
-      AddOption(info, "activeTimeSec",        "Active time (Seconds)",           String(myOptions->activeTimeSec));
-      AddOption(info, "deepSleepTimeSec",     "DeepSleep time (Seconds)",        String(myOptions->deepSleepTimeSec));
+      AddOption(info, "activeTimeSec",        "Active time (Interval)",           formatInterval(myOptions->activeTimeSec));
+      AddOption(info, "deepSleepTimeSec",     "DeepSleep time (Interval)",        formatInterval(myOptions->deepSleepTimeSec));
    }
    AddBr(info);
    {
@@ -473,16 +486,18 @@ void MyWebServer::handleLoadSettingsInfo()
          
          AddOption(info, "isMqttEnabled", "MQTT Active", myOptions->isMqttEnabled, false);
       }
-      AddOption(info, "mqttName",                  "MQTT Name",                             myOptions->mqttName);
-      AddOption(info, "mqttId",                    "MQTT Id",                               myOptions->mqttId);
-      AddOption(info, "mqttServer",                "MQTT Server",                           myOptions->mqttServer);
-      AddOption(info, "mqttPort",                  "MQTT Port",                             String(myOptions->mqttPort));
-      AddOption(info, "mqttUser",                  "MQTT User",                             myOptions->mqttUser);
-      AddOption(info, "mqttPassword",              "MQTT Password",                         myOptions->mqttPassword, true, true);
-      AddOption(info, "mqttReconnectIntervalSec",  "MQTT Reconnect every (Seconds)",        String(myOptions->mqttReconnectIntervalSec));
-      AddOption(info, "mqttSendOnMoveEverySec",    "MQTT Send on moving every (Seconds)",   String(myOptions->mqttSendOnMoveEverySec));
-      AddOption(info, "mqttSendOnNonMoveEverySec", "MQTT Send on standing every (Seconds)", String(myOptions->mqttSendOnNonMoveEverySec), false);
+      AddOption(info, "mqttName",                  "MQTT Name",                              myOptions->mqttName);
+      AddOption(info, "mqttId",                    "MQTT Id",                                myOptions->mqttId);
+      AddOption(info, "mqttServer",                "MQTT Server",                            myOptions->mqttServer);
+      AddOption(info, "mqttPort",                  "MQTT Port",                              String(myOptions->mqttPort));
+      AddOption(info, "mqttUser",                  "MQTT User",                              myOptions->mqttUser);
+      AddOption(info, "mqttPassword",              "MQTT Password",                          myOptions->mqttPassword, true, true);
+      AddOption(info, "mqttReconnectIntervalSec",  "MQTT Reconnect every (Interval)",        formatInterval(myOptions->mqttReconnectIntervalSec));
+      AddOption(info, "mqttSendOnMoveEverySec",    "MQTT Send on moving every (Interval)",   formatInterval(myOptions->mqttSendOnMoveEverySec));
+      AddOption(info, "mqttSendOnNonMoveEverySec", "MQTT Send on standing every (Interval)", formatInterval(myOptions->mqttSendOnNonMoveEverySec), false);
    }
+
+   AddIntervalInfo(info);
 
    server.send(200,"text/html", info);
 }
@@ -586,9 +601,9 @@ void MyWebServer::handleLoadInfoInfo()
       AddTableTr(info, "Distance (m)", String(myData->movingDistance, 2));
       AddTableTr(info);
    }
-   AddTableTr(info, "Active Time",             formatSeconds(myData->getActiveTimeSec()));
-   AddTableTr(info, "PowerUpTime",             formatSeconds(myData->getPowerOnTimeSec()));
-   AddTableTr(info, "DeepSleepTime",           formatSeconds(myData->rtcData.deepSleepTimeSec));
+   AddTableTr(info, "Active Time",             formatInterval(myData->getActiveTimeSec()));
+   AddTableTr(info, "PowerUpTime",             formatInterval(myData->getPowerOnTimeSec()));
+   AddTableTr(info, "DeepSleepTime",           formatInterval(myData->rtcData.deepSleepTimeSec));
    AddTableTr(info, "mAh",                     String(myData->getPowerConsumption(), 2));
    AddTableTr(info, "Low power mAh",           String(myData->getLowPowerPowerConsumption(), 2));
    AddTableTr(info);
