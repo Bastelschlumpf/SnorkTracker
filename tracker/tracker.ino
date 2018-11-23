@@ -66,6 +66,17 @@ bool        gsmHasPower = false;                           //!< Is the DC-DC mod
 bool        isStarting  = false;                           //!< Are we in a starting process?
 bool        isStopping  = false;                           //!< Are we in a stopping process?
 
+/**
+ * ***** IMPORTANT *****
+ * It seems that the yield function of ESP does not feed the watch dog timer.
+ * So we overwrite the yield() function here. If not the program crashed on some waits.
+ * ***** IMPORTANT *****
+ */
+void yield(void)
+{
+   ESP.wdtFeed();
+}
+
 /** Overwritten Debug Function 
   * It logs all the debug calls to the console string-list
   * And call a refresh of the webserver for not blocking the system.
