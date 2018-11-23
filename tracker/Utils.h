@@ -21,6 +21,28 @@
   */
 
 
+/**
+   * Helper class for debugging via Serial.println 
+   */
+class SerialOut
+{
+protected:
+   String message; //!< Mesage on contructor and destructor.
+
+public:
+   SerialOut(String msg)
+      : message(msg)
+   {
+      String m = ":" + String(millis()) + "[" + message;
+      Serial.println(m.c_str());
+   }
+   ~SerialOut()
+   {
+      String m = message + ":" + String(millis()) + "]";
+      Serial.println(m.c_str());
+   }
+};
+
 /** This function has to be overwritten to return the seconds since power up (not since last deep sleep). */
 long secondsSincePowerOn();
 
