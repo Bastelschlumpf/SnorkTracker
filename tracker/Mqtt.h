@@ -143,9 +143,8 @@ void MyMqtt::handleClient()
       }
       if (isTimeToSend) {
          if (!PubSubClient::connected()) {
-            MyDbg("Attempting MQTT connection...", true);
             for (int i = 0; !PubSubClient::connected() && i < 5; i++) {  
-               MyDbg("Attempting MQTT connection...");  
+               MyDbg("Attempting MQTT connection...", true);  
                if (PubSubClient::connect(myOptions.mqttName.c_str(), myOptions.mqttUser.c_str(), myOptions.mqttPassword.c_str())) {  
                   mySubscribe(topic_deep_sleep);
                   mySubscribe(topic_gsm_power);
