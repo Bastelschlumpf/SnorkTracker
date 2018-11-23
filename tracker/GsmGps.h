@@ -21,7 +21,7 @@
   */
 
 
-// #define  TINY_GSM_YIELD() { MyDelay(1); } //!< Overwrite the yield macro with our own delay function.
+#define  TINY_GSM_YIELD() { MyDelay(1); } //!< Overwrite the yield macro with our own delay function.
 #include "Sim808.h"
 #include "Serial.h"
 
