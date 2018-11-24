@@ -93,7 +93,7 @@ size_t MySerial::write(uint8_t byte)
       } else {
          if (outIdx > 0) {
             outData[outIdx] = 0;
-            logInfos.addTail("> " + (String)outData);
+            logInfos.addTail("> " + (String) outData);
          }
          outIdx = 0;
       }
