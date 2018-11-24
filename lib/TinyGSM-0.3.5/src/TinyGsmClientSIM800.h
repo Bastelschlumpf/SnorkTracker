@@ -852,15 +852,15 @@ protected:
       buf[1] = stream.read();
       char c = strtol(buf, NULL, 16);
 #else
-// Original!!!
-//      while (!stream.available()) { TINY_GSM_YIELD(); }
-//      char c = stream.read();
-// Ebby Neu
-       char c = stream.read();
-       if (c == -1) {
-          return i;
-       }
-// Ende
+      while (!stream.available()) { TINY_GSM_YIELD(); }
+      // Original!!!
+      // char c = stream.read();
+      // New: Check the return value!
+      char c = stream.read();
+      if (c == -1) {
+         return i;
+      }
+      // Ende
 #endif
        sockets[mux]->rx.put(c);
   }
