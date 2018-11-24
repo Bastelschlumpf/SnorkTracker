@@ -211,7 +211,7 @@ void loop()
 
    // Deep Sleep?
    // (No deep sleep if we are waiting for a valid gps position).
-   if (!myGsmGps.waitingForGps()) {
+   if (gsmHasPower && !myGsmGps.waitingForGps()) {
       if (myDeepSleep.haveToSleep()) {
          if (myGsmGps.isGsmActive) {
             myGsmGps.stop();
