@@ -434,30 +434,29 @@ void MyWebServer::handleLoadSettingsInfo()
    String info;
 
    MyDbg("LoadSettings", true);
-   AddOption(info, "wlanAP",                 "WLAN SSID",     myOptions->wlanAP);
-   AddOption(info, "wlanPassword",           "WLAN Password", myOptions->wlanPassword, true, true);
-   AddOption(info, "gprsAP",                 "GPRS AP",       myOptions->gprsAP);
-   AddOption(info, "isDebugActive",          "Debug Active",  myOptions->isDebugActive);
-   
+   AddOption(info, "wlanAP",        "WLAN SSID",     myOptions->wlanAP);
+   AddOption(info, "wlanPassword",  "WLAN Password", myOptions->wlanPassword, true, true);
+   AddOption(info, "gprsAP",        "GPRS AP",       myOptions->gprsAP);
+
+   AddOption(info, "isDebugActive", "Debug Active",  myOptions->isDebugActive);
+
+   AddOption(info, "isGsmEnabled",           "GSM Enabled",                myOptions->isGsmEnabled);
+   AddOption(info, "smsCheckIntervalSec",    "SMS check every (Interval)", formatInterval(myOptions->smsCheckIntervalSec));
+   AddOption(info, "phoneNumber",            "Information send to",        myOptions->phoneNumber);
+
    AddOption(info, "bme280CheckIntervalSec", "Temperature check every (Interval)", formatInterval(myOptions->bme280CheckIntervalSec));
-   AddOption(info, "isGsmEnabled",           "GSM Enabled",                        myOptions->isGsmEnabled);
-   AddOption(info, "isGpsEnabled",           "GPS Enabled",                        myOptions->isGpsEnabled);
-   AddOption(info, "gpsCheckIntervalSec",    "GPS check every (Interval)",         formatInterval(myOptions->gpsCheckIntervalSec));
-   AddOption(info, "phoneNumber",            "Information send to",                myOptions->phoneNumber);
-   AddOption(info, "smsCheckIntervalSec",    "SMS check every (Interval)",         formatInterval(myOptions->smsCheckIntervalSec));
+
+   AddBr(info);
    {
       HtmlTag fieldset(info, "fieldset");
       {
          HtmlTag legend(info, "legend");
-         
-         AddOption(info, "isDeepSleepEnabled", "Power saving mode active", myOptions->isDeepSleepEnabled, false);
+
+         AddOption(info, "isGpsEnabled", "GPS Enabled", myOptions->isGpsEnabled, false);
       }
-      AddOption(info, "powerSaveModeVoltage",  "Power saving mode under (Volt)",  String(myOptions->powerSaveModeVoltage, 1));
-      AddOption(info, "powerCheckIntervalSec", "Check power every (Interval)",    formatInterval(myOptions->powerCheckIntervalSec));
-      
-      AddOption(info, "activeTimeSec",        "Active time (Interval)",           formatInterval(myOptions->activeTimeSec));
-      AddOption(info, "deepSleepTimeSec",     "DeepSleep time (Interval)",        formatInterval(myOptions->deepSleepTimeSec));
+      AddOption(info, "gpsCheckIntervalSec", "GPS check every (Interval)", formatInterval(myOptions->gpsCheckIntervalSec), false);
    }
+
    AddBr(info);
    {
       HtmlTag fieldset(info, "fieldset");
@@ -474,6 +473,21 @@ void MyWebServer::handleLoadSettingsInfo()
       AddOption(info, "mqttPassword",              "MQTT Password",                          myOptions->mqttPassword, true, true);
       AddOption(info, "mqttSendOnMoveEverySec",    "MQTT Send on moving every (Interval)",   formatInterval(myOptions->mqttSendOnMoveEverySec));
       AddOption(info, "mqttSendOnNonMoveEverySec", "MQTT Send on standing every (Interval)", formatInterval(myOptions->mqttSendOnNonMoveEverySec), false);
+   }
+
+   AddBr(info);
+   {
+      HtmlTag fieldset(info, "fieldset");
+      {
+         HtmlTag legend(info, "legend");
+
+         AddOption(info, "isDeepSleepEnabled", "Power saving mode active", myOptions->isDeepSleepEnabled, false);
+      }
+      AddOption(info, "powerSaveModeVoltage",  "Power saving mode under (Volt)", String(myOptions->powerSaveModeVoltage, 1));
+      AddOption(info, "powerCheckIntervalSec", "Check power every (Interval)",   formatInterval(myOptions->powerCheckIntervalSec));
+
+      AddOption(info, "activeTimeSec",    "Active time (Interval)",    formatInterval(myOptions->activeTimeSec));
+      AddOption(info, "deepSleepTimeSec", "DeepSleep time (Interval)", formatInterval(myOptions->deepSleepTimeSec), false);
    }
 
    AddIntervalInfo(info);
