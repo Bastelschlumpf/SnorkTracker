@@ -74,6 +74,8 @@ public:
    
    bool begin();
    void handleClient();
+   
+   bool haveToSend();
 };
 
 /* ******************************************** */
@@ -121,6 +123,19 @@ bool MyMqtt::myPublish(String subTopic, String value)
    return ret;
 }
 
+/** Check if we have to send the mqtt datas. */
+bool MyMqtt::haveToSend()
+{
+   if (myGsmGps.isGsmActive) {
+      if (myData.isMoving) {
+         return secondsElapsedAndUpdate(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnMoveEverySec);
+      } else {
+         return secondsElapsedAndUpdate(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnNonMoveEverySec);
+      }
+   }
+   return false;
+}
+
 /** Sets the MQTT server settings */
 bool MyMqtt::begin()
 {
@@ -134,14 +149,7 @@ bool MyMqtt::begin()
 void MyMqtt::handleClient()
 {
    if (myGsmGps.isGsmActive) {
-      bool isTimeToSend = false;
-
-      if (myData.isMoving) {
-         isTimeToSend = secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnMoveEverySec);
-      } else {
-         isTimeToSend = secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnNonMoveEverySec);
-      }
-      if (isTimeToSend) {
+      if (haveToSend()) {
          if (!PubSubClient::connected()) {
             for (int i = 0; !PubSubClient::connected() && i < 5; i++) {  
                MyDbg("Attempting MQTT connection...", true);  

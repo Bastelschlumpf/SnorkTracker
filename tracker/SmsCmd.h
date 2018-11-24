@@ -79,7 +79,7 @@ bool MySmsCmd::begin()
 /** Check the sms if the time from the options is elapsed. */
 void MySmsCmd::handleClient()
 {
-   if (secondsElapsed(myData.rtcData.lastSmsCheckSec, myOptions.smsCheckIntervalSec)) {
+   if (secondsElapsedAndUpdate(myData.rtcData.lastSmsCheckSec, myOptions.smsCheckIntervalSec)) {
       checkSms();
    }
 }

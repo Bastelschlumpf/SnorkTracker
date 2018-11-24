@@ -173,7 +173,7 @@ void MyGsmGps::handleClient()
       return;
    }
 
-   if (secondsElapsed(lastGsmChecSec, 60000)) { // Check every minute
+   if (secondsElapsedAndUpdate(lastGsmChecSec, 60000)) { // Check every minute
       myData.signalQuality = String(gsmSim808.getSignalQuality());
       myData.batteryLevel  = String(gsmSim808.getBattPercent());
       myData.batteryVolt   = String(gsmSim808.getBattVoltage() / 1000.0F, 2);
@@ -183,7 +183,7 @@ void MyGsmGps::handleClient()
       MyDbg("(sim808) batteryVolt: "   + myData.batteryVolt);
    }
 
-   if (secondsElapsed(myData.rtcData.lastGpsReadSec, myOptions.gpsCheckIntervalSec)) {
+   if (secondsElapsedAndUpdate(myData.rtcData.lastGpsReadSec, myOptions.gpsCheckIntervalSec)) {
       if (myOptions.isGpsEnabled && !isGpsActive) {
          enableGps(true);
       }

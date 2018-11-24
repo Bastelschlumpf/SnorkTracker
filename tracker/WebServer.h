@@ -440,11 +440,22 @@ void MyWebServer::handleLoadSettingsInfo()
 
    AddOption(info, "isDebugActive", "Debug Active",  myOptions->isDebugActive);
 
-   AddOption(info, "isGsmEnabled",           "GSM Enabled",                myOptions->isGsmEnabled);
-   AddOption(info, "smsCheckIntervalSec",    "SMS check every (Interval)", formatInterval(myOptions->smsCheckIntervalSec));
-   AddOption(info, "phoneNumber",            "Information send to",        myOptions->phoneNumber);
+   AddOption(info, "isGsmEnabled",  "GSM Enabled",   myOptions->isGsmEnabled);
 
    AddOption(info, "bme280CheckIntervalSec", "Temperature check every (Interval)", formatInterval(myOptions->bme280CheckIntervalSec));
+
+   AddBr(info);
+   {
+      HtmlTag fieldset(info, "fieldset");
+      {
+         HtmlTag legend(info, "legend");
+
+         AddOption(info, "isSmsEnabled", "SMS Enabled", myOptions->isSmsEnabled, false);
+      }
+
+      AddOption(info, "smsCheckIntervalSec", "SMS check every (Interval)", formatInterval(myOptions->smsCheckIntervalSec));
+      AddOption(info, "phoneNumber",         "Information send to",        myOptions->phoneNumber, false);
+   }
 
    AddBr(info);
    {
@@ -508,6 +519,7 @@ void MyWebServer::handleSaveSettings()
    GetOption("wlanPassword",              myOptions->wlanPassword);
    GetOption("isDebugActive",             myOptions->isDebugActive);
    GetOption("bme280CheckIntervalSec",    myOptions->bme280CheckIntervalSec);
+   GetOption("isSmsEnabled",              myOptions->isSmsEnabled);
    GetOption("isGsmEnabled",              myOptions->isGsmEnabled);
    GetOption("phoneNumber",               myOptions->phoneNumber);
    GetOption("smsCheckIntervalSec",       myOptions->smsCheckIntervalSec);

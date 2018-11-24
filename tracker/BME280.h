@@ -67,7 +67,7 @@ bool MyBME280::begin()
   */
 bool MyBME280::readValues()
 {
-   if (secondsElapsed(myData.rtcData.lastBme280ReadSec, myOptions.bme280CheckIntervalSec)) {
+   if (secondsElapsedAndUpdate(myData.rtcData.lastBme280ReadSec, myOptions.bme280CheckIntervalSec)) {
       digitalWrite(pinPower, LOW);
       if (bme280.begin()) {
          myData.temperature = bme280.readTemperature();

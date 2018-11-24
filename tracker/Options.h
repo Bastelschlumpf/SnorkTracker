@@ -37,6 +37,7 @@ public:
    long   bme280CheckIntervalSec;    //!< Time interval to read the temp, hum and pressure.
    bool   gsmPower;                  //!< Is the GSM power from the DC-DC modul switched on? 
    bool   isGsmEnabled;              //!< Is the gsm part of the sim808 active?
+   bool   isSmsEnabled;              //!< Is the sms check functionality active?
    bool   isGpsEnabled;              //!< Is the gps part of the sim808 active?
    long   gpsCheckIntervalSec;       //!< Time interval to check the gps position.
    long   minMovingDistance;         //!< Minimum distance to accept as moving or not.
@@ -74,14 +75,15 @@ MyOptions::MyOptions()
    , bme280CheckIntervalSec(60)
    , gsmPower(false)
    , isGsmEnabled(true)
-   , isGpsEnabled(true)
+   , isSmsEnabled(false)
+   , isGpsEnabled(false)
    , gpsCheckIntervalSec(60)
    , minMovingDistance(100)
    , phoneNumber(PHONE_NUMBER)
    , smsCheckIntervalSec(60)
    , isDeepSleepEnabled(false)
    , powerSaveModeVoltage(15.0)
-   , powerCheckIntervalSec(60)
+   , powerCheckIntervalSec(300)
    , activeTimeSec(10)
    , deepSleepTimeSec(600)
    , isMqttEnabled(false)
@@ -137,6 +139,8 @@ bool MyOptions::load()
                bme280CheckIntervalSec = lValue;
             } else if (key == "isGsmEnabled") {
                isGsmEnabled = lValue;
+            } else if (key == "isSmsEnabled") {
+               isSmsEnabled = lValue;
             } else if (key == "isGpsEnabled") {
                isGpsEnabled = lValue;
             } else if (key == "gpsCheckIntervalSec") {
@@ -204,6 +208,7 @@ bool MyOptions::save()
      file.println("isDebugActive="             + String(isDebugActive));
      file.println("bme280CheckIntervalSec="    + String(bme280CheckIntervalSec));
      file.println("isGsmEnabled="              + String(isGsmEnabled));
+     file.println("isSmsEnabled="              + String(isSmsEnabled));
      file.println("isGpsEnabled="              + String(isGpsEnabled));
      file.println("gpsCheckIntervalSec="       + String(gpsCheckIntervalSec));
      file.println("minMovingDistance="         + String(minMovingDistance));
