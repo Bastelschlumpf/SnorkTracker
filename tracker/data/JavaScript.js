@@ -86,7 +86,7 @@ function loadConsoleInfo(p)
 				}
 				z = d.getElementsByTagName('l')[0].childNodes;
 				if (z.length > 0) {
-					t.value += z[0].nodeValue;
+				   t.value += decodeURIComponent(z[0].nodeValue);
 				}
 				t.scrollTop = 99999;
 				sn = t.scrollTop;
