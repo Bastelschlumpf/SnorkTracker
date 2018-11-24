@@ -69,7 +69,11 @@ int MySerial::read()
       } else {
          if (inIdx > 0) {
             inData[inIdx] = 0;
-            logInfos.addTail("< " + (String) inData);
+
+            String info = "< " + (String) inData;
+            logInfos.addTail(info);
+            // Pass thrue to the default Serial for debugging
+            Serial.println(info);
          }
          inIdx = 0;
       }
@@ -93,7 +97,12 @@ size_t MySerial::write(uint8_t byte)
       } else {
          if (outIdx > 0) {
             outData[outIdx] = 0;
-            logInfos.addTail("> " + (String) outData);
+
+            String info = "> " + (String)outData;
+
+            logInfos.addTail(info);
+            // Pass thrue to the default Serial for debugging
+            Serial.println(info);
          }
          outIdx = 0;
       }
