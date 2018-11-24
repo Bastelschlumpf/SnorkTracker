@@ -117,6 +117,26 @@ String WifiGetRssiAsQuality(int rssi)
    return String(quality);
 }
 
+/** Helper HTML text conversation function for special character.
+  * And replace every invalid xml char with '?'.
+  */
+String TextToXml(String data)
+{
+   data.replace(F("%"), F("%25")); // Tasmota: Needs to be done first as otherwise the % in %26 will also be converted
+   data.replace(F("&"), F("%26"));
+   data.replace(F("<"), F("%3C"));
+   data.replace(F(">"), F("%3E"));
+
+   for (int i = 0; i < data.length(); i++) {
+      bool validChar = (data[i] == 0x09 || data[i] == 0x0A || data[i] == 0x0D || (data[i] >= 0x20 && data[i] <= 0xFF));
+
+      if (!validChar) {
+         data[i] = '?';
+      }
+   }
+   return data;
+}
+
 /**
   * Trims the data string on the left and right side every occurrence of a char from chars.
   */

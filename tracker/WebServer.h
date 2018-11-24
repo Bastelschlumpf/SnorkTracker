@@ -42,20 +42,19 @@ public:
    static MyData          *myData;    //!< Reference to the data.
 
 protected:
-   static bool   loadFromSpiffs(String path);
-   static String TextToXml(String data);
-   static void   AddTableBegin(String &info);
-   static void   AddTableTr(String &info);
-   static void   AddTableTr(String &info, String name, String value);
-   static void   AddTableEnd(String &info);
-   static bool   GetOption(String id, String &option);
-   static bool   GetOption(String id, long   &option);
-   static bool   GetOption(String id, double &option);
-   static bool   GetOption(String id, bool   &option);
-   static void   AddBr(String &info);
-   static void   AddOption(String &info, String id, String name, bool value, bool addBr = true);
-   static void   AddOption(String &info, String id, String name, String value, bool addBr = true, bool isPassword = false);
-   static void   AddIntervalInfo(String &info);
+   static bool loadFromSpiffs  (String path);
+   static void AddTableBegin   (String &info);
+   static void AddTableTr      (String &info);
+   static void AddTableTr      (String &info, String name, String value);
+   static void AddTableEnd     (String &info);
+   static bool GetOption       (String id, String &option);
+   static bool GetOption       (String id, long   &option);
+   static bool GetOption       (String id, double &option);
+   static bool GetOption       (String id, bool   &option);
+   static void AddBr           (String &info);
+   static void AddOption       (String &info, String id, String name, bool value, bool addBr = true);
+   static void AddOption       (String &info, String id, String name, String value, bool addBr = true, bool isPassword = false);
+   static void AddIntervalInfo (String &info);
 
 public:
    static void handleRoot();
@@ -172,25 +171,6 @@ void MyWebServer::handleClient()
       dnsServer.processNextRequest();  
    }
 }
-
-/** Helper HTML text conversation function for special character. 
-  * And replace every invalid xml char with '?'.
-  */
-String MyWebServer::TextToXml(String data)
-{
-   data.replace(F("&"), F("%26"));
-   data.replace(F("<"), F("%3C"));
-   data.replace(F(">"), F("%3E"));
-
-   for (int i = 0; i < data.length(); i++) {
-      bool validChar = (data[i] == 0x09 || data[i] == 0x0A || data[i] == 0x0D || (data[i] >= 0x20 && data[i] <= 0xFF));
-
-      if (!validChar) {
-         data[i] = '?';
-      }
-   }
-   return data;
-} 
 
 /** Helper function to start a HTML table. */
 void MyWebServer::AddTableBegin(String &info)
