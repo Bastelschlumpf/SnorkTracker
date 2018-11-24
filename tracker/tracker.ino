@@ -95,8 +95,9 @@ void myDebugInfo(String info, bool fromWebserver, bool newline)
       Serial.println(secs + info);
    } else {
       String tmp = myData.logInfos.removeTail();
+
+      Serial.print(tmp + info);
       myData.logInfos.addTail(tmp + info);
-      Serial.print(info);
    }
    lastNewLine = newline;
 
