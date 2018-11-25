@@ -20,7 +20,7 @@
 
    To interact with the board it has an easy-to-use browser interface to show the
    scanned values, configure the system or to debug at runtime via console. 
-   It can connect to an existing Wi-Fi or function as an access point.
+   It can connect to an existing WiFi or function as an access point.
 
    The board has a voltage divider to measure the power supply voltage and
    a BME280 sensor to read temperature, humidity and air pressure.
@@ -53,7 +53,12 @@
    and run the DoxyGen generation batch **Doxygen.bat** from the main folder.
 
 ### User manual of the web interface
-  [See user-manual](USERMANUAL.md)
+  [**Overview of the system settings**](Docs/Settings.md)  
+  [**Switch on or off the system**](Docs/SwitchOnOff.md)  
+  [**Display system information**](Docs/Information.md)  
+  [**Working with the console**](Docs/Console.md)  
+  [**Firmware Update 'over the air'**](Docs/OTA.md)  
+  [**Restart the system**](Docs/Restart.md)
 
 ### Prerequisites
    * Arduino IDE
@@ -132,11 +137,11 @@
      * Now we can flash the program to the Wemos chip by clicking 'Sketch | upload'
      * Unplug and plug again the Wemos module to the usb cable and start immediately the serial monitor 
        of the Arduino IDE 'Tools | Serial monitor'.
-     * If everything is correct you can see an access-point in the Wi-Fi of your computer and you can connect 
+     * If everything is correct you can see an access-point in the WiFi of your computer and you can connect 
        to the browser interface by calling the ip in your browser.
        The software works in a captive way, so you can enter a dummy (not https) url and the system should redirect you 
        to the web interface. For example http://dummy.com
-       If this does not work find out the new ip via your Wi-Fi router interface.
+       If this does not work find out the new ip via your WiFi router interface.
    * If the software works fine on the usb cable then you can plug the wemos into the board and connect a power supply.
      Check again the connectivity.
 
