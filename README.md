@@ -79,8 +79,8 @@
       https://github.com/esp8266/arduino-esp8266fs-plugin  
       and follow the installation instructions.
    * Download **SnorkTracker** software by clone or download.
-   * Copy the content of the snorktracker/lib directory to the Arduino installation lib directory.
-     For example c:/Program Files (x86)/Arduino/lib/
+   * Copy the content of the snorktracker/libraries directory to the Arduino installation libraries directory.
+     For example c:/Program Files (x86)/Arduino/libraries/
    * Configure Arduino IDE
      * From 'Tools | Boards' choose 'LOLIN(WEMOS) D1 mini Lite'
      * Change 'Tools | Flash Size' to '1M (64k SPIFFS)'
