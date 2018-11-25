@@ -256,7 +256,7 @@ void SetupOTA()
 {
    MyDbg("StartOTA");
       
-   ArduinoOTA.setHostname("ESP8266SIM808");
+   ArduinoOTA.setHostname("SnorkTracker");
 
    ArduinoOTA.setPort(8266);
 

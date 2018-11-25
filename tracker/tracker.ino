@@ -131,7 +131,7 @@ long secondsSincePowerOn()
 void setup() 
 {
    Serial.begin(115200); 
-   MyDbg("Start ESP8266...");
+   MyDbg("Start SnorkTracker ...");
 
    myGsmPower.begin();
    SPIFFS.begin();
