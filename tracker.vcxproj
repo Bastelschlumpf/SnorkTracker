@@ -137,6 +137,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
+    <None Include="ReadMeConsole.md" />
+    <None Include="ReadMeInformation.md" />
+    <None Include="ReadMeOTA.md" />
+    <None Include="ReadMeRestart.md" />
+    <None Include="ReadMeSeettings.md" />
+    <None Include="ReadMeSwitchOnOff.md" />
     <None Include="tracker\data\Console.html" />
     <None Include="tracker\data\Infos.html" />
     <None Include="tracker\data\JavaScript.js" />
