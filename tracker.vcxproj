@@ -136,13 +136,13 @@
     <ClInclude Include="tracker\WebServer.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="docs\Console.md" />
+    <None Include="docs\Information.md" />
+    <None Include="docs\OTA.md" />
+    <None Include="docs\Restart.md" />
+    <None Include="docs\Seettings.md" />
+    <None Include="docs\SwitchOnOff.md" />
     <None Include="README.md" />
-    <None Include="ReadMeConsole.md" />
-    <None Include="ReadMeInformation.md" />
-    <None Include="ReadMeOTA.md" />
-    <None Include="ReadMeRestart.md" />
-    <None Include="ReadMeSeettings.md" />
-    <None Include="ReadMeSwitchOnOff.md" />
     <None Include="tracker\data\Console.html" />
     <None Include="tracker\data\Infos.html" />
     <None Include="tracker\data\JavaScript.js" />
