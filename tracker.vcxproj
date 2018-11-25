@@ -141,6 +141,7 @@
     <None Include="docs\OTA.md" />
     <None Include="docs\Restart.md" />
     <None Include="docs\Seettings.md" />
+    <None Include="docs\SMS.md" />
     <None Include="docs\SwitchOnOff.md" />
     <None Include="README.md" />
     <None Include="tracker\data\Console.html" />
@@ -152,7 +153,6 @@
     <None Include="tracker\data\Style.css" />
     <None Include="tracker\data\Update.html" />
     <None Include="tracker\tracker.ino" />
-    <None Include="USERMANUAL.md" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="tracker\data\favicon.ico" />

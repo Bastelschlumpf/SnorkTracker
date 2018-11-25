@@ -55,6 +55,7 @@
 ### User manual of the web interface
   * [Overview of the system settings](docs/Seettings.md)
   * [Switch on or off the system](docs/SwitchOnOff.md)
+  * [Using the sms interface](docs/SMS.md)
   * [Display system information](docs/Information.md)
   * [Working with the console](docs/Console.md)
   * [Firmware Update 'over the air'](docs/OTA.md)
