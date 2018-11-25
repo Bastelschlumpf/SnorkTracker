@@ -22,8 +22,8 @@
   */
 
 
-#define WLAN_SID      "sid"                    //!< WLAN SID
-#define WLAN_PW       "password"               //!< WLAN password
+#define WIFI_SID      "sid"                    //!< WiFi SID
+#define WIFI_PW       "password"               //!< WiFi password
 #define GPRS_AP       "internet"               //!< gprs access point name
 #define PHONE_NUMBER  "0123456789"             //!< my phone number for sms communication
 

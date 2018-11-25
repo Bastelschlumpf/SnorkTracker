@@ -31,8 +31,8 @@ class MyOptions
 {
 public:
    String gprsAP;                    //!< GRPS access point of the sim card supplier.
-   String wlanAP;                    //!< WLAN AP name.
-   String wlanPassword;              //!< WLAN AR password.
+   String wifiAP;                    //!< WiFi AP name.
+   String wifiPassword;              //!< WiFi AP password.
    bool   isDebugActive;             //!< Is detailed debugging enabled?
    long   bme280CheckIntervalSec;    //!< Time interval to read the temp, hum and pressure.
    bool   gsmPower;                  //!< Is the GSM power from the DC-DC modul switched on? 
@@ -69,8 +69,8 @@ public:
 
 MyOptions::MyOptions()
    : gprsAP(GPRS_AP)
-   , wlanAP(WLAN_SID)
-   , wlanPassword(WLAN_PW)
+   , wifiAP(WIFI_SID)
+   , wifiPassword(WIFI_PW)
    , isDebugActive(false)
    , bme280CheckIntervalSec(60)
    , gsmPower(false)
@@ -127,10 +127,10 @@ bool MyOptions::load()
 
             if (key == "gprsAP") {
                gprsAP = value;
-            } else if (key == "wlanAP") {
-               wlanAP = value;
-            } else if (key == "wlanPassword") {
-               wlanPassword = value;
+            } else if (key == "wifiAP") {
+               wifiAP = value;
+            } else if (key == "wifiPassword") {
+               wifiPassword = value;
             } else if (key == "gsmPower") {
                gsmPower = lValue;
             } else if (key == "isDebugActive") {
@@ -202,8 +202,8 @@ bool MyOptions::save()
      MyDbg("Failed to write options file");
   } else {
      file.println("gprsAP="                    + gprsAP);
-     file.println("wlanAP="                    + wlanAP);
-     file.println("wlanPassword="              + wlanPassword);
+     file.println("wifiAP="                    + wifiAP);
+     file.println("wifiPassword="              + wifiPassword);
      file.println("gsmPower="                  + String(gsmPower));
      file.println("isDebugActive="             + String(isDebugActive));
      file.println("bme280CheckIntervalSec="    + String(bme280CheckIntervalSec));

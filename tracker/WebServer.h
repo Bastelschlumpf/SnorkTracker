@@ -107,7 +107,7 @@ MyWebServer::~MyWebServer()
 
 /** Starts the Webserver in station and/or ap mode and sets all the callback functions for the specific urls. 
   * If you use rtc yourself you have to switch off the automatic Wifi configuration with WiFi.persistent(false)
-  * (because it uses also the RTC memory) otherwise the WLAN won't start after a Deep Sleep.
+  * (because it uses also the RTC memory) otherwise the WIFI won't start after a Deep Sleep.
   */
 bool MyWebServer::begin()
 {
@@ -127,17 +127,17 @@ bool MyWebServer::begin()
    MyDbg("SoftAPIP address: "     + myData->softAPIP, true);
    MyDbg("SoftAPIP mac address: " + myData->softAPmacAddress, true);
 
-   WiFi.begin(myOptions->wlanAP.c_str(), myOptions->wlanPassword.c_str());
+   WiFi.begin(myOptions->wifiAP.c_str(), myOptions->wifiPassword.c_str());
    for (int i = 0; i < 30 && WiFi.status() != WL_CONNECTED; i++) { // 15 Sec versuchen
       MyDbg(".", true, false);
       MyDelay(500);
    }
    if (WiFi.status() == WL_CONNECTED) {
       myData->stationIP = WiFi.localIP().toString();
-      MyDbg("Connected to "        + myOptions->wlanAP, true);
+      MyDbg("Connected to "        + myOptions->wifiAP, true);
       MyDbg("Station IP address: " + myData->stationIP, true);
    } else { // switch to AP Mode only
-      MyDbg((String) "No connection to " + myOptions->wlanAP, true);
+      MyDbg((String) "No connection to " + myOptions->wifiAP, true);
       WiFi.disconnect();
       WiFi.mode(WIFI_AP);
    }
@@ -434,8 +434,8 @@ void MyWebServer::handleLoadSettingsInfo()
    String info;
 
    MyDbg("LoadSettings", true);
-   AddOption(info, "wlanAP",        "WLAN SSID",     myOptions->wlanAP);
-   AddOption(info, "wlanPassword",  "WLAN Password", myOptions->wlanPassword, true, true);
+   AddOption(info, "wifiAP",        "Wi-Fi SSID",     myOptions->wifiAP);
+   AddOption(info, "wifiPassword",  "Wi-Fi Password", myOptions->wifiPassword, true, true);
    AddOption(info, "gprsAP",        "GPRS AP",       myOptions->gprsAP);
 
    AddOption(info, "isDebugActive", "Debug Active",  myOptions->isDebugActive);
@@ -515,8 +515,8 @@ void MyWebServer::handleSaveSettings()
    
    MyDbg("SaveSettings", true);
    GetOption("gprsAP",                    myOptions->gprsAP);
-   GetOption("wlanAP",                    myOptions->wlanAP);
-   GetOption("wlanPassword",              myOptions->wlanPassword);
+   GetOption("wifiAP",                    myOptions->wifiAP);
+   GetOption("wifiPassword",              myOptions->wifiPassword);
    GetOption("isDebugActive",             myOptions->isDebugActive);
    GetOption("bme280CheckIntervalSec",    myOptions->bme280CheckIntervalSec);
    GetOption("isSmsEnabled",              myOptions->isSmsEnabled);
@@ -560,7 +560,7 @@ void MyWebServer::handleLoadInfoInfo()
    }
    
    String info;
-   String ssidRssi = (String) myOptions->wlanAP + " (" + WifiGetRssiAsQuality(WiFi.RSSI()) + "%)";
+   String ssidRssi = (String) myOptions->wifiAP + " (" + WifiGetRssiAsQuality(WiFi.RSSI()) + "%)";
 
    AddTableBegin(info);
    if (myData->status != "") {
