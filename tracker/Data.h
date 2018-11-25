@@ -27,6 +27,9 @@
 class MyData
 {
 public:
+   /**
+     * Data to store in the RTC memory
+     */
    class RtcData {
    public:
       MyLocation lastLocation;           //!< Last known GPS position. 
@@ -50,10 +53,9 @@ public:
       RtcData();
 
       bool isValid();
-      void reset();
       void setCRC();
       long getCRC();
-   } rtcData;
+   } rtcData;                  //!< Data to store in the RTC memory.
 
    String status;              //!< Status information
    String restartInfo;         //!< Information on restart

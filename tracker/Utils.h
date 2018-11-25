@@ -22,20 +22,22 @@
 
 
 /**
-   * Helper class for debugging via Serial.println 
-   */
+  * Helper class for debugging via Serial.println 
+  */
 class SerialOut
 {
 protected:
    String message; //!< Mesage on contructor and destructor.
 
 public:
+   /** Print out the start millis() and the message */
    SerialOut(String msg)
       : message(msg)
    {
       String m = ":" + String(millis()) + "[" + message;
       Serial.println(m.c_str());
    }
+   /** Print out the end millis() and the message */
    ~SerialOut()
    {
       String m = message + ":" + String(millis()) + "]";
