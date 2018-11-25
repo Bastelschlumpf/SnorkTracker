@@ -89,7 +89,7 @@ values should be send while your system is moving and how often if the system st
 Here is a screen shot of a mqtt server result in  
 **ioBroker** software. See http://iobroker.net
 
-![Figure 9](images/MqttServer.png   "Figure 8")
+![Figure 9](../images/MqttServer.png   "Figure 8")
 
 Remember the system works with HTTP and not with HTTPS. So be sure you can connect with this
 protocol to your MQTT server.
