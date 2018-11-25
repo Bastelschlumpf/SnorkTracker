@@ -434,8 +434,8 @@ void MyWebServer::handleLoadSettingsInfo()
    String info;
 
    MyDbg("LoadSettings", true);
-   AddOption(info, "wifiAP",        "Wi-Fi SSID",     myOptions->wifiAP);
-   AddOption(info, "wifiPassword",  "Wi-Fi Password", myOptions->wifiPassword, true, true);
+   AddOption(info, "wifiAP",        "WiFi SSID",     myOptions->wifiAP);
+   AddOption(info, "wifiPassword",  "WiFi Password", myOptions->wifiPassword, true, true);
    AddOption(info, "gprsAP",        "GPRS AP",       myOptions->gprsAP);
 
    AddOption(info, "isDebugActive", "Debug Active",  myOptions->isDebugActive);
