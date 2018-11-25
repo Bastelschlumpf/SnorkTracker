@@ -53,12 +53,17 @@
    and run the DoxyGen generation batch **Doxygen.bat** from the main folder.
 
 ### User manual of the web interface
-  [**Overview of the system settings**](Docs/Settings.md)  
-  [**Switch on or off the system**](Docs/SwitchOnOff.md)  
-  [**Display system information**](Docs/Information.md)  
-  [**Working with the console**](Docs/Console.md)  
-  [**Firmware Update 'over the air'**](Docs/OTA.md)  
-  [**Restart the system**](Docs/Restart.md)
+  [Overview of the system settings](Docs/Settings.md)
+
+  [Switch on or off the system](Docs/SwitchOnOff.md)
+
+  [Display system information](Docs/Information.md)
+
+  [Working with the console](Docs/Console.md)
+
+  [Firmware Update 'over the air'](Docs/OTA.md)
+
+  [Restart the system](Docs/Restart.md)
 
 ### Prerequisites
    * Arduino IDE
