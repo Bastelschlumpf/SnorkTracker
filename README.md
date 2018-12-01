@@ -2,9 +2,9 @@
 ## SnorkTracker
    **GPS IoT tracker board for scanning gps and environment information and sending them to an MQTT server via GPRS.**
 
-   ![Figure 1](images/SnorkTracker.jpg "Figure 1")
+   ![SnorkTracker](images/SnorkTracker.jpg "SnorkTracker")
 
-   ![Figure 1](images/WebInterface.png "Figure 1")
+   ![Web interface](images/WebInterface.png "Web interface")
 
 ### Description
    The goal of this board is to have an easy-to-use, configurable GPS tracker that passes its data to an MQTT server. 
@@ -95,25 +95,29 @@
 ### Circuit
    ![Figure 2](circuit/Esp8266Sim808.png "Figure 2")
 
+### Housing (Prototype)
+   ![Housing Prototype](images/HousingPrototypView1.jpg "Housing Prototype")
+  * [See 3D Housing](docs/Housing.md)
+
 ### Assemble the Components
    * Take the Breadboard and the other items from the part-list.  
-     ![Figure 3](images/Breadboard.jpg   "Figure 3")
+     ![Breadboard](images/Breadboard.jpg   "Breadboard")
    * First of all unsolder the (ON/OFF) pin 5 from the DC-DC module, bend it up and
      solder a line to it. After that put 4 spacers under the DC-DC module and solder it
      to the breadboard. Check that the bottom of the LM2596 module is not in contact with the board.
      See  
-     ![Figure 4](images/DC-DC-Modul.jpg  "Figure 4")
+     ![DC-DC module](images/DC-DC-Modul.jpg  "DC-DC module")
    * Place the other parts from the part-list on the breadboard and solder it as shown. 
      Pay attention to the polarity of the capacitors!
      Split the header connector to the length that is needed and solder it. 
      A header connector is needed because flashing of the Wemos module often does not work 
      if it is still connected to the board.
      Check if the Wemos and SIM808 module has enough space and fits into the pins.  
-     ![Figure 5](images/Unplugged.jpg    "Figure 5")
+     ![Unplugged](images/Unplugged.jpg    "Unplugged")
    * Connect all the pins of the parts as seen on the circuit image with wires.  
-     ![Figure 4](images/Back.jpg         "Figure 4")
+     ![Back](images/Back.jpg         "Back")
    * The final board could look like this  
-     ![Figure 6](images/SnorkTracker.jpg "Figure 6")
+     ![Snorktracker board](images/SnorkTracker.jpg "Snorktracker board")
    * Check all the wiring with a multimeter. Also against short-circuit.
 
 ### Setup the LM2596 voltage and install the software

@@ -1,6 +1,6 @@
 ### Restart the system
 
-   ![Figure 1](../images/Restart.png "Figure 1")
+   ![System restart](../images/Restart.png "System restart")
 
 Should it be necessary that you want to restart the system, you can do so via the Restart button.
 

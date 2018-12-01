@@ -137,6 +137,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="docs\Console.md" />
+    <None Include="docs\Housing.md" />
     <None Include="docs\Information.md" />
     <None Include="docs\OTA.md" />
     <None Include="docs\Restart.md" />

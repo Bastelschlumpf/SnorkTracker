@@ -1,13 +1,13 @@
 
 ### Display system information
-   ![Figure 1](../images/Information.png "Figure 1")
+   ![Information Page](../images/Information.png "Information Page")
 
 Note: Some of the informations may be not visible if the function is not enabled.
 
 | Name | Sample | Description |
 |------|--------|-------------|
 |Status| Sim808 gsm connected |The current status of the wemos - sim808|
-|AP1 SSID (RSSI)|WLAN (46%)|The name of the connected Wi-Fi access point and the qualitity of the signal.|
+|AP1 SSID (RSSI)|WLAN (46%)|The name of the connected Wi-Fi access point and the quality of the signal.|
 |Locale IP| 192.168.178.51 |The current IP of the Tracker|
 | | | |
 |Modem Info|SIM808 R14.18|The response of the SIM808 modem-info AT request|

@@ -8,7 +8,7 @@ You can set the level of detail using the **Debug Active** option.
 
 Note: To communicate with the SIM808 module this must be switched on
 
-   ![Figure 1](../images/Console.png "Figure 1")
+   ![Console Page](../images/Console.png "Console Page")
 
 If you want to send your own AT commands to the SIM808 it is advisable to deactivate the 
 SMS, GPS and MQTT functions under Settings during this time, otherwise they may interfere 

@@ -1,6 +1,6 @@
 ### Switch on/off
 
-   ![Figure 1](../images/OnOff.png "Figure 1")
+   ![Switch on off](../images/OnOff.png "Switch on off")
 
 You can switch on or switch off the system with the first button on the main page.
 
@@ -12,4 +12,4 @@ When switching on the GSM function it may happen that the system does not react
 for a short time. The simplest way to monitor that no errors occur is to switch 
 to the console view immediately after switching on and display the communication.
 
-   ![Figure 2](../images/Console.png "Figure 2")
+   ![Console page](../images/Console.png "Console page")
