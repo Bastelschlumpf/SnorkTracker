@@ -38,8 +38,7 @@ public:
    MyGsmSim808   gsmSim808;        //!< SIM808 interface class 
    TinyGsmClient gsmClient;        //!< Gsm client interface
    
-   bool          isSimActive;      //!< Is the sim808 modul started?
-   bool          isGsmActive;      //!< Is the gsm part of the sim808 activated?
+   bool          isGsmActive;      //!< Is the sim808 modul started?
    bool          isGpsActive;      //!< Is the gs part of the sim808 activated?
 
    MyOptions    &myOptions;        //!< Reference to the options.
@@ -72,7 +71,6 @@ MyGsmGps::MyGsmGps(MyOptions &options, MyData &data, short pinRx, short pinTx)
    : gsmSerial(data.logInfos, options.isDebugActive, pinRx, pinTx)
    , gsmSim808(gsmSerial)
    , gsmClient(gsmSim808)
-   , isSimActive(false)
    , isGsmActive(false)
    , isGpsActive(false)
    , myOptions(options)
@@ -90,7 +88,7 @@ bool MyGsmGps::begin()
       return false;
    }
 
-   if (!isSimActive) {
+   if (!isGsmActive) {
       MyDbg("MyGsmGps::begin");
       myData.status = "Sim808 Initializing...";
       MyDbg(myData.status);
@@ -111,15 +109,7 @@ bool MyGsmGps::begin()
       MyDbg(myData.status);
 
       gsmSim808.setBaud(9600);
-      isSimActive = true;
-   }
-   
-   if (isSimActive && myOptions.isGpsEnabled && !isGpsActive) {
-      enableGps(true);
-      isGpsActive = true;
-   }
 
-   if (isSimActive && myOptions.isGsmEnabled && !isGsmActive) {
       myData.status = "Sim808 Waiting for network...";
       MyDbg(myData.status);
       for (int i = 0; !gsmSim808.waitForNetwork() && i <= 5; i++) {
@@ -138,38 +128,46 @@ bool MyGsmGps::begin()
       if (!gsmSim808.isNetworkConnected()) {
          myData.status = "Sim808 network failed";
          MyDbg(myData.status);
-      }
-
-      MyDbg((String) "GPRS: " + myOptions.gprsAP);
-      if (!gsmSim808.gprsConnect(myOptions.gprsAP.c_str(), "", "")) {
-         myData.status = "Sim808 gprs connection failed!";
+      } else {
+         myData.status = "Sim808 network connected";
          MyDbg(myData.status);
-         while (true);
+
+         MyDbg("GPRS: " + myOptions.gprsAP);
+         if (!gsmSim808.gprsConnect(myOptions.gprsAP.c_str(), "", "")) {
+            myData.status = "Sim808 gprs connection failed!";
+            MyDbg(myData.status);
+            return false;
+         }
+         myData.status = "Sim808 gsm connected";
+         MyDbg(myData.status);
+
+         myData.modemInfo = gsmSim808.getModemInfo();
+         MyDbg("Modem info: " + myData.modemInfo);
+
+         myData.modemIP = gsmSim808.getLocalIP();
+         MyDbg("Modem IP: " + myData.modemIP);
+
+         myData.imei = gsmSim808.getIMEI();
+         MyDbg("sim808: " + myData.modemInfo);
+
+         myData.cop = gsmSim808.getOperator();
+         MyDbg("cop: " + myData.modemInfo);
       }
-      myData.status = "Sim808 gsm connected";
-      MyDbg(myData.status);
-
-      myData.modemInfo = gsmSim808.getModemInfo();
-      MyDbg("Modem info: " + myData.modemInfo);
-
-      myData.modemIP = gsmSim808.getLocalIP();
-      MyDbg("Modem IP: " + myData.modemIP);
-
-      myData.imei = gsmSim808.getIMEI();
-      MyDbg("sim808: " + myData.modemInfo);
-
-      myData.cop = gsmSim808.getOperator();
-      MyDbg("cop: " + myData.modemInfo);
-
       isGsmActive = true;
    }
+   
+   if (isGsmActive && myOptions.isGpsEnabled && !isGpsActive) {
+      enableGps(true);
+      isGpsActive = true;
+   }
+
    return true;
 }
 
 /** Checks the gps from time to time if enabled. */
 void MyGsmGps::handleClient()
 {
-   if (!isSimActive) {
+   if (!isGsmActive) {
       return;
    }
 
@@ -202,9 +200,8 @@ bool MyGsmGps::stop()
       ret = gsmSim808.gprsDisconnect();
    }  
    if (ret) {
-      isGsmActive = false;
       isGpsActive = false;
-      isSimActive = false;
+      isGsmActive = false;
       MyDbg("gprs gps stopped");
       myData.status = "Sim808 stopped!";
       sleepMode2();
@@ -221,7 +218,7 @@ bool MyGsmGps::waitingForGps()
 /** Send one AT command to the sim modul and log the result for the console window. */
 bool MyGsmGps::sendAT(String cmd)
 {
-   if (!isSimActive) {
+   if (!isGsmActive) {
       MyDbg("sim808 not active!");
       return false;
    }
@@ -281,7 +278,7 @@ bool MyGsmGps::deleteSMS(long index)
 /** Switch on the gps part of the sim808 modul. */
 void MyGsmGps::enableGps(bool enable)
 {
-   if (!isSimActive) {
+   if (!isGsmActive) {
       MyDbg("sim808 not active!");
       return;
    }
@@ -302,7 +299,7 @@ void MyGsmGps::enableGps(bool enable)
 /** Read one gps position with the sim808 modul and save the values in the global data. */
 bool MyGsmGps::getGps()
 {
-   if (!isSimActive) {
+   if (!isGsmActive) {
       MyDbg("sim808 not active!");
       return false;
    }

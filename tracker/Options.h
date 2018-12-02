@@ -36,7 +36,6 @@ public:
    bool   isDebugActive;             //!< Is detailed debugging enabled?
    long   bme280CheckIntervalSec;    //!< Time interval to read the temp, hum and pressure.
    bool   gsmPower;                  //!< Is the GSM power from the DC-DC modul switched on? 
-   bool   isGsmEnabled;              //!< Is the gsm part of the sim808 active?
    bool   isSmsEnabled;              //!< Is the sms check functionality active?
    bool   isGpsEnabled;              //!< Is the gps part of the sim808 active?
    long   gpsCheckIntervalSec;       //!< Time interval to check the gps position.
@@ -74,7 +73,6 @@ MyOptions::MyOptions()
    , isDebugActive(false)
    , bme280CheckIntervalSec(60)
    , gsmPower(false)
-   , isGsmEnabled(true)
    , isSmsEnabled(false)
    , isGpsEnabled(false)
    , gpsCheckIntervalSec(60)
@@ -137,8 +135,6 @@ bool MyOptions::load()
                isDebugActive = lValue;
             } else if (key == "bme280CheckIntervalSec") {
                bme280CheckIntervalSec = lValue;
-            } else if (key == "isGsmEnabled") {
-               isGsmEnabled = lValue;
             } else if (key == "isSmsEnabled") {
                isSmsEnabled = lValue;
             } else if (key == "isGpsEnabled") {
@@ -207,7 +203,6 @@ bool MyOptions::save()
      file.println("gsmPower="                  + String(gsmPower));
      file.println("isDebugActive="             + String(isDebugActive));
      file.println("bme280CheckIntervalSec="    + String(bme280CheckIntervalSec));
-     file.println("isGsmEnabled="              + String(isGsmEnabled));
      file.println("isSmsEnabled="              + String(isSmsEnabled));
      file.println("isGpsEnabled="              + String(isGpsEnabled));
      file.println("gpsCheckIntervalSec="       + String(gpsCheckIntervalSec));

@@ -195,7 +195,6 @@ bool MySmsCmd::readValues(long &value1, long &value2, const String message)
 void MySmsCmd::cmdOn(const SmsData &sms)
 {
    myOptions.gsmPower     = true;
-   myOptions.isGsmEnabled = true;
    myOptions.isGpsEnabled = true;
    myOptions.save();
    sendOk(sms);

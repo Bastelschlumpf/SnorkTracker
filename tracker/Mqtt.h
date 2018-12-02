@@ -30,7 +30,6 @@
 #define topic_mAhLowPower            "/mAhLowPower"            //!< Power consumption in low power
 
 #define topic_gsm_power              "/GsmPower"               //!< switch power on/off
-#define topic_gsm_enabled            "/GsmEnabled"             //!< switch gsm on/off
 #define topic_gps_enabled            "/GpsEnabled"             //!< switch gps on/off
 #define topic_send_on_move_every     "/SendOnMoveEverySec"     //!< mqtt send interval on moving
 #define topic_send_on_non_move_every "/SendOnNonMoveEverySec"  //!< mqtt sending interval on non moving
@@ -156,7 +155,6 @@ void MyMqtt::handleClient()
                if (PubSubClient::connect(myOptions.mqttName.c_str(), myOptions.mqttUser.c_str(), myOptions.mqttPassword.c_str())) {  
                   mySubscribe(topic_deep_sleep);
                   mySubscribe(topic_gsm_power);
-                  mySubscribe(topic_gsm_enabled);
                   mySubscribe(topic_gps_enabled);
                   mySubscribe(topic_send_on_move_every);
                   mySubscribe(topic_send_on_non_move_every);
@@ -220,10 +218,6 @@ void MyMqtt::mqttCallback(char* topic, byte* payload, unsigned int len)
       if (strTopic == g_myOptions->mqttName + topic_gsm_power) {
          g_myOptions->gsmPower = atoi((char *) payload);
          MyDbg(strTopic + g_myOptions->gsmPower ? " - On" : " - Off", true);
-      }
-      if (strTopic == g_myOptions->mqttName + topic_gsm_enabled) {
-         g_myOptions->isGsmEnabled = atoi((char *) payload);
-         MyDbg(strTopic + g_myOptions->isGsmEnabled ? " - Enabled" : " - Disabled", true);
       }
       if (strTopic == g_myOptions->mqttName + topic_gps_enabled) {
          g_myOptions->isGpsEnabled = atoi((char *) payload);
