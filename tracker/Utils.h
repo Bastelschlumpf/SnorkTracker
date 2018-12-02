@@ -130,12 +130,13 @@ String WifiGetRssiAsQuality(int rssi)
    return String(quality);
 }
 
-/** Helper HTML text conversation function for special character.
+/** Convert Text to html - URL.
+  * Should be decoded with encodeURIComponent() in JavaScript
   * And replace every invalid xml char with '?'.
   */
-String TextToXml(String data)
+String TextToUrl(String data)
 {
-   data.replace(F("%"), F("%25")); // Tasmota: Needs to be done first as otherwise the % in %26 will also be converted
+   data.replace(F("%"), F("%25"));
    data.replace(F("&"), F("%26"));
    data.replace(F("<"), F("%3C"));
    data.replace(F(">"), F("%3E"));
@@ -147,6 +148,17 @@ String TextToXml(String data)
          data[i] = '?';
       }
    }
+   return data;
+}
+
+/** Helper HTML text conversation function for special character.
+  */
+String TextToXml(String data)
+{
+   data.replace(F("&"),  F("&amp;"));
+   data.replace(F("<"),  F("&lt;"));
+   data.replace(F(">"),  F("&gt;"));
+   data.replace(F("\""), F("&quot;"));
    return data;
 }
 

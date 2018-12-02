@@ -653,7 +653,7 @@ void MyWebServer::handleLoadConsoleInfo()
          "<j>1</j>"
          "<l>";
             for (int i = atoi(startIdx.c_str()); i < myData->logInfos.count(); i++) {
-               sendData += TextToXml(myData->logInfos.getAt(i));
+               sendData += TextToUrl(myData->logInfos.getAt(i));
                sendData += '\n';
             }
    sendData += 
