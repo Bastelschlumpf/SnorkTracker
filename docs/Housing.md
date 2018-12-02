@@ -2,15 +2,13 @@
 ### Housing (Prototype)
 
 Here are a prototype made of cardboard.
-The 3D models for 3D printing will follow soon.
 
    ![Prototype View 1](../images/HousingPrototypView1.jpg "Prototype View 1")
 
    ![Prototype View 2](../images/HousingPrototypView2.jpg "Prototype View 2")
 
-   ![Prototype View 3](../images/HousingPrototypView3.jpg "Prototype View 3")
+And here the AutoDesk 123D Design model for 3D printing.
 
-   ![Prototype View 4](../images/HousingPrototypView4.jpg "Prototype View 4")
+You will find aso the .stl files in the housing folder.
 
-   ![Prototype View 5](../images/HousingPrototypView5.jpg "Prototype View 5")
-
+   ![Prototype 3D Model](../images/Housing3D.png "Prototype 3D Model")
