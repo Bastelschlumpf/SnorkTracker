@@ -95,8 +95,8 @@
 ### Circuit
    ![Figure 2](circuit/Esp8266Sim808.png "Figure 2")
 
-### Housing (Autodesk 123D-Design for 3D printing)
-   ![Housing Prototype](images/Housing.png "Housing 3D Model")
+### Housing
+   ![Housing Prototype](images/Housing3D.png "Housing 3D Model")
   * [See 3D Housing](docs/Housing.md)
 
 ### Assemble the Components

@@ -9,6 +9,6 @@ Here are a prototype made of cardboard.
 
 And here the AutoDesk 123D Design model for 3D printing.
 
-You will find aso the .stl files in the housing folder.
+You will find also the .stl files in the housing folder.
 
    ![Prototype 3D Model](../images/Housing3D.png "Prototype 3D Model")
