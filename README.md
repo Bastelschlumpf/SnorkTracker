@@ -174,6 +174,8 @@
 |Power connector    |Mount screw connector    |2 pins            |
 |Header connector   |Female header connector  |3 x 9 pins        |
 |wire               |colored breadboard wire  |i.e. 0.14 mm2     |
+|12V Plug           |Cigarette Lighter Power  |12V To 5.5 x 2.1mm|
+|Panel Jack         |Jack Socket Female       |5.5 x 2.1mm       |
 |V1                 |VC Power                 |6V - 16V          |
 |WeMos D1 Mini lite |WeMos D1 Mini lite       |ESP8295           |
 |BK-808v2           |BK-808 v2                |www.and-global.com|
@@ -198,6 +200,8 @@ Here are some sample shopping items. Please check the details if everything is c
 |-------------------|-----------|------------------|
 |Breadboard set     |13$        | https://www.amazon.com/Paxcoo-Double-Prototype-Connector-Terminal/dp/B07C3TC68Z |
 |wire               |13$        | https://www.amazon.com/StrivedayTM-Flexible-Silicone-electronic-electrics/dp/B01KQ2JN |
+|12V Plug           |2$         | https://www.amazon.com/Zerone-Cigarette-Lighter-Supply-Adapter/dp/B07DWRVBLF/ref=sr_1_1 |
+|Panel Jack         |2$         | https://www.amazon.com/Abicial-5-5mm-Socket-Female-Connector/dp/B07J9WRC2Z/ref=sr_1_2 |
 |WeMos D1 Mini lite |10$ 2 pcs  | https://www.amazon.com/Aideepen-Development-ESP8285-V1-0-0-Internet/dp/B07BGW7QG |
 |BK-808v2           |22$        | https://www.amazon.com/Breakout-Quad-band-GSMGPRS-Integrated-GPSBluetooth/dp/B0748DGCRN |
 |GPS Antenna        |9$         | https://www.amazon.com/CIROCOMM-Antenna-Ceramic-25x25x2mm-Geekstory/dp/B078Y2WNY6 |
