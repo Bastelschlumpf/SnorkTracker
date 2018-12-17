@@ -19,10 +19,12 @@ At the end I printed the Snorktracker with this great 3D printer in 10 hours.
 
 Here the version in black
 
-   ![SnorkTracker housing black side](../images/HousingBlackView2.jpg "SnorkTracker housing black side")
+   ![SnorkTracker housing black front](../images/HousingBlackView2.jpg "SnorkTracker housing black front")
 
-   ![SnorkTracker housing black front](../images/HousingBlackView1.jpg "SnorkTracker housing black front")
+   ![SnorkTracker housing black side](../images/HousingBlackView1.jpg "SnorkTracker housing black side")
 
-And here the version in wood PLA
+And here the version in PLA wood 
 
-coming soon ;)
+   ![SnorkTracker housing wood front](../images/HousingWoodView2.jpg "SnorkTracker housing wood front")
+
+   ![SnorkTracker housing wood side](../images/HousingWoodView1.jpg "SnorkTracker housing wood side")
