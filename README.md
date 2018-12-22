@@ -4,9 +4,9 @@
 
    ![SnorkTracker Schema](images/Schema.png "SnorkTracker Schema")
 
-   ![SnorkTracker](images/HousingBlackView1.jpg "SnorkTracker")
-
    ![SnorkTracker](images/SnorkTracker.jpg "SnorkTracker")
+
+   ![SnorkTracker](images/HousingBlackView1.jpg "SnorkTracker")
 
    ![Web interface](images/WebInterface.png "Web interface")
 
