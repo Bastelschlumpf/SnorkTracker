@@ -2,6 +2,10 @@
 ## SnorkTracker
    **GPS IoT tracker board for scanning gps and environment information and sending them to an MQTT server via GPRS.**
 
+   ![SnorkTracker Schema](images/Schema.png "SnorkTracker Schema")
+
+   ![SnorkTracker](images/HousingBlackView1.jpg "SnorkTracker")
+
    ![SnorkTracker](images/SnorkTracker.jpg "SnorkTracker")
 
    ![Web interface](images/WebInterface.png "Web interface")
