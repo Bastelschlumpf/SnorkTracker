@@ -65,7 +65,8 @@ MyGsmSim808::MyGsmSim808(Stream &stream)
 /** Read and parse a gps information from the sim808 modul in the own MyGps data class */
 bool MyGsmSim808::getGPS(MyGps &gps)
 {
-   gps.fixStatus = false;
+   gps.fixStatus  = false;
+   gps.hasTimeout = false;
 
    sendAT(GF("+CGNSINF"));
    if (waitResponse(GF(GSM_NL "+CGNSINF:")) != 1) {

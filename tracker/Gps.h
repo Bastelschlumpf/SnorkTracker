@@ -123,6 +123,7 @@ public:
    double     vdop;              //!< Vertical dilution of precision 
    int        satellitesInView;  //!< Sattelites in the View
    int        satellitesUsed;    //!< Sattelites used for gps position.
+   bool       hasTimeout;        //!< Timeout happend
 
 protected:
    bool parse(bool   &b, const String &data);
@@ -340,6 +341,7 @@ MyGps::MyGps()
    , vdop(0)
    , satellitesInView(0)
    , satellitesUsed(0)
+   , hasTimeout(false)
 {
 }
 

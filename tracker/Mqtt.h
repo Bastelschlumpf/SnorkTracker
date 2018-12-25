@@ -62,6 +62,7 @@ protected:
    MyGsmGps  &myGsmGps;             //!< Reference to the Gsmgps instance.
    MyOptions &myOptions;            //!< Reference to the options. 
    MyData    &myData;               //!< Reference to the data.
+   bool       publishInProgress;    //!< Are we publishing right now.
 
 protected:
    bool mySubscribe(String subTopic);
@@ -74,7 +75,7 @@ public:
    bool begin();
    void handleClient();
    
-   bool haveToSend();
+   bool waitingForMqtt();
 };
 
 /* ******************************************** */
@@ -85,6 +86,7 @@ MyMqtt::MyMqtt(MyGsmGps &gsmGps, MyOptions &options, MyData &data)
    , PubSubClient(gsmGps.gsmClient)
    , myOptions(options)
    , myData(data)
+   , publishInProgress(false)
 {
    g_myOptions = &options;
 }
@@ -122,14 +124,17 @@ bool MyMqtt::myPublish(String subTopic, String value)
    return ret;
 }
 
-/** Check if we have to send the mqtt datas. */
-bool MyMqtt::haveToSend()
+/** Check if we have to wait for sending mqtt data. */
+bool MyMqtt::waitingForMqtt()
 {
+   if (publishInProgress) {
+      return true;
+   }
    if (myGsmGps.isGsmActive) {
       if (myData.isMoving) {
-         return secondsElapsedAndUpdate(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnMoveEverySec);
+         return secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnMoveEverySec);
       } else {
-         return secondsElapsedAndUpdate(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnNonMoveEverySec);
+         return secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnNonMoveEverySec);
       }
    }
    return false;
@@ -148,7 +153,15 @@ bool MyMqtt::begin()
 void MyMqtt::handleClient()
 {
    if (myGsmGps.isGsmActive) {
-      if (haveToSend()) {
+      bool send = false;
+
+      if (myData.isMoving) {
+         send = secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnMoveEverySec);
+      } else {
+         send = secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnNonMoveEverySec);
+      }
+      if (send) {
+         publishInProgress = true;
          if (!PubSubClient::connected()) {
             for (int i = 0; !PubSubClient::connected() && i < 5; i++) {  
                MyDbg("Attempting MQTT connection...", true);  
@@ -169,27 +182,31 @@ void MyMqtt::handleClient()
          }
          if (PubSubClient::connected()) {
             MyDbg("Attempting MQTT publishing", true);
-            myPublish(topic_voltage, String(myData.voltage));
-            myPublish(topic_mAh, String(myData.getPowerConsumption()));
+            myPublish(topic_voltage,     String(myData.voltage));
+            myPublish(topic_mAh,         String(myData.getPowerConsumption()));
             myPublish(topic_mAhLowPower, String(myData.getLowPowerPowerConsumption()));
 
             myPublish(topic_temperature, String(myData.temperature));
-            myPublish(topic_humidity, String(myData.humidity));
-            myPublish(topic_pressure, String(myData.pressure));
+            myPublish(topic_humidity,    String(myData.humidity));
+            myPublish(topic_pressure,    String(myData.pressure));
 
             myPublish(topic_signal_quality, myData.signalQuality);
-            myPublish(topic_batt_level, myData.batteryLevel);
-            myPublish(topic_batt_volt, myData.batteryVolt);
+            myPublish(topic_batt_level,     myData.batteryLevel);
+            myPublish(topic_batt_volt,      myData.batteryVolt);
 
             if (myData.gps.fixStatus) {
-               myPublish(topic_lon, myData.gps.longitudeString());
-               myPublish(topic_lat, myData.gps.latitudeString());
-               myPublish(topic_alt, myData.gps.altitudeString());
+               myPublish(topic_lon,  myData.gps.longitudeString());
+               myPublish(topic_lat,  myData.gps.latitudeString());
+               myPublish(topic_alt,  myData.gps.altitudeString());
                myPublish(topic_kmph, myData.gps.kmphString());
             }
 
             MyDbg("mqtt published", true);
+            MyDelay(5000);
+
+            myData.rtcData.lastMqttSendSec = secondsSincePowerOn();
          }
+         publishInProgress = false;
       }
    }
 }

@@ -38,6 +38,7 @@ public:
    bool   gsmPower;                  //!< Is the GSM power from the DC-DC modul switched on? 
    bool   isSmsEnabled;              //!< Is the sms check functionality active?
    bool   isGpsEnabled;              //!< Is the gps part of the sim808 active?
+   long   gpsTimeoutSec;             //!< Timeout for waiting for gps position.
    long   gpsCheckIntervalSec;       //!< Time interval to check the gps position.
    long   minMovingDistance;         //!< Minimum distance to accept as moving or not.
    String phoneNumber;               //!< Pone number for sms answers.
@@ -75,6 +76,7 @@ MyOptions::MyOptions()
    , gsmPower(false)
    , isSmsEnabled(false)
    , isGpsEnabled(false)
+   , gpsTimeoutSec(180)
    , gpsCheckIntervalSec(60)
    , minMovingDistance(100)
    , phoneNumber(PHONE_NUMBER)
@@ -139,6 +141,8 @@ bool MyOptions::load()
                isSmsEnabled = lValue;
             } else if (key == "isGpsEnabled") {
                isGpsEnabled = lValue;
+            } else if (key == "gpsTimeoutSec") {
+               gpsTimeoutSec = lValue;
             } else if (key == "gpsCheckIntervalSec") {
                gpsCheckIntervalSec = lValue;
             } else if (key == "minMovingDistance") {
@@ -205,6 +209,7 @@ bool MyOptions::save()
      file.println("bme280CheckIntervalSec="    + String(bme280CheckIntervalSec));
      file.println("isSmsEnabled="              + String(isSmsEnabled));
      file.println("isGpsEnabled="              + String(isGpsEnabled));
+     file.println("gpsTimeoutSec="             + String(gpsTimeoutSec));
      file.println("gpsCheckIntervalSec="       + String(gpsCheckIntervalSec));
      file.println("minMovingDistance="         + String(minMovingDistance));
      file.println("phoneNumber="               + phoneNumber);

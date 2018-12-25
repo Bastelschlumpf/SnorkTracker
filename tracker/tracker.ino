@@ -213,7 +213,7 @@ void loop()
 
    // Deep Sleep?
    // (No deep sleep if we are waiting for a valid gps position).
-   if (gsmHasPower && !myGsmGps.waitingForGps() && !myMqtt.haveToSend()) {
+   if (gsmHasPower && !myGsmGps.waitingForGps() && !myMqtt.waitingForMqtt()) {
       if (myDeepSleep.haveToSleep()) {
          if (myGsmGps.isGsmActive) {
             myGsmGps.stop();

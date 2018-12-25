@@ -32,6 +32,8 @@ class MyGsmGps
 {
 protected:
    long          lastGsmChecSec;   //!< Check intervall for signal and battery quality.
+   long          lastGpsCheckSec;  //!< GPS Check intervall
+   long          startGpsCheck;    //!< Timstamp of first getGps try
 
 public:
    MySerial      gsmSerial;        //!< Serial interface to the sim808 modul.
@@ -76,6 +78,8 @@ MyGsmGps::MyGsmGps(MyOptions &options, MyData &data, short pinRx, short pinTx)
    , myOptions(options)
    , myData(data)
    , lastGsmChecSec(0)
+   , lastGpsCheckSec(0)
+   , startGpsCheck(0)
 {
    gsmSerial.begin(9600);
 }
@@ -181,11 +185,35 @@ void MyGsmGps::handleClient()
       MyDbg("(sim808) batteryVolt: "   + myData.batteryVolt);
    }
 
-   if (secondsElapsedAndUpdate(myData.rtcData.lastGpsReadSec, myOptions.gpsCheckIntervalSec)) {
-      if (myOptions.isGpsEnabled && !isGpsActive) {
-         enableGps(true);
+   if (secondsElapsedAndUpdate(lastGpsCheckSec, 10)) { // Wait 10 sec between retries
+      if (secondsElapsed(myData.rtcData.lastGpsReadSec, myOptions.gpsCheckIntervalSec)) {
+         if (myOptions.isGpsEnabled && !isGpsActive) {
+            enableGps(true);
+         }
+         MyDbg("getGPS");
+         if (startGpsCheck == 0) {
+            startGpsCheck = secondsSincePowerOn();
+         }
+         if (getGps()) {
+            MyDbg(" -> ok");
+            startGpsCheck = 0;
+            myData.rtcData.lastGpsReadSec = secondsSincePowerOn();
+         } else {
+            long waitForGpsTime = secondsSincePowerOn() - startGpsCheck;
+
+            // Ignore gps if we cannot get a position in X minutes.
+            if (waitForGpsTime > myOptions.gpsTimeoutSec) {
+               MyDbg(" -> gps timeout!");
+               startGpsCheck = 0;
+               myData.gps.hasTimeout = true;
+               myData.rtcData.lastGpsReadSec = secondsSincePowerOn();
+            } else {
+               if (myOptions.gpsTimeoutSec - waitForGpsTime > 0) {
+                  MyDbg(" -> no gps fix (timeout in " + String(myOptions.gpsTimeoutSec - waitForGpsTime) + " seconds!)");
+               }
+            }
+         }
       }
-      getGps();
    }
 }
 
@@ -212,7 +240,7 @@ bool MyGsmGps::stop()
 /** Is the gps enabled but we don't have a valid gps position. */
 bool MyGsmGps::waitingForGps()
 {
-   return isGpsActive && !myData.gps.fixStatus;
+   return isGpsActive && !myData.gps.fixStatus && !myData.gps.hasTimeout;
 }
 
 /** Send one AT command to the sim modul and log the result for the console window. */
@@ -307,7 +335,6 @@ bool MyGsmGps::getGps()
    bool ret = false;
 
    if (isGpsActive) {
-      MyDbg("getGPS");
       if (gsmSim808.getGPS(myData.gps)) {
          myData.lastGpsUpdateSec = secondsSincePowerOn();
 
@@ -319,13 +346,13 @@ bool MyGsmGps::getGps()
          MyDbg("(gps) course: "     + myData.gps.courseString());
          MyDbg("(gps) gpsDate: "    + myData.gps.dateString());
          MyDbg("(gps) gpsTime: "    + myData.gps.timeString());
-    
+
          if (myData.rtcData.lastLocation.latitude() != 0) {
-            myData.movingDistance       = myData.gps.location.distanceTo(myData.rtcData.lastLocation);
-            myData.isMoving             = myData.movingDistance > myOptions.minMovingDistance;
-            myData.rtcData.lastLocation = myData.gps.location;
-            ret = true;
+            myData.movingDistance = myData.gps.location.distanceTo(myData.rtcData.lastLocation);
+            myData.isMoving       = myData.movingDistance > myOptions.minMovingDistance;
          }
+         myData.rtcData.lastLocation = myData.gps.location;
+         ret = true;
       }
    }
    return ret;

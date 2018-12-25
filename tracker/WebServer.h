@@ -463,7 +463,8 @@ void MyWebServer::handleLoadSettingsInfo()
 
          AddOption(info, "isGpsEnabled", "GPS Enabled", myOptions->isGpsEnabled, false);
       }
-      AddOption(info, "gpsCheckIntervalSec", "GPS check every (Interval)", formatInterval(myOptions->gpsCheckIntervalSec), false);
+      AddOption(info, "gpsCheckIntervalSec", "GPS check every (Interval)", formatInterval(myOptions->gpsCheckIntervalSec));
+      AddOption(info, "gpsTimeoutSec", "GPS timeout", formatInterval(myOptions->gpsTimeoutSec), false);
    }
 
    AddBr(info);
@@ -521,6 +522,7 @@ void MyWebServer::handleSaveSettings()
    GetOption("phoneNumber",               myOptions->phoneNumber);
    GetOption("smsCheckIntervalSec",       myOptions->smsCheckIntervalSec);
    GetOption("isGpsEnabled",              myOptions->isGpsEnabled);
+   GetOption("gpsTimeoutSec",             myOptions->gpsTimeoutSec);
    GetOption("gpsCheckIntervalSec",       myOptions->gpsCheckIntervalSec);
    GetOption("isDeepSleepEnabled",        myOptions->isDeepSleepEnabled);
    GetOption("powerSaveModeVoltage",      myOptions->powerSaveModeVoltage);
