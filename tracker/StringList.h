@@ -34,14 +34,16 @@
 class StringList
 {
 public:
-   String infos;       //!< All the items in one string.
-   int    infosCount;  //!< Number of items in the list.
+   String infos;          //!< All the items in one string.
+   int    infosCount;     //!< Number of items in the list.
+   int    infosRolledOut; //!< Number of items rolled out.
    
 public:
    StringList();
 
    bool   isEmpty();
    int    count(); 
+   int    rolledOut();
    
    void   removeAll();
    
@@ -56,6 +58,7 @@ public:
 
 StringList::StringList()
    : infosCount(0)
+   , infosRolledOut(0)
 {
 }
 
@@ -71,11 +74,18 @@ int StringList::count()
    return infosCount;
 }
 
+/** How many items are in the list? */
+int StringList::rolledOut()
+{
+   return infosRolledOut;
+}
+
 /** Removes all items from the list. */
 void StringList::removeAll()
 {
-   infos      = "";
-   infosCount = 0;
+   infos          = "";
+   infosCount     = 0;
+   infosRolledOut = 0;
 }
 
 /** Returns the n'th item from the list. */
@@ -119,6 +129,7 @@ String StringList::removeHead()
       ret   = infos.substring(0, idx);
       infos = infos.substring(idx + 1);
       infosCount--;
+      infosRolledOut++;
    }
    return ret;
 }

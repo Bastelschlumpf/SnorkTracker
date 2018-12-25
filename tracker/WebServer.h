@@ -643,6 +643,9 @@ void MyWebServer::handleLoadConsoleInfo()
    String cmd      = server.arg("c1");
    String startIdx = server.arg("c2");
 
+   int indexFrom = atoi(startIdx.c_str()) - myData->logInfos.rolledOut();
+   if (indexFrom < 0) indexFrom = 0;
+
    if (server.hasArg("c1")) {
       MyDbg(cmd, true);
       myData->consoleCmds.addTail(cmd);
@@ -652,7 +655,7 @@ void MyWebServer::handleLoadConsoleInfo()
          "<i>" + String(myData->logInfos.count()) + "</i>"
          "<j>1</j>"
          "<l>";
-            for (int i = atoi(startIdx.c_str()); i < myData->logInfos.count(); i++) {
+            for (int i = indexFrom; i < myData->logInfos.count(); i++) {
                sendData += TextToUrl(myData->logInfos.getAt(i));
                sendData += '\n';
             }
