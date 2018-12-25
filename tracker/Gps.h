@@ -501,5 +501,5 @@ String MyGps::dateString()
 /** Returns the gps time as a string */
 String MyGps::timeString()
 {
-   String(time.hour()) + ':' + String(time.minute()) + ':' + String(time.second());
+   return String(time.hour()) + ':' + String(time.minute()) + ':' + String(time.second());
 }
