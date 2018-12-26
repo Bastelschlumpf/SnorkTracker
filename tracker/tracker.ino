@@ -199,7 +199,7 @@ void loop()
    if (gsmHasPower && !isStarting && !isStopping) {
       myGsmGps.handleClient();
 
-      // No sms or mqtt when if we are waiting for a gps position.
+      // No sms or mqtt if we are waiting for a gps position.
       // Otherwise we are sending invalid gps values.
       if (!myGsmGps.waitingForGps()) {
          if (myOptions.isSmsEnabled) {
