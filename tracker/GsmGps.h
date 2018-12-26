@@ -185,31 +185,33 @@ void MyGsmGps::handleClient()
       MyDbg("(sim808) batteryVolt: "   + myData.batteryVolt);
    }
 
-   if (secondsElapsedAndUpdate(lastGpsCheckSec, 10)) { // Wait 10 sec between retries
-      if (secondsElapsed(myData.rtcData.lastGpsReadSec, myOptions.gpsCheckIntervalSec)) {
-         if (myOptions.isGpsEnabled && !isGpsActive) {
-            enableGps(true);
-         }
-         MyDbg("getGPS");
-         if (startGpsCheck == 0) {
-            startGpsCheck = secondsSincePowerOn();
-         }
-         if (getGps()) {
-            MyDbg(" -> ok");
-            startGpsCheck = 0;
-            myData.rtcData.lastGpsReadSec = secondsSincePowerOn();
-         } else {
-            long waitForGpsTime = secondsSincePowerOn() - startGpsCheck;
-
-            // Ignore gps if we cannot get a position in X minutes.
-            if (waitForGpsTime > myOptions.gpsTimeoutSec) {
-               MyDbg(" -> gps timeout!");
+   if (myOptions.isGpsEnabled) {
+      if (secondsElapsedAndUpdate(lastGpsCheckSec, 10)) { // Wait 10 sec between retries
+         if (secondsElapsed(myData.rtcData.lastGpsReadSec, myOptions.gpsCheckIntervalSec)) {
+            if (!isGpsActive) {
+               enableGps(true);
+            }
+            MyDbg("getGPS");
+            if (startGpsCheck == 0) {
+               startGpsCheck = secondsSincePowerOn();
+            }
+            if (getGps()) {
+               MyDbg(" -> ok");
                startGpsCheck = 0;
-               myData.gps.hasTimeout = true;
                myData.rtcData.lastGpsReadSec = secondsSincePowerOn();
             } else {
-               if (myOptions.gpsTimeoutSec - waitForGpsTime > 0) {
-                  MyDbg(" -> no gps fix (timeout in " + String(myOptions.gpsTimeoutSec - waitForGpsTime) + " seconds!)");
+               long waitForGpsTime = secondsSincePowerOn() - startGpsCheck;
+
+               // Ignore gps if we cannot get a position in X minutes.
+               if (waitForGpsTime > myOptions.gpsTimeoutSec) {
+                  MyDbg(" -> gps timeout!");
+                  startGpsCheck = 0;
+                  myData.gps.hasTimeout = true;
+                  myData.rtcData.lastGpsReadSec = secondsSincePowerOn();
+               } else {
+                  if (myOptions.gpsTimeoutSec - waitForGpsTime > 0) {
+                     MyDbg(" -> no gps fix (timeout in " + String(myOptions.gpsTimeoutSec - waitForGpsTime) + " seconds!)");
+                  }
                }
             }
          }
@@ -240,7 +242,7 @@ bool MyGsmGps::stop()
 /** Is the gps enabled but we don't have a valid gps position. */
 bool MyGsmGps::waitingForGps()
 {
-   return isGpsActive && !myData.gps.fixStatus && !myData.gps.hasTimeout;
+   return isGsmActive && myOptions.isGpsEnabled && !myData.gps.fixStatus && !myData.gps.hasTimeout;
 }
 
 /** Send one AT command to the sim modul and log the result for the console window. */
