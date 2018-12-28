@@ -94,7 +94,7 @@
    * Configure Arduino IDE
      * From 'Tools | Boards' choose 'LOLIN(WEMOS) D1 mini Lite'
      * Change 'Tools | Flash Size' to '1M (64k SPIFFS)'
-     * Change 'Tools | IwIP variant' to 'v14 Higher Bandwidth' 
+     * Change 'Tools | IwIP variant' to 'v2 Higher Bandwidth' 
 
 ### Circuit
    ![Figure 2](circuit/Esp8266Sim808.png "Figure 2")
