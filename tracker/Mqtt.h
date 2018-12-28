@@ -160,7 +160,7 @@ void MyMqtt::handleClient()
       } else {
          send = secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnNonMoveEverySec);
       }
-      if (send) {
+      if (send && !publishInProgress) {
          publishInProgress = true;
          if (!PubSubClient::connected()) {
             for (int i = 0; !PubSubClient::connected() && i < 5; i++) {  
@@ -201,10 +201,9 @@ void MyMqtt::handleClient()
                myPublish(topic_kmph, myData.gps.kmphString());
             }
 
+            myData.rtcData.lastMqttSendSec = secondsSincePowerOn();
             MyDbg("mqtt published", true);
             MyDelay(5000);
-
-            myData.rtcData.lastMqttSendSec = secondsSincePowerOn();
          }
          publishInProgress = false;
       }
