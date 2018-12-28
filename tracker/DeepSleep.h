@@ -20,7 +20,7 @@
   * DeepSleep functions.
   */
 
-#define NO_DEEP_SLEEP_STARTUP_TIME 60 //!< No deep sleep for the first minute.
+#define NO_DEEP_SLEEP_STARTUP_TIME 120 //!< No deep sleep for the first two minute.
 
 
 /**
