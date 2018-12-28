@@ -22,7 +22,7 @@
   */
 
 
-#define MAX_LOG_INFOS_SIZE 1000 //!< Maximum bytes of the complete list items + separators.
+#define MAX_LOG_INFOS_SIZE 10000 //!< Maximum bytes of the complete list items + separators.
 
 /**
   * String List class. 
