@@ -178,7 +178,9 @@ void loop()
          myGsmPower.on(); 
          gsmHasPower = true;
          if (!myGsmGps.begin()) {
-            myOptions.gsmPower = false;
+            myGsmGps.stop();
+            myGsmPower.off();
+            gsmHasPower = false;
          }
          isStarting = false;
       }
@@ -213,7 +215,7 @@ void loop()
 
    // Deep Sleep?
    // (No deep sleep if we are waiting for a valid gps position).
-   if (gsmHasPower && !myGsmGps.waitingForGps() && !myMqtt.waitingForMqtt()) {
+   if (!myGsmGps.waitingForGps() && !myMqtt.waitingForMqtt()) {
       if (myDeepSleep.haveToSleep()) {
          if (myGsmGps.isGsmActive) {
             myGsmGps.stop();
