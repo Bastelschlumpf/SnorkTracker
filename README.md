@@ -105,7 +105,7 @@
 
 ### Assemble the Components
    * Take the Breadboard and the other items from the part-list.  
-     ![Breadboard](images/Breadboard.jpg   "Breadboard")
+     ![Components](images/Components.jpg   "Components")
    * First of all unsolder the (ON/OFF) pin 5 from the DC-DC module, bend it up and
      solder a line to it. After that put 4 spacers under the DC-DC module and solder it
      to the breadboard. Check that the bottom of the LM2596 module is not in contact with the board.
