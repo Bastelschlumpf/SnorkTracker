@@ -58,15 +58,15 @@ MyDeepSleep::MyDeepSleep(MyOptions &options, MyData &data)
   */
 bool MyDeepSleep::begin()
 {
-   MyDbg("MyDeepSleep::begin");
+   MyDbg(F("MyDeepSleep::begin"));
    
    MyData::RtcData rtcData;
 
    ESP.rtcUserMemoryRead(0, (uint32_t *) &rtcData, sizeof(MyData::RtcData));
    if (!rtcData.isValid()) {
-      MyDbg("RtcData invalid");
+      MyDbg(F("RtcData invalid"));
    } else {
-      MyDbg("RtcData read");
+      MyDbg(F("RtcData read"));
       myData.rtcData = rtcData;
    }
 
@@ -76,11 +76,11 @@ bool MyDeepSleep::begin()
 
          // Check from time to time the power and return to deep sleep if the 
          // power is too low until the deep sleep time is over.
-         MyDbg("CheckTime elapsed: " + String(checkTimeElapsed) + " sec");
+         MyDbg((String) F("CheckTime elapsed: ") + String(checkTimeElapsed) + F(" sec"));
          if (checkTimeElapsed < myOptions.deepSleepTimeSec) {
             sleep(false);
          }
-         MyDbg("Awake");
+         MyDbg(F("Awake"));
       }
    }
    return true;
@@ -105,7 +105,7 @@ bool MyDeepSleep::haveToSleep()
 /** Entering the DeepSleep mode. Be sure we have connected the RST pin to the D0 pin for wakeup. */
 void MyDeepSleep::sleep(bool start /* = true */)
 {
-   MyDbg("Entering DeepSleep for: " + String(myOptions.powerCheckIntervalSec) + "Sec");
+   MyDbg((String) F("Entering DeepSleep for: ") + String(myOptions.powerCheckIntervalSec) + F("Sec"));
 
    if (start) {
       myData.rtcData.deepSleepStartSec = secondsSincePowerOn();

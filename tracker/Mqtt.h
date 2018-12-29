@@ -102,8 +102,8 @@ bool MyMqtt::mySubscribe(String subTopic)
 {
    String topic;
 
-   topic = myOptions.mqttName + "/" + myOptions.mqttId + subTopic;
-   MyDbg("MyMqtt::subscribe: [" + topic + "]", true);
+   topic = myOptions.mqttName + F("/") + myOptions.mqttId + subTopic;
+   MyDbg((String) F("MyMqtt::subscribe: [") + topic + F("]"), true);
    return PubSubClient::subscribe(topic.c_str());
 }
 
@@ -117,8 +117,8 @@ bool MyMqtt::myPublish(String subTopic, String value)
    if (value.length() > 0) {
       String topic;
 
-      topic = myOptions.mqttName + "/" + myOptions.mqttId + subTopic;
-      MyDbg("MyMqtt::publish: [" + topic + "]=[" + value + "]", true);
+      topic = myOptions.mqttName + F("/") + myOptions.mqttId + subTopic;
+      MyDbg((String) F("MyMqtt::publish: [") + topic + F("]=[") + value + F("]"), true);
       ret = PubSubClient::publish(topic.c_str(), value.c_str(), true);
    }
    return ret;
@@ -143,7 +143,7 @@ bool MyMqtt::waitingForMqtt()
 /** Sets the MQTT server settings */
 bool MyMqtt::begin()
 {
-   MyDbg("MQTT:begin", true);
+   MyDbg(F("MQTT:begin"), true);
    PubSubClient::setServer(myOptions.mqttServer.c_str(), myOptions.mqttPort);
    PubSubClient::setCallback(mqttCallback);
    return true;
@@ -164,24 +164,24 @@ void MyMqtt::handleClient()
          publishInProgress = true;
          if (!PubSubClient::connected()) {
             for (int i = 0; !PubSubClient::connected() && i < 5; i++) {  
-               MyDbg("Attempting MQTT connection...", true);  
+               MyDbg(F("Attempting MQTT connection..."), true);
                if (PubSubClient::connect(myOptions.mqttName.c_str(), myOptions.mqttUser.c_str(), myOptions.mqttPassword.c_str())) {  
                   mySubscribe(topic_deep_sleep);
                   mySubscribe(topic_gsm_power);
                   mySubscribe(topic_gps_enabled);
                   mySubscribe(topic_send_on_move_every);
                   mySubscribe(topic_send_on_non_move_every);
-                  MyDbg(" connected", true);
+                  MyDbg(F(" connected"), true);
                } else {  
-                  MyDbg("   Mqtt failed, rc = " + String(PubSubClient::state()), true);
-                  MyDbg(" Try again in 5 seconds", true);
+                  MyDbg((String) F("   Mqtt failed, rc = ") + String(PubSubClient::state()), true);
+                  MyDbg(F(" Try again in 5 seconds"), true);
                   MyDelay(5000);
-                  MyDbg(".", true, false);
+                  MyDbg(F("."), true, false);
                }  
             }  
          }
          if (PubSubClient::connected()) {
-            MyDbg("Attempting MQTT publishing", true);
+            MyDbg(F("Attempting MQTT publishing"), true);
             myPublish(topic_voltage,     String(myData.voltage));
             myPublish(topic_mAh,         String(myData.getPowerConsumption()));
             myPublish(topic_mAhLowPower, String(myData.getLowPowerPowerConsumption()));
@@ -202,7 +202,7 @@ void MyMqtt::handleClient()
             }
 
             myData.rtcData.lastMqttSendSec = secondsSincePowerOn();
-            MyDbg("mqtt published", true);
+            MyDbg(F("mqtt published"), true);
             MyDelay(5000);
          }
          publishInProgress = false;
@@ -222,22 +222,22 @@ void MyMqtt::mqttCallback(char* topic, byte* payload, unsigned int len)
    String strTopic = String((char*)topic);
 
    payload[len] = '\0';
-   MyDbg("Message arrived [" + strTopic + "]:[ ", true);
+   MyDbg((String) F("Message arrived [") + strTopic + F("]:[ "), true);
    if (len) MyDbg((char *) payload, true);
-   MyDbg("]", true);
+   MyDbg(F("]"), true);
 
    if (MyMqtt::g_myOptions) {
       if (strTopic == g_myOptions->mqttName + topic_deep_sleep) {
          g_myOptions->isDeepSleepEnabled = atoi((char *) payload);
-         MyDbg(strTopic + g_myOptions->isDeepSleepEnabled ? " - On" : " - Off", true);
+         MyDbg(strTopic + g_myOptions->isDeepSleepEnabled ? F(" - On") : F(" - Off"), true);
       }
       if (strTopic == g_myOptions->mqttName + topic_gsm_power) {
          g_myOptions->gsmPower = atoi((char *) payload);
-         MyDbg(strTopic + g_myOptions->gsmPower ? " - On" : " - Off", true);
+         MyDbg(strTopic + g_myOptions->gsmPower ? F(" - On") : F(" - Off"), true);
       }
       if (strTopic == g_myOptions->mqttName + topic_gps_enabled) {
          g_myOptions->isGpsEnabled = atoi((char *) payload);
-         MyDbg(strTopic + g_myOptions->isGpsEnabled ? " - Enabled" : " - Disabled", true);
+         MyDbg(strTopic + g_myOptions->isGpsEnabled ? F(" - Enabled") : F(" - Disabled"), true);
       }
       if (strTopic == g_myOptions->mqttName + topic_send_on_move_every) {
          g_myOptions->mqttSendOnMoveEverySec = atoi((char *) payload);

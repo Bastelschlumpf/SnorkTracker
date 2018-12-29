@@ -115,7 +115,7 @@ bool MyGsmSim808::getSMS(SmsData &sms)
       sms.referenceNumber = stream.readStringUntil(',');
       sms.dateTime        = stream.readStringUntil('\n');
       sms.message         = stream.readStringUntil('\n');
-      sms.message         = Trim(sms.message, "\r\n");
+      sms.message         = Trim(sms.message, F("\r\n"));
       waitResponse(); 
       return true;
    }

@@ -348,10 +348,10 @@ MyGps::MyGps()
 /** Parse a bool value from a string '0' or '1' */
 bool MyGps::parse(bool &b, const String &data)
 {
-   if (data == "0") {
+   if (data == F("0")) {
       b = false;
       return true;
-   } else if (data == "1") {
+   } else if (data == F("1")) {
       b = true;
       return true;
    }

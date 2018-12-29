@@ -70,7 +70,7 @@ int MySerial::read()
          if (inIdx > 0) {
             inData[inIdx] = 0;
 
-            String info = "< " + (String) inData;
+            String info = (String) F("< ") + (String) inData;
             logInfos.addTail(info);
             // Pass thrue to the default Serial for debugging
             Serial.println(info);
@@ -98,7 +98,7 @@ size_t MySerial::write(uint8_t byte)
          if (outIdx > 0) {
             outData[outIdx] = 0;
 
-            String info = "> " + (String)outData;
+            String info = (String) F("> ") + (String)outData;
 
             logInfos.addTail(info);
             // Pass thrue to the default Serial for debugging

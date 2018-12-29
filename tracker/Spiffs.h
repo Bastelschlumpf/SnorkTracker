@@ -27,7 +27,7 @@ String readFromSpiffs(String path)
    File   file = SPIFFS.open(path.c_str(), "r");
    
    if (!file) {
-      MyDbg("SPIFFS File not found: '" + path + "'");
+      MyDbg((String) F("SPIFFS File not found: '") + path + F("'"));
    } else {
       ret = file.readString();
       file.close();

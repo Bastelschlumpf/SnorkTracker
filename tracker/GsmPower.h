@@ -54,7 +54,7 @@ MyGsmPower::MyGsmPower(MyData &data, int pin)
 /** Set the pin mode to input -> switch off the DC-DC module */
 bool MyGsmPower::begin()
 {
-   MyDbg("MyGsmPower::begin");
+   MyDbg(F("MyGsmPower::begin"));
    pinMode(pinPower, INPUT);
    return true;
 }
@@ -62,7 +62,7 @@ bool MyGsmPower::begin()
 /** Switch on the DC-DC module */
 void MyGsmPower::on()
 {
-   MyDbg("MyGsmPower::on");
+   MyDbg(F("MyGsmPower::on"));
    pinMode(pinPower, OUTPUT);
    digitalWrite(pinPower, LOW); 
    myData.isPowerOn = true;
@@ -73,7 +73,7 @@ void MyGsmPower::on()
 /** Switch off the DC-DC module */
 void MyGsmPower::off()
 {
-   MyDbg("MyGsmPower::off");
+   MyDbg(F("MyGsmPower::off"));
    pinMode(pinPower, INPUT);
    digitalWrite(pinPower, HIGH); 
    myData.rtcData.powerOnTimeSec += millis() / 1000 - powerOnStartSec;

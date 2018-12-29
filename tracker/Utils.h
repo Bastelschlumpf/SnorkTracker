@@ -206,18 +206,18 @@ String formatInterval(long secs)
    int seconds =  secs % 60;
 
    if (days <= 0) {
-      return print2(hours) + ":" + print2(minutes) + ":" + print2(seconds); 
+      return print2(hours) + F(":") + print2(minutes) + F(":") + print2(seconds);
    } else {
-      return String(days) + " " + print2(hours) + ":" + print2(minutes) + ":" + print2(seconds); 
+      return String(days) + F(" ") + print2(hours) + F(":") + print2(minutes) + F(":") + print2(seconds);
    }
 }
 
 /** Helper function to scan a interval information '[days] hours:minutes:seconds' */
 bool scanInterval(String interval, long &secs)
 {
-   int first = interval.indexOf(":");
+   int first = interval.indexOf(F(":"));
 
-   interval = Trim(interval, " ");
+   interval = Trim(interval, F(" "));
    if (first != -1) {
       String daysString;
       String hoursString;
@@ -228,10 +228,10 @@ bool scanInterval(String interval, long &secs)
       long   minutes = 0;
       long   seconds = 0;
 
-      int second = interval.indexOf(":", first + 1);
+      int second = interval.indexOf(F(":"), first + 1);
 
       if (second != -1) {
-         int space = interval.indexOf(" ");
+         int space = interval.indexOf(F(" "));
 
          if (space != -1 && space < first) {
             daysString  = interval.substring(0, space);
@@ -268,27 +268,27 @@ bool scanInterval(String interval, long &secs)
   */
 void SetupOTA()
 {
-   MyDbg("StartOTA");
+   MyDbg(F("StartOTA"));
       
    ArduinoOTA.setHostname("SnorkTracker");
 
    ArduinoOTA.setPort(8266);
 
    ArduinoOTA.onStart([]() {
-      MyDbg("OTA Start");
+      MyDbg(F("OTA Start"));
    });
    ArduinoOTA.onEnd([]() {
-      MyDbg("\nOTA End");
+      MyDbg(F("\nOTA End"));
    });
    ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
       MyDbg("OTA Progress: " + String(progress / (total / 100)));
    });   
    ArduinoOTA.onError([](ota_error_t error) {
       MyDbg("OTA Error[%u]: " + error);
-      if (error == OTA_AUTH_ERROR) MyDbg("OTA Auth Failed");
-      else if (error == OTA_BEGIN_ERROR) MyDbg("OTA Begin Failed");
-      else if (error == OTA_CONNECT_ERROR) MyDbg("OTA Connect Failed");
-      else if (error == OTA_RECEIVE_ERROR) MyDbg("OTA Receive Failed");
-      else if (error == OTA_END_ERROR) MyDbg("OTA End Failed");
+      if (error == OTA_AUTH_ERROR)         MyDbg(F("OTA Auth Failed"));
+      else if (error == OTA_BEGIN_ERROR)   MyDbg(F("OTA Begin Failed"));
+      else if (error == OTA_CONNECT_ERROR) MyDbg(F("OTA Connect Failed"));
+      else if (error == OTA_RECEIVE_ERROR) MyDbg(F("OTA Receive Failed"));
+      else if (error == OTA_END_ERROR)     MyDbg(F("OTA End Failed"));
    });
 }

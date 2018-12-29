@@ -115,49 +115,49 @@ bool MyWebServer::begin()
       return false;
    }
 
-   MyDbg("MyWebServer::begin");
+   MyDbg(F("MyWebServer::begin"));
    WiFi.persistent(false);
    WiFi.mode(WIFI_AP_STA);
    WiFi.softAP("SnorkTracker", "");
    WiFi.softAPConfig(ip, ip, IPAddress(255, 255, 255, 0));  
    dnsServer.setErrorReplyCode(DNSReplyCode::NoError);
-   dnsServer.start(53, "*", ip);
+   dnsServer.start(53, F("*"), ip);
    myData->softAPIP         = WiFi.softAPIP().toString();
    myData->softAPmacAddress =  WiFi.softAPmacAddress();
-   MyDbg("SoftAPIP address: "     + myData->softAPIP, true);
-   MyDbg("SoftAPIP mac address: " + myData->softAPmacAddress, true);
+   MyDbg((String) F("SoftAPIP address: ")     + myData->softAPIP, true);
+   MyDbg((String) F("SoftAPIP mac address: ") + myData->softAPmacAddress, true);
 
    WiFi.begin(myOptions->wifiAP.c_str(), myOptions->wifiPassword.c_str());
    for (int i = 0; i < 30 && WiFi.status() != WL_CONNECTED; i++) { // 15 Sec versuchen
-      MyDbg(".", true, false);
+      MyDbg(F("."), true, false);
       MyDelay(500);
    }
    if (WiFi.status() == WL_CONNECTED) {
       myData->stationIP = WiFi.localIP().toString();
-      MyDbg("Connected to "        + myOptions->wifiAP, true);
-      MyDbg("Station IP address: " + myData->stationIP, true);
+      MyDbg((String) F("Connected to ")        + myOptions->wifiAP, true);
+      MyDbg((String) F("Station IP address: ") + myData->stationIP, true);
    } else { // switch to AP Mode only
-      MyDbg((String) "No connection to " + myOptions->wifiAP, true);
+      MyDbg((String) F("No connection to ") + myOptions->wifiAP, true);
       WiFi.disconnect();
       WiFi.mode(WIFI_AP);
    }
    
-   server.on("/",                    handleRoot);
-   server.on("/Main.html",           loadMain);
-   server.on("/MainInfo",            handleLoadMainInfo);
-   server.on("/Update.html",         loadUpdate);
-   server.on("/Settings.html",       loadSettings);
-   server.on("/SettingsInfo",        handleLoadSettingsInfo);
-   server.on("/SaveSettings",        handleSaveSettings);
-   server.on("/InfoInfo",            handleLoadInfoInfo);
-   server.on("/Console.html",        loadConsole);
-   server.on("/ConsoleInfo",         handleLoadConsoleInfo);
-   server.on("/Restart.html",        loadRestart);
-   server.on("/RestartInfo",         handleLoadRestartInfo);
+   server.on(F("/"),              handleRoot);
+   server.on(F("/Main.html"),     loadMain);
+   server.on(F("/MainInfo"),      handleLoadMainInfo);
+   server.on(F("/Update.html"),   loadUpdate);
+   server.on(F("/Settings.html"), loadSettings);
+   server.on(F("/SettingsInfo"),  handleLoadSettingsInfo);
+   server.on(F("/SaveSettings"),  handleSaveSettings);
+   server.on(F("/InfoInfo"),      handleLoadInfoInfo);
+   server.on(F("/Console.html"),  loadConsole);
+   server.on(F("/ConsoleInfo"),   handleLoadConsoleInfo);
+   server.on(F("/Restart.html"),  loadRestart);
+   server.on(F("/RestartInfo"),   handleLoadRestartInfo);
    server.onNotFound(handleWebRequests);
 
    server.begin(); 
-   MyDbg("Server listening", true);
+   MyDbg(F("Server listening"), true);
 
    isWebServerActive = true;
    return true;
@@ -175,30 +175,30 @@ void MyWebServer::handleClient()
 /** Helper function to start a HTML table. */
 void MyWebServer::AddTableBegin(String &info)
 {
-   info += "<table style='width:100%'>";
+   info += F("<table style='width:100%'>");
 }
 
 /** Helper function to write one HTML row with no data. */
 void MyWebServer::AddTableTr(String &info)
 {
-   info += "<tr><th></th><td>&nbsp;</td></tr>";
+   info += F("<tr><th></th><td>&nbsp;</td></tr>");
 }
 
 /** Helper function to add one HTML table row line with data. */
 void MyWebServer::AddTableTr(String &info, String name, String value)
 {
    if (value != "") {
-      info += "<tr>";
-      info += "<th>" + TextToXml(name)  + "</th>";
-      info += "<td>" + TextToXml(value) + "</td>";
-      info += "</tr>";
+      info += F("<tr>");
+      info += (String) F("<th>") + TextToXml(name)  + F("</th>");
+      info += (String) F("<td>") + TextToXml(value) + F("</td>");
+      info += F("</tr>");
    }
 }
   
 /** Helper function to add one HTML table end element. */
 void MyWebServer::AddTableEnd(String &info)
 {
-   info += "</table>";
+   info += F("</table>");
 }
 
 /** Reads one string option from the url args. */
@@ -218,7 +218,7 @@ bool MyWebServer::GetOption(String id, long &option)
    String opt = server.arg(id);
 
    if (opt != "") {
-      if (opt.indexOf(":") != -1) {
+      if (opt.indexOf(F(":")) != -1) {
          ret = scanInterval(opt, option);
       }  else {
          option = atoi(opt.c_str());
@@ -247,7 +247,7 @@ bool MyWebServer::GetOption(String id, bool &option)
 
    option = false;
    if (opt != "") {
-      if (opt == "on") {
+      if (opt == F("on")) {
          option = true;
       }
       return true;
@@ -258,14 +258,14 @@ bool MyWebServer::GetOption(String id, bool &option)
 /** Add a HTML br element. */
 void MyWebServer::AddBr(String &info)
 {
-   info += "<br />";
+   info += F("<br />");
 }
 
 /** Add one string input option field to the HTML source. */
 void MyWebServer::AddOption(String &info, String id, String name, String value, bool addBr /* = true */, bool isPassword /* = false */)
 {
-   info += "<b>" + TextToXml(name) + "</b>";
-   info += "<input id='" + id + "' name='" + id + "' ";
+   info += (String) F("<b>") + TextToXml(name) + F("</b>");
+   info += (String) F("<input id='") + id + F("' name='") + id + F("' ");
    /*
     * Autocomplete overwrites our password if the type is password :(
     * So we show it actually in clear text.
@@ -273,27 +273,34 @@ void MyWebServer::AddOption(String &info, String id, String name, String value, 
       info += " type='password' autocomplete='new-password' ";
    }
    */
-   info += "value='" + TextToXml(value) + "'>";
+   info += (String) F("value='") + TextToXml(value) + F("'>");
    if (addBr) {
-      info += "<br />";
+      info += F("<br />");
    }
 }
 
 /** Add one bool input option field to the HTML source. */
 void MyWebServer::AddOption(String &info, String id, String name, bool value, bool addBr /* = true */)
 {
-   info += "<input style='width:auto;' id='" + id + "' name='" + id + "' type='checkbox' " + 
-           (String) (value ? " checked" : "") + "><b>" + TextToXml(name) + "</b>";
+   info += F("<input style='width:auto;' id='");
+   info += id;
+   info += F("' name='");
+   info += id;
+   info += F("' type='checkbox' ");
+   info += value ? F(" checked") : F("");
+   info += F("><b>");
+   info += TextToXml(name);
+   info += F("</b>");
    if (addBr) {
-      info += "<br />";
+      info += F("<br />");
    }
 }
 
 /** Add the format information of the intervall in 'dd hh:mm:ss' */
 void MyWebServer::AddIntervalInfo(String &info)
 {
-   info += "<p>" + TextToXml("Interval in '[days] hours:minutes:seconds' or just 'seconds'") + "</p>";
-   info += "<br />";
+   info += (String) F("<p>") + TextToXml(F("Interval in '[days] hours:minutes:seconds' or just 'seconds'")) + F("</p>");
+   info += F("<br />");
 }
 
 /** Helper function to load a file from the SPIFFS. */
@@ -301,26 +308,26 @@ bool MyWebServer::loadFromSpiffs(String path)
 {
    bool ret = false;
    
-   String dataType = "text/plain";
-   if(path.endsWith("/")) path += "index.htm";
+   String dataType = F("text/plain");
+   if(path.endsWith("/")) path += F("index.htm");
    
-   if(path.endsWith(".src")) path = path.substring(0, path.lastIndexOf("."));
-   else if(path.endsWith(".html")) dataType = "text/html";
-   else if(path.endsWith(".htm")) dataType = "text/html";
-   else if(path.endsWith(".css")) dataType = "text/css";
-   else if(path.endsWith(".js")) dataType = "application/javascript";
-   else if(path.endsWith(".png")) dataType = "image/png";
-   else if(path.endsWith(".gif")) dataType = "image/gif";
-   else if(path.endsWith(".jpg")) dataType = "image/jpeg";
-   else if(path.endsWith(".ico")) dataType = "image/x-icon";
-   else if(path.endsWith(".xml")) dataType = "text/xml";
-   else if(path.endsWith(".pdf")) dataType = "application/pdf";
-   else if(path.endsWith(".zip")) dataType = "application/zip";
+   if(path.endsWith(F(".src"))) path = path.substring(0, path.lastIndexOf("."));
+   else if(path.endsWith(F(".html"))) dataType = F("text/html");
+   else if(path.endsWith(F(".htm")))  dataType = F("text/html");
+   else if(path.endsWith(F(".css")))  dataType = F("text/css");
+   else if(path.endsWith(F(".js")))   dataType = F("application/javascript");
+   else if(path.endsWith(F(".png")))  dataType = F("image/png");
+   else if(path.endsWith(F(".gif")))  dataType = F("image/gif");
+   else if(path.endsWith(F(".jpg")))  dataType = F("image/jpeg");
+   else if(path.endsWith(F(".ico")))  dataType = F("image/x-icon");
+   else if(path.endsWith(F(".xml")))  dataType = F("text/xml");
+   else if(path.endsWith(F(".pdf")))  dataType = F("application/pdf");
+   else if(path.endsWith(F(".zip")))  dataType = F("application/zip");
    
    File dataFile = SPIFFS.open(path.c_str(), "r");
    if (dataFile) {
-      if (server.hasArg("download")) {
-         dataType = "application/octet-stream";
+      if (server.hasArg(F("download"))) {
+         dataType = F("application/octet-stream");
       }
       if (server.streamFile(dataFile, dataType) == dataFile.size()) {
          ret = true;
@@ -333,14 +340,14 @@ bool MyWebServer::loadFromSpiffs(String path)
 /** Redirect a root call to the Main.html site. */
 void MyWebServer::handleRoot()
 {
-   server.sendHeader("Location", "Main.html", true);
-   server.send(302, "text/plain", "");
+   server.sendHeader(F("Location"), F("Main.html"), true);
+   server.send(302, F("text/plain"), "");
 }
 
 /** Sends the Main.html to the client. */
 void MyWebServer::loadMain()
 {
-   if (loadFromSpiffs("/Main.html")) {
+   if (loadFromSpiffs(F("/Main.html"))) {
       return;
    }
    handleNotFound();
@@ -354,47 +361,47 @@ void MyWebServer::handleLoadMainInfo()
    }
    
    String info;
-   String onOff = server.arg("o");
+   String onOff = server.arg(F("o"));
 
-   if (onOff == "1") {
+   if (onOff == F("1")) {
       myOptions->gsmPower = !myOptions->gsmPower;
       myOptions->save();
    }
 
    AddTableBegin(info);
    if (myData->status != "") {
-      AddTableTr(info, "Status", myData->status);
+      AddTableTr(info, F("Status"), myData->status);
    }
-   AddTableTr(info, "Modem Info",  myData->modemInfo);
+   AddTableTr(info, F("Modem Info"),  myData->modemInfo);
    
-   AddTableTr(info, "Battery",     String(myData->voltage,     1) + " V");
-   AddTableTr(info, "Temperature", String(myData->temperature, 1) + " °C");
-   AddTableTr(info, "Humidity",    String(myData->humidity,    1) + " %");
-   AddTableTr(info, "Pressure",    String(myData->pressure,    1) + " hPa");
+   AddTableTr(info, F("Battery"),     String(myData->voltage,     1) + F(" V"));
+   AddTableTr(info, F("Temperature"), String(myData->temperature, 1) + F(" °C"));
+   AddTableTr(info, F("Humidity"),    String(myData->humidity,    1) + F(" %"));
+   AddTableTr(info, F("Pressure"),    String(myData->pressure,    1) + F(" hPa"));
    if (myData->gps.fixStatus) {
-      AddTableTr(info, "Longitude",  myData->gps.longitudeString());
-      AddTableTr(info, "Latitude",   myData->gps.latitudeString());
-      AddTableTr(info, "Altitude",   myData->gps.altitudeString() + " m");
-      AddTableTr(info, "Speed",      myData->gps.kmphString()     + " kmph");
-      AddTableTr(info, "Satellites", myData->gps.satellitesString());
+      AddTableTr(info, F("Longitude"),  myData->gps.longitudeString());
+      AddTableTr(info, F("Latitude"),   myData->gps.latitudeString());
+      AddTableTr(info, F("Altitude"),   myData->gps.altitudeString() + F(" m"));
+      AddTableTr(info, F("Speed"),      myData->gps.kmphString()     + F(" kmph"));
+      AddTableTr(info, F("Satellites"), myData->gps.satellitesString());
    }
    if (myData->secondsToDeepSleep >= 0) {
-      AddTableTr(info, "Power saving in ", String(myData->secondsToDeepSleep) + " Seconds");
+      AddTableTr(info, F("Power saving in "), String(myData->secondsToDeepSleep) + F(" Seconds"));
    }
    AddTableEnd(info);
    
-   info +=
-      "<table style='width:100%'>"
+   info += (String) 
+      F("<table style='width:100%'>"
          "<tr>"
             "<td style='width:100%'>"
-               "<div style='text-align:center;font-weight:bold;font-size:62px'>" 
-                  + (String) (myOptions->gsmPower ? "ON" : "OFF") +
-               "</div>"
+               "<div style='text-align:center;font-weight:bold;font-size:62px'>") +
+                  + (myOptions->gsmPower ? F("ON") : F("OFF")) +
+               F("</div>"
             "</td>"
          "</tr>"
-      "</table>";
+      "</table>");
    
-   server.send(200,"text/html", info);
+   server.send(200, F("text/html"), info);
 }
 
 /** Load the firmware update page after starting OTA. */
@@ -409,7 +416,7 @@ void MyWebServer::loadUpdate()
       myData->isOtaActive = true;
    }
 
-   if (loadFromSpiffs("/Update.html")) {
+   if (loadFromSpiffs(F("/Update.html"))) {
       return;
    }
    handleNotFound();
@@ -418,7 +425,7 @@ void MyWebServer::loadUpdate()
 /** Load the Settings page. */
 void MyWebServer::loadSettings()
 {
-   if (loadFromSpiffs("/Settings.html")) {
+   if (loadFromSpiffs(F("/Settings.html"))) {
       return;
    }
    handleNotFound();
@@ -433,76 +440,76 @@ void MyWebServer::handleLoadSettingsInfo()
    
    String info;
 
-   MyDbg("LoadSettings", true);
-   AddOption(info, "wifiAP",        "WiFi SSID",     myOptions->wifiAP);
-   AddOption(info, "wifiPassword",  "WiFi Password", myOptions->wifiPassword, true, true);
-   AddOption(info, "gprsAP",        "GPRS AP",       myOptions->gprsAP);
+   MyDbg(F("LoadSettings"), true);
+   AddOption(info, F("wifiAP"),       F("WiFi SSID"),     myOptions->wifiAP);
+   AddOption(info, F("wifiPassword"), F("WiFi Password"), myOptions->wifiPassword, true, true);
+   AddOption(info, F("gprsAP"),       F("GPRS AP"),       myOptions->gprsAP);
 
-   AddOption(info, "isDebugActive", "Debug Active",  myOptions->isDebugActive);
+   AddOption(info, F("isDebugActive"), F("Debug Active"),  myOptions->isDebugActive);
 
-   AddOption(info, "bme280CheckIntervalSec", "Temperature check every (Interval)", formatInterval(myOptions->bme280CheckIntervalSec));
+   AddOption(info, F("bme280CheckIntervalSec"), F("Temperature check every (Interval)"), formatInterval(myOptions->bme280CheckIntervalSec));
 
    AddBr(info);
    {
-      HtmlTag fieldset(info, "fieldset");
+      HtmlTag fieldset(info, F("fieldset"));
       {
-         HtmlTag legend(info, "legend");
+         HtmlTag legend(info, F("legend"));
 
-         AddOption(info, "isSmsEnabled", "SMS Enabled", myOptions->isSmsEnabled, false);
+         AddOption(info, F("isSmsEnabled"), F("SMS Enabled"), myOptions->isSmsEnabled, false);
       }
 
-      AddOption(info, "smsCheckIntervalSec", "SMS check every (Interval)", formatInterval(myOptions->smsCheckIntervalSec));
-      AddOption(info, "phoneNumber",         "Information send to",        myOptions->phoneNumber, false);
+      AddOption(info, F("smsCheckIntervalSec"), F("SMS check every (Interval)"), formatInterval(myOptions->smsCheckIntervalSec));
+      AddOption(info, F("phoneNumber"),         F("Information send to"),        myOptions->phoneNumber, false);
    }
 
    AddBr(info);
    {
-      HtmlTag fieldset(info, "fieldset");
+      HtmlTag fieldset(info, F("fieldset"));
       {
-         HtmlTag legend(info, "legend");
+         HtmlTag legend(info, F("legend"));
 
-         AddOption(info, "isGpsEnabled", "GPS Enabled", myOptions->isGpsEnabled, false);
+         AddOption(info, F("isGpsEnabled"), F("GPS Enabled"), myOptions->isGpsEnabled, false);
       }
-      AddOption(info, "gpsCheckIntervalSec", "GPS check every (Interval)", formatInterval(myOptions->gpsCheckIntervalSec));
-      AddOption(info, "gpsTimeoutSec", "GPS timeout", formatInterval(myOptions->gpsTimeoutSec), false);
+      AddOption(info, F("gpsCheckIntervalSec"), F("GPS check every (Interval)"), formatInterval(myOptions->gpsCheckIntervalSec));
+      AddOption(info, F("gpsTimeoutSec"),       F("GPS timeout"), formatInterval(myOptions->gpsTimeoutSec), false);
    }
 
    AddBr(info);
    {
-      HtmlTag fieldset(info, "fieldset");
+      HtmlTag fieldset(info, F("fieldset"));
       {
-         HtmlTag legend(info, "legend");
+         HtmlTag legend(info, F("legend"));
          
-         AddOption(info, "isMqttEnabled", "MQTT Active", myOptions->isMqttEnabled, false);
+         AddOption(info, F("isMqttEnabled"), F("MQTT Active"), myOptions->isMqttEnabled, false);
       }
-      AddOption(info, "mqttName",                  "MQTT Name",                              myOptions->mqttName);
-      AddOption(info, "mqttId",                    "MQTT Id",                                myOptions->mqttId);
-      AddOption(info, "mqttServer",                "MQTT Server",                            myOptions->mqttServer);
-      AddOption(info, "mqttPort",                  "MQTT Port",                              String(myOptions->mqttPort));
-      AddOption(info, "mqttUser",                  "MQTT User",                              myOptions->mqttUser);
-      AddOption(info, "mqttPassword",              "MQTT Password",                          myOptions->mqttPassword, true, true);
-      AddOption(info, "mqttSendOnMoveEverySec",    "MQTT Send on moving every (Interval)",   formatInterval(myOptions->mqttSendOnMoveEverySec));
-      AddOption(info, "mqttSendOnNonMoveEverySec", "MQTT Send on standing every (Interval)", formatInterval(myOptions->mqttSendOnNonMoveEverySec), false);
+      AddOption(info, F("mqttName"),                  F("MQTT Name"),                              myOptions->mqttName);
+      AddOption(info, F("mqttId"),                    F("MQTT Id"),                                myOptions->mqttId);
+      AddOption(info, F("mqttServer"),                F("MQTT Server"),                            myOptions->mqttServer);
+      AddOption(info, F("mqttPort"),                  F("MQTT Port"),                              String(myOptions->mqttPort));
+      AddOption(info, F("mqttUser"),                  F("MQTT User"),                              myOptions->mqttUser);
+      AddOption(info, F("mqttPassword"),              F("MQTT Password"),                          myOptions->mqttPassword, true, true);
+      AddOption(info, F("mqttSendOnMoveEverySec"),    F("MQTT Send on moving every (Interval)"),   formatInterval(myOptions->mqttSendOnMoveEverySec));
+      AddOption(info, F("mqttSendOnNonMoveEverySec"), F("MQTT Send on standing every (Interval)"), formatInterval(myOptions->mqttSendOnNonMoveEverySec), false);
    }
 
    AddBr(info);
    {
-      HtmlTag fieldset(info, "fieldset");
+      HtmlTag fieldset(info, F("fieldset"));
       {
-         HtmlTag legend(info, "legend");
+         HtmlTag legend(info, F("legend"));
 
-         AddOption(info, "isDeepSleepEnabled", "Power saving mode active", myOptions->isDeepSleepEnabled, false);
+         AddOption(info, F("isDeepSleepEnabled"), F("Power saving mode active"), myOptions->isDeepSleepEnabled, false);
       }
-      AddOption(info, "powerSaveModeVoltage",  "Power saving mode under (Volt)", String(myOptions->powerSaveModeVoltage, 1));
-      AddOption(info, "powerCheckIntervalSec", "Check power every (Interval)",   formatInterval(myOptions->powerCheckIntervalSec));
+      AddOption(info, F("powerSaveModeVoltage"),  F("Power saving mode under (Volt)"), String(myOptions->powerSaveModeVoltage, 1));
+      AddOption(info, F("powerCheckIntervalSec"), F("Check power every (Interval)"),   formatInterval(myOptions->powerCheckIntervalSec));
 
-      AddOption(info, "activeTimeSec",    "Active time (Interval)",    formatInterval(myOptions->activeTimeSec));
-      AddOption(info, "deepSleepTimeSec", "DeepSleep time (Interval)", formatInterval(myOptions->deepSleepTimeSec), false);
+      AddOption(info, F("activeTimeSec"),    F("Active time (Interval)"),    formatInterval(myOptions->activeTimeSec));
+      AddOption(info, F("deepSleepTimeSec"), F("DeepSleep time (Interval)"), formatInterval(myOptions->deepSleepTimeSec), false);
    }
 
    AddIntervalInfo(info);
 
-   server.send(200,"text/html", info);
+   server.send(200, F("text/html"), info);
 }
 
 /** Reads all the options from the url and save them to the SPIFFS. */
@@ -512,32 +519,32 @@ void MyWebServer::handleSaveSettings()
       return;
    }
    
-   MyDbg("SaveSettings", true);
-   GetOption("gprsAP",                    myOptions->gprsAP);
-   GetOption("wifiAP",                    myOptions->wifiAP);
-   GetOption("wifiPassword",              myOptions->wifiPassword);
-   GetOption("isDebugActive",             myOptions->isDebugActive);
-   GetOption("bme280CheckIntervalSec",    myOptions->bme280CheckIntervalSec);
-   GetOption("isSmsEnabled",              myOptions->isSmsEnabled);
-   GetOption("phoneNumber",               myOptions->phoneNumber);
-   GetOption("smsCheckIntervalSec",       myOptions->smsCheckIntervalSec);
-   GetOption("isGpsEnabled",              myOptions->isGpsEnabled);
-   GetOption("gpsTimeoutSec",             myOptions->gpsTimeoutSec);
-   GetOption("gpsCheckIntervalSec",       myOptions->gpsCheckIntervalSec);
-   GetOption("isDeepSleepEnabled",        myOptions->isDeepSleepEnabled);
-   GetOption("powerSaveModeVoltage",      myOptions->powerSaveModeVoltage);
-   GetOption("powerCheckIntervalSec",     myOptions->powerCheckIntervalSec);
-   GetOption("activeTimeSec",             myOptions->activeTimeSec);
-   GetOption("deepSleepTimeSec",          myOptions->deepSleepTimeSec);
-   GetOption("isMqttEnabled",             myOptions->isMqttEnabled);
-   GetOption("mqttName",                  myOptions->mqttName);
-   GetOption("mqttId",                    myOptions->mqttId);
-   GetOption("mqttServer",                myOptions->mqttServer);
-   GetOption("mqttPort",                  myOptions->mqttPort);
-   GetOption("mqttUser",                  myOptions->mqttUser);
-   GetOption("mqttPassword",              myOptions->mqttPassword);
-   GetOption("mqttSendOnMoveEverySec",    myOptions->mqttSendOnMoveEverySec);
-   GetOption("mqttSendOnNonMoveEverySec", myOptions->mqttSendOnNonMoveEverySec);
+   MyDbg(F("SaveSettings"), true);
+   GetOption(F("gprsAP"),                    myOptions->gprsAP);
+   GetOption(F("wifiAP"),                    myOptions->wifiAP);
+   GetOption(F("wifiPassword"),              myOptions->wifiPassword);
+   GetOption(F("isDebugActive"),             myOptions->isDebugActive);
+   GetOption(F("bme280CheckIntervalSec"),    myOptions->bme280CheckIntervalSec);
+   GetOption(F("isSmsEnabled"),              myOptions->isSmsEnabled);
+   GetOption(F("phoneNumber"),               myOptions->phoneNumber);
+   GetOption(F("smsCheckIntervalSec"),       myOptions->smsCheckIntervalSec);
+   GetOption(F("isGpsEnabled"),              myOptions->isGpsEnabled);
+   GetOption(F("gpsTimeoutSec"),             myOptions->gpsTimeoutSec);
+   GetOption(F("gpsCheckIntervalSec"),       myOptions->gpsCheckIntervalSec);
+   GetOption(F("isDeepSleepEnabled"),        myOptions->isDeepSleepEnabled);
+   GetOption(F("powerSaveModeVoltage"),      myOptions->powerSaveModeVoltage);
+   GetOption(F("powerCheckIntervalSec"),     myOptions->powerCheckIntervalSec);
+   GetOption(F("activeTimeSec"),             myOptions->activeTimeSec);
+   GetOption(F("deepSleepTimeSec"),          myOptions->deepSleepTimeSec);
+   GetOption(F("isMqttEnabled"),             myOptions->isMqttEnabled);
+   GetOption(F("mqttName"),                  myOptions->mqttName);
+   GetOption(F("mqttId"),                    myOptions->mqttId);
+   GetOption(F("mqttServer"),                myOptions->mqttServer);
+   GetOption(F("mqttPort"),                  myOptions->mqttPort);
+   GetOption(F("mqttUser"),                  myOptions->mqttUser);
+   GetOption(F("mqttPassword"),              myOptions->mqttPassword);
+   GetOption(F("mqttSendOnMoveEverySec"),    myOptions->mqttSendOnMoveEverySec);
+   GetOption(F("mqttSendOnNonMoveEverySec"), myOptions->mqttSendOnNonMoveEverySec);
 
    // Reset the rtc data if something has changed.
    myData->awakeTimeOffsetSec = millis() / 1000;
@@ -545,7 +552,7 @@ void MyWebServer::handleSaveSettings()
 
    if (false /* reboot */) {
       myData->restartInfo = 
-         "<b>Settings saved</b>";
+         F("<b>Settings saved</b>");
       loadRestart();
    }
    loadMain();
@@ -559,74 +566,75 @@ void MyWebServer::handleLoadInfoInfo()
    }
    
    String info;
-   String ssidRssi = (String) myOptions->wifiAP + " (" + WifiGetRssiAsQuality(WiFi.RSSI()) + "%)";
+   String ssidRssi = (String) myOptions->wifiAP + F(" (") + WifiGetRssiAsQuality(WiFi.RSSI()) + F("%)");
 
    AddTableBegin(info);
    if (myData->status != "") {
-      AddTableTr(info, "Status",               myData->status);
+      AddTableTr(info, F("Status"), myData->status);
       AddTableTr(info);
    }
    if (myData->isOtaActive) {
-      AddTableTr(info, "OTA",                  "Active");
+      AddTableTr(info, F("OTA"), F("Active"));
       AddTableTr(info);
    }
    if (ssidRssi != "" || myData->softAPIP || myData->softAPmacAddress != "" || myData->stationIP != "") {
-      AddTableTr(info, "AP1 SSID (RSSI)",      ssidRssi);
-      AddTableTr(info, "AP IP",                myData->softAPIP);
-      AddTableTr(info, "Locale IP",            myData->stationIP);
-      AddTableTr(info, "MAC Address",          myData->softAPmacAddress);
+      AddTableTr(info, F("AP1 SSID (RSSI)"),   ssidRssi);
+      AddTableTr(info, F("AP IP"),             myData->softAPIP);
+      AddTableTr(info, F("Locale IP"),         myData->stationIP);
+      AddTableTr(info, F("MAC Address"),       myData->softAPmacAddress);
       AddTableTr(info);
    }
    if (myData->modemInfo     != "" || myData->modemIP != ""      || myData->imei        != "" || myData->cop != "" || 
        myData->signalQuality != "" || myData->batteryLevel != "" || myData->batteryVolt != "") {
-      AddTableTr(info, "Modem Info",           myData->modemInfo); 
-      AddTableTr(info, "Modem IP",             myData->modemIP);
-      AddTableTr(info, "IMEI",                 myData->imei);
-      AddTableTr(info, "COP",                  myData->cop);
-      AddTableTr(info, "Signal Quality",       myData->signalQuality);
-      AddTableTr(info, "Battery Level",        myData->batteryLevel);
-      AddTableTr(info, "Battery Volt",         myData->batteryVolt);
+      AddTableTr(info, F("Modem Info"),        myData->modemInfo);
+      AddTableTr(info, F("Modem IP"),          myData->modemIP);
+      AddTableTr(info, F("IMEI"),              myData->imei);
+      AddTableTr(info, F("COP"),               myData->cop);
+      AddTableTr(info, F("Signal Quality"),    myData->signalQuality);
+      AddTableTr(info, F("Battery Level"),     myData->batteryLevel);
+      AddTableTr(info, F("Battery Volt"),      myData->batteryVolt);
       AddTableTr(info);
    }
    if (myData->gps.fixStatus) {
-      AddTableTr(info, "Longitude",            myData->gps.longitudeString());
-      AddTableTr(info, "Latitude",             myData->gps.latitudeString());
-      AddTableTr(info, "Altitude",             myData->gps.altitudeString());
-      AddTableTr(info, "Km/h",                 myData->gps.kmphString());
-      AddTableTr(info, "Satellite",            myData->gps.satellitesString());
-      AddTableTr(info, "Course",               myData->gps.courseString());
-      AddTableTr(info, "GPS Datum",            myData->gps.dateString());
-      AddTableTr(info, "GPS Time",             myData->gps.timeString());
+      AddTableTr(info, F("Longitude"),         myData->gps.longitudeString());
+      AddTableTr(info, F("Latitude"),          myData->gps.latitudeString());
+      AddTableTr(info, F("Altitude"),          myData->gps.altitudeString());
+      AddTableTr(info, F("Km/h"),              myData->gps.kmphString());
+      AddTableTr(info, F("Satellite"),         myData->gps.satellitesString());
+      AddTableTr(info, F("Course"),            myData->gps.courseString());
+      AddTableTr(info, F("GPS Datum"),         myData->gps.dateString());
+      AddTableTr(info, F("GPS Time"),          myData->gps.timeString());
       AddTableTr(info);
    }
    if (myData->isMoving || myData->movingDistance != 0.0) {
-      AddTableTr(info, "Moving", myData->isMoving ? "Yes" : "No");
-      AddTableTr(info, "Distance (m)", String(myData->movingDistance, 2));
+      AddTableTr(info, F("Moving"), myData->isMoving ? F("Yes") : F("No"));
+      AddTableTr(info, F("Distance (m)"), String(myData->movingDistance, 2));
       AddTableTr(info);
    }
-   AddTableTr(info, "Active Time",             formatInterval(myData->getActiveTimeSec()));
-   AddTableTr(info, "PowerUpTime",             formatInterval(myData->getPowerOnTimeSec()));
-   AddTableTr(info, "DeepSleepTime",           formatInterval(myData->rtcData.deepSleepTimeSec));
-   AddTableTr(info, "mAh",                     String(myData->getPowerConsumption(), 2));
-   AddTableTr(info, "Low power mAh",           String(myData->getLowPowerPowerConsumption(), 2));
-   AddTableTr(info);
-   AddTableTr(info, "ESP Chip ID",             String(ESP.getChipId()));
-   AddTableTr(info, "Flash Chip ID",           String(ESP.getFlashChipId()));
-   AddTableTr(info, "Real Flash Memory",       String(ESP.getFlashChipRealSize() / 1024) + " kB");
-   AddTableTr(info, "Total Flash Memory",      String(ESP.getFlashChipSize()     / 1024) + " kB");
-   AddTableTr(info, "Used Flash Memory",       String(ESP.getSketchSize()        / 1024) + " kB");
-   AddTableTr(info, "Free Sketch Memory",      String(ESP.getFreeSketchSpace()   / 1024) + " kB");
-   AddTableTr(info, "Free Heap Memory",        String(ESP.getFreeHeap()          / 1024) + " kB");
+   AddTableTr(info, F("Active Time"),          formatInterval(myData->getActiveTimeSec()));
+   AddTableTr(info, F("PowerUpTime"),          formatInterval(myData->getPowerOnTimeSec()));
+   AddTableTr(info, F("DeepSleepTime"),        formatInterval(myData->rtcData.deepSleepTimeSec));
+   AddTableTr(info, F("mAh"),                  String(myData->getPowerConsumption(), 2));
+   AddTableTr(info, F("Low power mAh"),        String(myData->getLowPowerPowerConsumption(), 2));
+   AddTableTr(info);                       
+   AddTableTr(info, F("ESP Chip ID"),          String(ESP.getChipId()));
+   AddTableTr(info, F("Flash Chip ID"),        String(ESP.getFlashChipId()));
+   AddTableTr(info, F("Real Flash Memory"),    String(ESP.getFlashChipRealSize()) + F(" Byte"));
+   AddTableTr(info, F("Total Flash Memory"),   String(ESP.getFlashChipSize())     + F(" Byte"));
+   AddTableTr(info, F("Used Flash Memory"),    String(ESP.getSketchSize())        + F(" Byte"));
+   AddTableTr(info, F("Free Sketch Memory"),   String(ESP.getFreeSketchSpace())   + F(" Byte"));
+   AddTableTr(info, F("Free Heap Memory"),     String(ESP.getFreeHeap())          + F(" Byte"));
+
    AddTableEnd(info);
    
-   server.send(200,"text/html", info);
+   server.send(200, F("text/html"), info);
 }
 
 /** Load the console page */
 void MyWebServer::loadConsole()
 {
-   if (loadFromSpiffs("/Console.html")) {
-      if (server.hasArg("clear")) {
+   if (loadFromSpiffs(F("/Console.html"))) {
+      if (server.hasArg(F("clear"))) {
          myData->logInfos.removeAll();
       }
       return;
@@ -642,41 +650,41 @@ void MyWebServer::handleLoadConsoleInfo()
    }
    
    String sendData;
-   String cmd      = server.arg("c1");
-   String startIdx = server.arg("c2");
+   String cmd      = server.arg(F("c1"));
+   String startIdx = server.arg(F("c2"));
 
-   if (server.hasArg("c1")) {
+   if (server.hasArg(F("c1"))) {
       MyDbg(cmd, true);
       myData->consoleCmds.addTail(cmd);
    }
 
    int indexFrom = atoi(startIdx.c_str()) - myData->logInfos.rolledOut();
 
-   sendData = 
-      "<r>"
-         "<i>" + String(myData->logInfos.count() + myData->logInfos.rolledOut()) + "</i>"
+   sendData = (String) 
+      F("<r>"
+         "<i>") + String(myData->logInfos.count() + myData->logInfos.rolledOut()) + F("</i>"
          "<j>1</j>"
-         "<l>";
+         "<l>");
             for (int i = indexFrom; i < myData->logInfos.count(); i++) {
                if (i >= 0 && i < myData->logInfos.count()) {
                   sendData += TextToUrl(myData->logInfos.getAt(i));
                   sendData += '\n';
                }
             }
-   sendData += 
-         "</l>"
-      "</r>";
+   sendData += (String)
+         F("</l>"
+      "</r>");
       
-   server.send(200,"text/xml", sendData.c_str());
+   server.send(200, F("text/xml"), sendData.c_str());
 }
 
 /** Load the restart page. */
 void MyWebServer::loadRestart()
 {
-   if (loadFromSpiffs("/Restart.html")) {
-      MyDbg("Load File /Restart.html", true);
+   if (loadFromSpiffs(F("/Restart.html"))) {
+      MyDbg(F("Load File /Restart.html"), true);
       MyDelay(2000);
-      MyDbg("Restart", true);
+      MyDbg(F("Restart"), true);
       ESP.restart();
       return;
    }
@@ -690,7 +698,7 @@ void MyWebServer::handleLoadRestartInfo()
       return;
    }
    
-   server.send(200,"text/html", myData->restartInfo);
+   server.send(200, F("text/html"), myData->restartInfo);
    myData->restartInfo = "";
 }
 
@@ -701,19 +709,19 @@ void MyWebServer::handleNotFound()
       return;
    }
    
-   String message = "File Not Found\n";
+   String message = F("File Not Found\n");
    
-   message += "URI: ";
+   message += F("URI: ");
    message += server.uri();
-   message += "\nMethod: ";
-   message += (server.method() == HTTP_GET)?"GET":"POST";
-   message += "\nArguments: ";
+   message += F("\nMethod: ");
+   message += (server.method() == HTTP_GET) ? F("GET") : F("POST");
+   message += F("\nArguments: ");
    message += server.args();
-   message += "\n";
+   message += F("\n");
    for (uint8_t i=0; i<server.args(); i++){
       message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
    }
-   server.send(404, "text/plain", message);
+   server.send(404, F("text/plain"), message);
    MyDbg(message, true);
 }
 

@@ -54,7 +54,7 @@ MyVoltage::MyVoltage(MyOptions &options, MyData &data)
 /** Reads the voltage at startup. */
 bool MyVoltage::begin()
 {
-   MyDbg("MyVoltage::begin");
+   MyDbg(F("MyVoltage::begin"));
    myData.voltage    = ANALOG_FACTOR * analogRead(A0); // Volt
    myData.isLowPower = myData.voltage < myOptions.powerSaveModeVoltage;
    lowPowerStartSec  = millis() / 1000;
@@ -78,11 +78,11 @@ void MyVoltage::readVoltage()
       if (myData.isPowerOn) {
          myData.rtcData.lowPowerPowerOnTimeSec += lowPowerSec;
       }
-      MyDbg("Change to high power (V): " + String(myData.voltage, 1));
+      MyDbg((String) F("Change to high power (V): ") + String(myData.voltage, 1));
    }
    if (!myData.isLowPower && isLowPower) { // Change to low power
       lowPowerStartSec = currSec;
-      MyDbg("Change to low power (V): " + String(myData.voltage, 1));
+      MyDbg((String) F("Change to low power (V): ") + String(myData.voltage, 1));
    }
    myData.isLowPower = isLowPower;
 }

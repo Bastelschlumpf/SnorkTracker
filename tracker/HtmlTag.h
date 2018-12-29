@@ -49,11 +49,17 @@ HtmlTag::HtmlTag(String &h, const String &tn, String attributes /*= ""*/)
    : html(h)
    , tagName(tn)
 {
-   html += "<" + tagName + " " + attributes + ">";
+   html += F("<");
+   html += tagName;
+   html += F(" ");
+   html += attributes;
+   html += F(">");
 }
 
 /** Creates the end element */
 HtmlTag::~HtmlTag()
 {
-   html += "</" + tagName + ">"; 
+   html += F("</");
+   html += tagName;
+   html += F(">");
 }

@@ -72,7 +72,7 @@ MySmsCmd::MySmsCmd(MyGsmGps &gsmGps, MyOptions &options, MyData &data)
 /** Log only the start of the sms controller */
 bool MySmsCmd::begin()
 {
-   MyDbg("MySmsCmd::begin");
+   MyDbg(F("MySmsCmd::begin"));
    return true;
 }
 
@@ -88,12 +88,12 @@ void MySmsCmd::handleClient()
 String MySmsCmd::getGoogleMapGpsUrl()
 {
    if (myData.gps.fixStatus) {
-      return "https://maps.google.com/maps?q=" + myData.gps.latitudeString() + "," + myData.gps.longitudeString();   
+      return (String) F("https://maps.google.com/maps?q=") + myData.gps.latitudeString() + F(",") + myData.gps.longitudeString();
    } else {
       if (myOptions.isGpsEnabled) {
-         return "No Gps position.\n";
+         return F("No Gps position.\n");
       } else {
-         return "Gps not enabled.\n";
+         return F("Gps not enabled.\n");
       }
    }
 }
@@ -107,29 +107,29 @@ void MySmsCmd::checkSms()
    
    SmsData sms;
 
-   MyDbg("checkSMS");
+   MyDbg(F("checkSMS"));
    while (myGsmGps.getSMS(sms)) {
       String messageLower = sms.message;
 
       messageLower.toLowerCase();
       myGsmGps.deleteSMS(sms.index);
 
-      MyDbg("SMS: " + sms.message + " ["+ sms.phoneNumber + "]");
-      if (messageLower.indexOf("on") == 0) {
+      MyDbg((String) F("SMS: ") + sms.message + F(" [") + sms.phoneNumber + F("]"));
+      if (messageLower.indexOf(F("on")) == 0) {
          cmdOn(sms);
-      } else if (messageLower.indexOf("off") == 0) {
+      } else if (messageLower.indexOf(F("off")) == 0) {
          cmdOff(sms);
-      } else if (messageLower.indexOf("status") == 0) {
+      } else if (messageLower.indexOf(F("status")) == 0) {
          cmdStatus(sms);
-      } else if (messageLower.indexOf("psm") == 0) {
+      } else if (messageLower.indexOf(F("psm")) == 0) {
          cmdPsm(sms);
-      } else if (messageLower.indexOf("gps") == 0) {
+      } else if (messageLower.indexOf(F("gps")) == 0) {
          cmdGps(sms);
-      } else if (messageLower.indexOf("sms") == 0) {
+      } else if (messageLower.indexOf(F("sms")) == 0) {
          cmdSms(sms);
-      } else if (messageLower.indexOf("mqtt") == 0) {
+      } else if (messageLower.indexOf(F("mqtt")) == 0) {
          cmdMqtt(sms);
-      } else if (messageLower.indexOf("phone") == 0) {
+      } else if (messageLower.indexOf(F("phone")) == 0) {
          cmdPhone(sms);
       } else {
          cmdDefault(sms);
@@ -146,7 +146,7 @@ void MySmsCmd::sendSms(const String &message)
 /** Send an OK sms */
 void MySmsCmd::sendOk(const SmsData &sms)
 {
-   sendSms(sms.message + " -> OK");
+   sendSms(sms.message + F(" -> OK"));
 }
 
 /** Parse a sub string parameter from a sms message (xxx:sub) */
@@ -213,21 +213,21 @@ void MySmsCmd::cmdStatus(const SmsData &sms)
 {
    String status;
 
-   status += "Status: "       + myData.status              + '\n';
-   status += "Voltage: "      + String(myData.voltage, 1)  + " V\n";
-   status += "Temperature: "  + String(myData.temperature) + " C\n";
-   status += "Humidity: "     + String(myData.humidity)    + " %\n";
-   status += "Pressure: "     + String(myData.pressure)    + " hPa\n";
+   status += (String) F("Status: ")      + myData.status              + '\n';
+   status += (String) F("Voltage: ")     + String(myData.voltage, 1)  + F(" V\n");
+   status += (String) F("Temperature: ") + String(myData.temperature) + F(" C\n");
+   status += (String) F("Humidity: ")    + String(myData.humidity)    + F(" %\n");
+   status += (String) F("Pressure: ")    + String(myData.pressure)    + F(" hPa\n");
    if (!myData.gps.fixStatus) {
       if (myOptions.isGpsEnabled) {
-         status += "No Gps positions.";
+         status += F("No Gps positions.");
       } else {
-         status += "Gps not enabled.";
+         status += F("Gps not enabled.");
       }
    } else {
-      status += "Altitude: "   + myData.gps.altitudeString()   + " m\n";
-      status += "Speed: "      + myData.gps.kmphString()       + " kmph\n";
-      status += "Satellites: " + myData.gps.satellitesString() + '\n';
+      status += (String) F("Altitude: ")   + myData.gps.altitudeString()   + F(" m\n");
+      status += (String) F("Speed: ")      + myData.gps.kmphString()       + F(" kmph\n");
+      status += (String) F("Satellites: ") + myData.gps.satellitesString() + '\n';
       status += getGoogleMapGpsUrl();
    }
    sendSms(status);
@@ -236,19 +236,19 @@ void MySmsCmd::cmdStatus(const SmsData &sms)
 /** Command: switch the power saving mode on or off. */
 void MySmsCmd::cmdPsm(const SmsData &sms)
 {
-   if (sms.message.indexOf(":") == -1) {
+   if (sms.message.indexOf(F(":")) == -1) {
       myOptions.isDeepSleepEnabled = true;
       myOptions.save();
       sendOk(sms);
    } else {
       String off;
 
-      if (readValues(off, sms.message) && off == "off") {
+      if (readValues(off, sms.message) && off == F("off")) {
          myOptions.isDeepSleepEnabled = true;
          myOptions.save();
          sendOk(sms);
       } else {
-         MyDbg("psm:[" + off + "]");
+         MyDbg((String) F("psm:[") + off + F("]"));
          cmdDefault(sms);
       }
    }
@@ -257,7 +257,7 @@ void MySmsCmd::cmdPsm(const SmsData &sms)
 /** Command: send the gps position as an google map URL. */
 void MySmsCmd::cmdGps(const SmsData &sms)
 {
-   if (sms.message.indexOf(":") == -1) {
+   if (sms.message.indexOf(F(":")) == -1) {
       sendSms(getGoogleMapGpsUrl());
    } else {
       if (readValues(myOptions.gpsCheckIntervalSec, sms.message)) {
@@ -303,14 +303,14 @@ void MySmsCmd::cmdDefault(const SmsData &sms)
 {
    String info;
 
-   info += "wrong command\n";
-   info += "on\n";
-   info += "off\n";
-   info += "status\n";
-   info += "psm[:off] - power saving mode\n";
-   info += "gps[:15] - check every (sec)\n";
-   info += "sms[:15] - check every (sec)\n";
-   info += "mqtt[30:60] - (moving:standing (sec)\n";
-   info += "phone:1234\n";
+   info += F("wrong command\n");
+   info += F("on\n");
+   info += F("off\n");
+   info += F("status\n");
+   info += F("psm[:off] - power saving mode\n");
+   info += F("gps[:15] - check every (sec)\n");
+   info += F("sms[:15] - check every (sec)\n");
+   info += F("mqtt[30:60] - (moving:standing (sec)\n");
+   info += F("phone:1234\n");
    sendSms(info);
 }

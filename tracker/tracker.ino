@@ -86,7 +86,7 @@ void myDebugInfo(String info, bool fromWebserver, bool newline)
    static bool lastNewLine = true;
    
    if (newline || lastNewLine != newline) {
-      String secs = String(secondsSincePowerOn()) + ": ";
+      String secs = String(secondsSincePowerOn()) + F(": ");
 
       myData.logInfos.addTail(secs + info);
       if (!lastNewLine) {
@@ -131,7 +131,7 @@ long secondsSincePowerOn()
 void setup() 
 {
    Serial.begin(115200); 
-   MyDbg("Start SnorkTracker ...");
+   MyDbg(F("Start SnorkTracker ..."));
 
    myGsmPower.begin();
    SPIFFS.begin();

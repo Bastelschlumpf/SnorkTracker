@@ -105,7 +105,7 @@ bool MyOptions::load()
    File file = SPIFFS.open(OPTION_FILE_NAME, "r");
 
    if (!file) {
-      MyDbg("Failed to read options file");
+      MyDbg(F("Failed to read options file"));
    } else {
       ret = true;
       while (file.available() && ret) {
@@ -113,7 +113,7 @@ bool MyOptions::load()
          int    idx  = line.indexOf('=');
 
          if (idx == -1) {
-            MyDbg("Wrong option entry: " + line);
+            MyDbg((String) F("Wrong option entry: ") + line);
             ret = false;
          } else {
             String key    = line.substring(0, idx);
@@ -123,64 +123,64 @@ bool MyOptions::load()
 
             value.replace("\r", "");
             value.replace("\n", "");
-            MyDbg("Load option '" + key + "=" + value + "'");
+            MyDbg((String) F("Load option '") + key + F("=") + value + F("'"));
 
-            if (key == "gprsAP") {
+            if (key == F("gprsAP")) {
                gprsAP = value;
-            } else if (key == "wifiAP") {
+            } else if (key == F("wifiAP")) {
                wifiAP = value;
-            } else if (key == "wifiPassword") {
+            } else if (key == F("wifiPassword")) {
                wifiPassword = value;
-            } else if (key == "gsmPower") {
+            } else if (key == F("gsmPower")) {
                gsmPower = lValue;
-            } else if (key == "isDebugActive") {
+            } else if (key == F("isDebugActive")) {
                isDebugActive = lValue;
-            } else if (key == "bme280CheckIntervalSec") {
+            } else if (key == F("bme280CheckIntervalSec")) {
                bme280CheckIntervalSec = lValue;
-            } else if (key == "isSmsEnabled") {
+            } else if (key == F("isSmsEnabled")) {
                isSmsEnabled = lValue;
-            } else if (key == "isGpsEnabled") {
+            } else if (key == F("isGpsEnabled")) {
                isGpsEnabled = lValue;
-            } else if (key == "gpsTimeoutSec") {
+            } else if (key == F("gpsTimeoutSec")) {
                gpsTimeoutSec = lValue;
-            } else if (key == "gpsCheckIntervalSec") {
+            } else if (key == F("gpsCheckIntervalSec")) {
                gpsCheckIntervalSec = lValue;
-            } else if (key == "minMovingDistance") {
+            } else if (key == F("minMovingDistance")) {
                minMovingDistance = lValue;
-            } else if (key == "phoneNumber") {
+            } else if (key == F("phoneNumber")) {
                phoneNumber = value;
-            } else if (key == "smsCheckIntervalSec") {
+            } else if (key == F("smsCheckIntervalSec")) {
                smsCheckIntervalSec = lValue;
-            } else if (key == "isDeepSleepEnabled") {
+            } else if (key == F("isDeepSleepEnabled")) {
                isDeepSleepEnabled = lValue;
-            } else if (key == "powerSaveModeVoltage") {
+            } else if (key == F("powerSaveModeVoltage")) {
                powerSaveModeVoltage = fValue;
-            } else if (key == "powerCheckIntervalSec") {
+            } else if (key == F("powerCheckIntervalSec")) {
                powerCheckIntervalSec = lValue;
-            } else if (key == "activeTimeSec") {
+            } else if (key == F("activeTimeSec")) {
                activeTimeSec = lValue;
-            } else if (key == "deepSleepTimeSec") {
+            } else if (key == F("deepSleepTimeSec")) {
                deepSleepTimeSec = lValue;
-            } else if (key == "isMqttEnabled") {
+            } else if (key == F("isMqttEnabled")) {
                isMqttEnabled = lValue;
-            } else if (key == "mqttName") {
+            } else if (key == F("mqttName")) {
                mqttName = value;
-            } else if (key == "mqttId") {
+            } else if (key == F("mqttId")) {
                mqttId = value;
-            } else if (key == "mqttServer") {
+            } else if (key == F("mqttServer")) {
                mqttServer = value;
-            } else if (key == "mqttPort") {
+            } else if (key == F("mqttPort")) {
                mqttPort = lValue;
-            } else if (key == "mqttUser") {
+            } else if (key == F("mqttUser")) {
                mqttUser = value;
-            } else if (key == "mqttPassword") {
+            } else if (key == F("mqttPassword")) {
                mqttPassword = value;
-            } else if (key == "mqttSendOnMoveEverySec") {
+            } else if (key == F("mqttSendOnMoveEverySec")) {
                mqttSendOnMoveEverySec = lValue;
-            } else if (key == "mqttSendOnNonMoveEverySec") {
+            } else if (key == F("mqttSendOnNonMoveEverySec")) {
                mqttSendOnNonMoveEverySec = lValue;
             } else {
-               MyDbg("Wrong option entry: " + line);
+               MyDbg((String) F("Wrong option entry: ") + line);
                ret = false;
             }
          }
@@ -188,7 +188,7 @@ bool MyOptions::load()
       file.close();
    }
    if (ret) {
-      MyDbg("Settings loaded");
+      MyDbg(F("Settings loaded"));
    }
    return ret;
 }
@@ -201,35 +201,35 @@ bool MyOptions::save()
   if (!file) {
      MyDbg("Failed to write options file");
   } else {
-     file.println("gprsAP="                    + gprsAP);
-     file.println("wifiAP="                    + wifiAP);
-     file.println("wifiPassword="              + wifiPassword);
-     file.println("gsmPower="                  + String(gsmPower));
-     file.println("isDebugActive="             + String(isDebugActive));
-     file.println("bme280CheckIntervalSec="    + String(bme280CheckIntervalSec));
-     file.println("isSmsEnabled="              + String(isSmsEnabled));
-     file.println("isGpsEnabled="              + String(isGpsEnabled));
-     file.println("gpsTimeoutSec="             + String(gpsTimeoutSec));
-     file.println("gpsCheckIntervalSec="       + String(gpsCheckIntervalSec));
-     file.println("minMovingDistance="         + String(minMovingDistance));
-     file.println("phoneNumber="               + phoneNumber);
-     file.println("smsCheckIntervalSec="       + String(smsCheckIntervalSec));
-     file.println("isDeepSleepEnabled="        + String(isDeepSleepEnabled));
-     file.println("powerSaveModeVoltage="      + String(powerSaveModeVoltage, 1));
-     file.println("powerCheckIntervalSec="     + String(powerCheckIntervalSec));
-     file.println("activeTimeSec="             + String(activeTimeSec));
-     file.println("deepSleepTimeSec="          + String(deepSleepTimeSec));
-     file.println("isMqttEnabled="             + String(isMqttEnabled));
-     file.println("mqttName="                  + mqttName);
-     file.println("mqttId="                    + mqttId);
-     file.println("mqttServer="                + mqttServer);
-     file.println("mqttPort="                  + String(mqttPort));
-     file.println("mqttUser="                  + mqttUser);
-     file.println("mqttPassword="              + mqttPassword);
-     file.println("mqttSendOnMoveEverySec="    + String(mqttSendOnMoveEverySec));
-     file.println("mqttSendOnNonMoveEverySec=" + String(mqttSendOnNonMoveEverySec));
+     file.println((String) F("gprsAP=")                    + gprsAP);
+     file.println((String) F("wifiAP=")                    + wifiAP);
+     file.println((String) F("wifiPassword=")              + wifiPassword);
+     file.println((String) F("gsmPower=")                  + String(gsmPower));
+     file.println((String) F("isDebugActive=")             + String(isDebugActive));
+     file.println((String) F("bme280CheckIntervalSec=")    + String(bme280CheckIntervalSec));
+     file.println((String) F("isSmsEnabled=")              + String(isSmsEnabled));
+     file.println((String) F("isGpsEnabled=")              + String(isGpsEnabled));
+     file.println((String) F("gpsTimeoutSec=")             + String(gpsTimeoutSec));
+     file.println((String) F("gpsCheckIntervalSec=")       + String(gpsCheckIntervalSec));
+     file.println((String) F("minMovingDistance=")         + String(minMovingDistance));
+     file.println((String) F("phoneNumber=")               + phoneNumber);
+     file.println((String) F("smsCheckIntervalSec=")       + String(smsCheckIntervalSec));
+     file.println((String) F("isDeepSleepEnabled=")        + String(isDeepSleepEnabled));
+     file.println((String) F("powerSaveModeVoltage=")      + String(powerSaveModeVoltage, 1));
+     file.println((String) F("powerCheckIntervalSec=")     + String(powerCheckIntervalSec));
+     file.println((String) F("activeTimeSec=")             + String(activeTimeSec));
+     file.println((String) F("deepSleepTimeSec=")          + String(deepSleepTimeSec));
+     file.println((String) F("isMqttEnabled=")             + String(isMqttEnabled));
+     file.println((String) F("mqttName=")                  + mqttName);
+     file.println((String) F("mqttId=")                    + mqttId);
+     file.println((String) F("mqttServer=")                + mqttServer);
+     file.println((String) F("mqttPort=")                  + String(mqttPort));
+     file.println((String) F("mqttUser=")                  + mqttUser);
+     file.println((String) F("mqttPassword=")              + mqttPassword);
+     file.println((String) F("mqttSendOnMoveEverySec=")    + String(mqttSendOnMoveEverySec));
+     file.println((String) F("mqttSendOnNonMoveEverySec=") + String(mqttSendOnNonMoveEverySec));
      file.close();
-     MyDbg("Settings saved");
+     MyDbg(F("Settings saved"));
      return true;
   }
   return false;
