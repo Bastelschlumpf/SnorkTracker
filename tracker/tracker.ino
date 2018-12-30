@@ -46,10 +46,10 @@
 #include "BME280.h"
 
 
-#define     PIN_TX        14                               //!< Transmit-pin to the sim808
-#define     PIN_RX        12                               //!< receive-pin to the sim808
-#define     PIN_POWER     0                                //!< power on/off to DC-DC LM2596
-#define     PIN_BME_POWER 2                                //!< power pin to the BME280 module
+#define     PIN_POWER     D3                               //!< power on/off to DC-DC LM2596
+#define     PIN_BME_POWER D4                               //!< Ground pin to the BME280 module
+#define     PIN_TX        D5                               //!< Transmit-pin to the sim808 RX
+#define     PIN_RX        D6                               //!< Receive-pin to the sim808 TX
 
 MyOptions   myOptions;                                     //!< The global options.
 MyData      myData;                                        //!< The global collected data.
