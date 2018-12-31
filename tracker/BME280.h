@@ -33,7 +33,7 @@ class MyBME280
 protected:
    MyOptions      &myOptions;    //!< Reference to global options
    MyData         &myData;       //!< Reference to global data
-   int             pinPower;     //!< Pin connection to switch on the BME280 module
+   int             pinGrnd;      //!< Ground-Pin connection to switch on the BME280 module
    Adafruit_BME280 bme280;       //!< Adafruit BME280 helper interface
    
 public:
@@ -48,7 +48,7 @@ public:
 
 /** Constructor */
 MyBME280::MyBME280(MyOptions &options, MyData &data, int pin)
-   : pinPower(pin)
+   : pinGrnd(pin)
    , myOptions(options)
    , myData(data)
 {
@@ -57,8 +57,8 @@ MyBME280::MyBME280(MyOptions &options, MyData &data, int pin)
 /** Switch off the module at startup to safe power. */
 bool MyBME280::begin()
 {
-   pinMode(pinPower, OUTPUT);
-   digitalWrite(pinPower, HIGH); 
+   pinMode(pinGrnd, OUTPUT);
+   digitalWrite(pinGrnd, HIGH); 
 }
 
 /** 
@@ -68,7 +68,7 @@ bool MyBME280::begin()
 bool MyBME280::readValues()
 {
    if (secondsElapsedAndUpdate(myData.rtcData.lastBme280ReadSec, myOptions.bme280CheckIntervalSec)) {
-      digitalWrite(pinPower, LOW);
+      digitalWrite(pinGrnd, LOW);
       if (!bme280.begin()) {
          MyDbg("No valid BME280 sensor, check wiring!");
       } else {
@@ -76,6 +76,6 @@ bool MyBME280::readValues()
          myData.humidity    = bme280.readHumidity();
          myData.pressure    = (bme280.readPressure() / 100.0F) + BARO_CORR_HPA;
       }
-      digitalWrite(pinPower, HIGH); 
+      digitalWrite(pinGrnd, HIGH); 
    }
 }

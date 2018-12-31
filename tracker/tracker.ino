@@ -47,7 +47,7 @@
 
 
 #define     PIN_POWER     D3                               //!< power on/off to DC-DC LM2596
-#define     PIN_BME_POWER D4                               //!< Ground pin to the BME280 module
+#define     PIN_BME_GRND  D4                               //!< Ground pin to the BME280 module
 #define     PIN_TX        D5                               //!< Transmit-pin to the sim808 RX
 #define     PIN_RX        D6                               //!< Receive-pin to the sim808 TX
 
@@ -60,7 +60,7 @@ MyGsmPower  myGsmPower(myData, PIN_POWER);                 //!< Helper class to 
 MyGsmGps    myGsmGps(myOptions, myData, PIN_RX, PIN_TX);   //!< sim808 gsm/gps communication class.
 MySmsCmd    mySmsCmd(myGsmGps, myOptions, myData);         //!< sms controller class for the sms handling.
 MyMqtt      myMqtt(myGsmGps, myOptions, myData);           //!< Helper class for the mqtt communication.
-MyBME280    myBME280(myOptions, myData, PIN_BME_POWER);    //!< Helper class for the BME280 sensor communication.
+MyBME280    myBME280(myOptions, myData, PIN_BME_GRND);    //!< Helper class for the BME280 sensor communication.
 
 bool        gsmHasPower = false;                           //!< Is the DC-DC modul switched on?
 bool        isStarting  = false;                           //!< Are we in a starting process?
