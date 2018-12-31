@@ -70,6 +70,9 @@ bool MyBME280::readValues()
    if (secondsElapsedAndUpdate(myData.rtcData.lastBme280ReadSec, myOptions.bme280CheckIntervalSec)) {
       digitalWrite(pinGrnd, LOW);
       if (!bme280.begin()) {
+         myData.temperature = 0;
+         myData.humidity    = 0;
+         myData.pressure    = 0;
          MyDbg("No valid BME280 sensor, check wiring!");
       } else {
          myData.temperature = bme280.readTemperature();
