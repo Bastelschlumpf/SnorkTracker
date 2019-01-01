@@ -23,7 +23,8 @@
 
 #include <Adafruit_BME280.h>
 
-#define BARO_CORR_HPA 34.5879 //!< Correction for 289m above sea level
+#define BARO_CORR_HPA     34.5879 //!< Correction for 289m above sea level
+#define TEMP_CORR_DEGREE  -2.0    //!< The BME280 measure 2 degrees too high 
 
 /**
   * Communication with the BME280 modul to read temperature, humidity and pressure
@@ -57,6 +58,8 @@ MyBME280::MyBME280(MyOptions &options, MyData &data, int pin)
 /** Switch off the module at startup to safe power. */
 bool MyBME280::begin()
 {
+   pinMode(D1,      INPUT); // I2C SCL Open state to safe power
+   pinMode(D2,      INPUT); // I2C SDA Open state to safe power
    pinMode(pinGrnd, OUTPUT);
    digitalWrite(pinGrnd, HIGH); 
 }
@@ -69,16 +72,22 @@ bool MyBME280::readValues()
 {
    if (secondsElapsedAndUpdate(myData.rtcData.lastBme280ReadSec, myOptions.bme280CheckIntervalSec)) {
       digitalWrite(pinGrnd, LOW);
+      delay(100); // Short delay after power on
       if (!bme280.begin()) {
          myData.temperature = 0;
          myData.humidity    = 0;
          myData.pressure    = 0;
          MyDbg("No valid BME280 sensor, check wiring!");
       } else {
-         myData.temperature = bme280.readTemperature();
+         myData.temperature = bme280.readTemperature() + TEMP_CORR_DEGREE;
          myData.humidity    = bme280.readHumidity();
          myData.pressure    = (bme280.readPressure() / 100.0F) + BARO_CORR_HPA;
+         MyDbg("Temperature: " + String(myData.temperature) + "°C");
+         MyDbg("Humidity: "    + String(myData.humidity)    + "%");
+         MyDbg("Pressure: "    + String(myData.pressure)    + "hPa");
       }
       digitalWrite(pinGrnd, HIGH); 
+      pinMode(D1, INPUT); // I2C SCL Open state to safe power
+      pinMode(D2, INPUT); // I2C SDA Open state to safe power
    }
 }
