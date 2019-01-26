@@ -49,7 +49,8 @@ class MyGsmSim808 : public TinyGsmSim808
 public:
    MyGsmSim808(Stream &stream);
 
-   bool getGPS    (MyGps &gps);
+   bool getGps    (MyGps &gps);
+   bool getGsmGps (MyGps &gps);
    bool getSMS    (SmsData &sms);
    bool deleteSMS (long index);
 };
@@ -63,10 +64,9 @@ MyGsmSim808::MyGsmSim808(Stream &stream)
 }
 
 /** Read and parse a gps information from the sim808 modul in the own MyGps data class */
-bool MyGsmSim808::getGPS(MyGps &gps)
+bool MyGsmSim808::getGps(MyGps &gps)
 {
-   gps.fixStatus  = false;
-   gps.hasTimeout = false;
+   gps.clear();
 
    sendAT(GF("+CGNSINF"));
    if (waitResponse(GF(GSM_NL "+CGNSINF:")) != 1) {
@@ -92,6 +92,43 @@ bool MyGsmSim808::getGPS(MyGps &gps)
    stream.readStringUntil('\n');
    waitResponse();
    
+   return gps.fixStatus;
+}
+
+/** Read and parse a gsm-gps information from the sim808 modul in the own MyGps data class 
+  * Sample: AT+CIPGSMLOC=1,1
+  *         +CIPGSMLOC: 0,23.7798,61.496052,2019/01/26,08:21:47
+  */
+bool MyGsmSim808::getGsmGps(MyGps &gps)
+{
+   gps.clear();
+
+   sendAT(GF("+CIPGSMLOC=1,1"));
+   if (waitResponse(10000L, GF(GSM_NL "+CIPGSMLOC:")) != 1) {
+      return false;
+   }
+
+   String locationCode = stream.readStringUntil(',');
+   String longitude    = stream.readStringUntil(',');
+   String latitude     = stream.readStringUntil(',');
+   String gsmDate      = stream.readStringUntil(',');
+   String gsmTime      = stream.readStringUntil(',');
+   stream.readStringUntil('\n');
+   waitResponse();
+
+   locationCode.trim();
+   if (locationCode == "0") {
+      String dateTime = gsmDate + gsmTime;
+
+      dateTime.replace("/", "");
+      dateTime.replace(":", "");
+      dateTime += ".000";
+      gps.setLatitude(longitude);
+      gps.setLongitude(latitude);
+      gps.setDateTime(dateTime);
+      gps.fixStatus = true;
+   }
+
    return gps.fixStatus;
 }
 

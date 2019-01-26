@@ -34,6 +34,8 @@ public:
    MyDegrees();
    MyDegrees(const MyDegrees &myDegrees);
 
+   void   clear();
+
    double value();
    bool   set(const String &data);
 };
@@ -53,6 +55,8 @@ public:
    static double courseTo(double lat1, double long1, double lat2, double long2);
 
 public:
+   void   clear();
+
    double latitude();
    double longitude();
 
@@ -81,6 +85,8 @@ public:
       : date(0)
    {
    }
+
+   void clear();
 };
 
 /**
@@ -101,6 +107,8 @@ public:
       : time(0)
    {
    }
+
+   void clear();
 };
   
 /**
@@ -132,6 +140,8 @@ protected:
    
 public:
    MyGps();
+
+   void clear();
 
    bool setRunStatus       (const String &data);
    bool setFixStatus       (const String &data);
@@ -176,6 +186,14 @@ MyDegrees::MyDegrees(const MyDegrees &myDegrees)
 {
 }
 
+/** Reset the values. */
+void MyDegrees::clear()
+{
+   predecimal = 0;
+   billionths = 0;
+   negative   = false;
+}
+
 /** Recalculate the value from the pre and post decimal to double. */
 double MyDegrees::value()
 {
@@ -206,6 +224,13 @@ bool MyDegrees::set(const String &data)
    }
    negative = false;
    return true;
+}
+
+/** Reset the values. */
+void MyLocation::clear()
+{
+   latitude_.clear();
+   longitude_.clear();
 }
 
 /** Calculate the distance between two gps positions in meter */
@@ -291,6 +316,12 @@ double MyLocation::courseTo(MyLocation &to)
    return courseTo(latitude(), longitude(), to.latitude(), to.longitude());
 }
 
+/** Reset the values. */
+void MyDate::clear()
+{
+   date = 0;
+}
+
 /** Gets the year from the date */
 int MyDate::year()
 {
@@ -307,6 +338,12 @@ int MyDate::month()
 int MyDate::day()
 {
    return date % 100;
+}
+
+/** Reset the values. */
+void MyTime::clear()
+{
+   time = 0;
 }
 
 /** Gets the hour from the time value */
@@ -343,6 +380,26 @@ MyGps::MyGps()
    , satellitesUsed(0)
    , hasTimeout(false)
 {
+}
+
+/** Reset the values. */
+void MyGps::clear()
+{
+   date.clear();
+   time.clear();
+   location.clear();
+   runStatus        = false;
+   fixStatus        = false;
+   altitude         = 0.0;
+   speed            = 0.0;
+   course           = 0.0;
+   fixMode          = 0;
+   pdop             = 0.0;
+   hdop             = 0.0;
+   vdop             = 0.0;
+   satellitesInView = 0;
+   satellitesUsed   = 0;
+   hasTimeout       = false;
 }
 
 /** Parse a bool value from a string '0' or '1' */

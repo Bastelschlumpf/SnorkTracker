@@ -185,33 +185,31 @@ void MyGsmGps::handleClient()
       MyDbg((String) F("(sim808) batteryVolt: ")   + myData.batteryVolt);
    }
 
-   if (myOptions.isGpsEnabled) {
-      if (secondsElapsedAndUpdate(lastGpsCheckSec, 10)) { // Wait 10 sec between retries
-         if (secondsElapsed(myData.rtcData.lastGpsReadSec, myOptions.gpsCheckIntervalSec)) {
-            if (!isGpsActive) {
-               enableGps(true);
-            }
-            MyDbg(F("getGPS"));
-            if (startGpsCheck == 0) {
-               startGpsCheck = secondsSincePowerOn();
-            }
-            if (getGps()) {
-               MyDbg(F(" -> ok"));
+   if (secondsElapsedAndUpdate(lastGpsCheckSec, 10)) { // Wait 10 sec between retries
+      if (secondsElapsed(myData.rtcData.lastGpsReadSec, myOptions.gpsCheckIntervalSec)) {
+         if (!isGpsActive) {
+            enableGps(true);
+         }
+         MyDbg(F("getGPS"));
+         if (startGpsCheck == 0) {
+            startGpsCheck = secondsSincePowerOn();
+         }
+         if (getGps()) {
+            MyDbg(F(" -> ok"));
+            startGpsCheck = 0;
+            myData.rtcData.lastGpsReadSec = secondsSincePowerOn();
+         } else {
+            long waitForGpsTime = secondsSincePowerOn() - startGpsCheck;
+
+            // Ignore gps if we cannot get a position in X minutes.
+            if (waitForGpsTime > myOptions.gpsTimeoutSec) {
+               MyDbg(F(" -> gps timeout!"));
                startGpsCheck = 0;
+               myData.gps.hasTimeout = true;
                myData.rtcData.lastGpsReadSec = secondsSincePowerOn();
             } else {
-               long waitForGpsTime = secondsSincePowerOn() - startGpsCheck;
-
-               // Ignore gps if we cannot get a position in X minutes.
-               if (waitForGpsTime > myOptions.gpsTimeoutSec) {
-                  MyDbg(F(" -> gps timeout!"));
-                  startGpsCheck = 0;
-                  myData.gps.hasTimeout = true;
-                  myData.rtcData.lastGpsReadSec = secondsSincePowerOn();
-               } else {
-                  if (myOptions.gpsTimeoutSec - waitForGpsTime > 0) {
-                     MyDbg((String) F(" -> no gps fix (timeout in ") + String(myOptions.gpsTimeoutSec - waitForGpsTime) + F(" seconds!)"));
-                  }
+               if (myOptions.gpsTimeoutSec - waitForGpsTime > 0) {
+                  MyDbg((String) F(" -> no gps fix (timeout in ") + String(myOptions.gpsTimeoutSec - waitForGpsTime) + F(" seconds!)"));
                }
             }
          }
@@ -337,7 +335,7 @@ bool MyGsmGps::getGps()
    bool ret = false;
 
    if (isGpsActive) {
-      if (gsmSim808.getGPS(myData.gps)) {
+      if (gsmSim808.getGps(myData.gps)) {
          myData.lastGpsUpdateSec = secondsSincePowerOn();
 
          MyDbg((String) F("(gps) longitude: ")  + myData.gps.longitudeString());
@@ -355,6 +353,25 @@ bool MyGsmGps::getGps()
          }
          myData.rtcData.lastLocation = myData.gps.location;
          ret = true;
+      } else {
+         // Get the GPS position as fallback from the GSM modul.
+         MyDbg(F("getGsmGps"));
+         if (gsmSim808.getGsmGps(myData.gps)) {
+            myData.lastGpsUpdateSec = secondsSincePowerOn();
+            
+            MyDbg((String) F("(gsmGps) longitude: ") + myData.gps.longitudeString());
+            MyDbg((String) F("(gsmGps) latitude: ")  + myData.gps.latitudeString());
+            MyDbg((String) F("(gsmGps) gpsDate: ")   + myData.gps.dateString());
+            MyDbg((String) F("(gsmGps) gpsTime: ")   + myData.gps.timeString());
+            
+            if (myData.rtcData.lastLocation.latitude() != 0) {
+               myData.movingDistance = myData.gps.location.distanceTo(myData.rtcData.lastLocation);
+               myData.isMoving       = myData.movingDistance > myOptions.minMovingDistance;
+            }
+            myData.rtcData.lastLocation = myData.gps.location;
+         } else {
+            MyDbg(F(" -> GsmGPS timeout!"));
+         }
       }
    }
    return ret;
