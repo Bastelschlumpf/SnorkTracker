@@ -136,8 +136,9 @@ bool MyGsmGps::begin()
          myData.status = F("Sim808 network connected");
          MyDbg(myData.status);
 
-         MyDbg((String) F("GPRS: ") + myOptions.gprsAP);
-         if (!gsmSim808.gprsConnect(myOptions.gprsAP.c_str(), "", "")) {
+         MyDbg((String) F("GPRS: ") + myOptions.gprsAP + 
+            F(" User: ") + myOptions.gprsUser + F(" Password: ") + myOptions.gprsPassword);
+         if (!gsmSim808.gprsConnect(myOptions.gprsAP.c_str(), myOptions.gprsUser.c_str(), myOptions.gprsPassword.c_str())) {
             myData.status = F("Sim808 gprs connection failed!");
             MyDbg(myData.status);
             return false;
@@ -205,7 +206,7 @@ void MyGsmGps::handleClient()
             if (waitForGpsTime > myOptions.gpsTimeoutSec) {
                MyDbg(F(" -> gps timeout!"));
                startGpsCheck = 0;
-               myData.gps.hasTimeout = true;
+               myData.rtcData.lastGps.hasTimeout = true;
                myData.rtcData.lastGpsReadSec = secondsSincePowerOn();
             } else {
                if (myOptions.gpsTimeoutSec - waitForGpsTime > 0) {
@@ -240,7 +241,7 @@ bool MyGsmGps::stop()
 /** Is the gps enabled but we don't have a valid gps position. */
 bool MyGsmGps::waitingForGps()
 {
-   return isGsmActive && myOptions.isGpsEnabled && !myData.gps.fixStatus && !myData.gps.hasTimeout;
+   return isGsmActive && myOptions.isGpsEnabled && !myData.rtcData.lastGps.fixStatus && !myData.rtcData.lastGps.hasTimeout;
 }
 
 /** Send one AT command to the sim modul and log the result for the console window. */
@@ -335,42 +336,45 @@ bool MyGsmGps::getGps()
    bool ret = false;
 
    if (isGpsActive) {
-      if (gsmSim808.getGps(myData.gps)) {
+      MyGps gps;
+
+      if (gsmSim808.getGps(gps)) {
          myData.lastGpsUpdateSec = secondsSincePowerOn();
 
-         MyDbg((String) F("(gps) longitude: ")  + myData.gps.longitudeString());
-         MyDbg((String) F("(gps) latitude: ")   + myData.gps.latitudeString());
-         MyDbg((String) F("(gps) altitude: ")   + myData.gps.altitudeString());
-         MyDbg((String) F("(gps) kmph: ")       + myData.gps.kmphString());
-         MyDbg((String) F("(gps) satellites: ") + myData.gps.satellitesString());
-         MyDbg((String) F("(gps) course: ")     + myData.gps.courseString());
-         MyDbg((String) F("(gps) gpsDate: ")    + myData.gps.dateString());
-         MyDbg((String) F("(gps) gpsTime: ")    + myData.gps.timeString());
+         MyDbg((String) F("(gps) longitude: ")  + gps.longitudeString());
+         MyDbg((String) F("(gps) latitude: ")   + gps.latitudeString());
+         MyDbg((String) F("(gps) altitude: ")   + gps.altitudeString());
+         MyDbg((String) F("(gps) kmph: ")       + gps.kmphString());
+         MyDbg((String) F("(gps) satellites: ") + gps.satellitesString());
+         MyDbg((String) F("(gps) course: ")     + gps.courseString());
+         MyDbg((String) F("(gps) gpsDate: ")    + gps.date.dateString());
+         MyDbg((String) F("(gps) gpsTime: ")    + gps.time.timeString());
 
-         if (myData.rtcData.lastLocation.latitude() != 0) {
-            myData.movingDistance = myData.gps.location.distanceTo(myData.rtcData.lastLocation);
+         if (myData.rtcData.lastGps.location.latitude() != 0) {
+            myData.movingDistance = gps.location.distanceTo(myData.rtcData.lastGps.location);
             myData.isMoving       = myData.movingDistance > myOptions.minMovingDistance;
          }
-         myData.rtcData.lastLocation = myData.gps.location;
+         myData.rtcData.lastGps = gps;
          ret = true;
       } else {
          // Get the GPS position as fallback from the GSM modul.
          MyDbg(F("getGsmGps"));
-         if (gsmSim808.getGsmGps(myData.gps)) {
+         if (gsmSim808.getGsmGps(gps)) {
             myData.lastGpsUpdateSec = secondsSincePowerOn();
             
-            MyDbg((String) F("(gsmGps) longitude: ") + myData.gps.longitudeString());
-            MyDbg((String) F("(gsmGps) latitude: ")  + myData.gps.latitudeString());
-            MyDbg((String) F("(gsmGps) gpsDate: ")   + myData.gps.dateString());
-            MyDbg((String) F("(gsmGps) gpsTime: ")   + myData.gps.timeString());
+            MyDbg((String) F("(gsmGps) longitude: ") + gps.longitudeString());
+            MyDbg((String) F("(gsmGps) latitude: ")  + gps.latitudeString());
+            MyDbg((String) F("(gsmGps) gpsDate: ")   + gps.date.dateString());
+            MyDbg((String) F("(gsmGps) gpsTime: ")   + gps.time.timeString());
             
-            if (myData.rtcData.lastLocation.latitude() != 0) {
-               myData.movingDistance = myData.gps.location.distanceTo(myData.rtcData.lastLocation);
+            if (myData.rtcData.lastGps.location.latitude() != 0) {
+               myData.movingDistance = gps.location.distanceTo(myData.rtcData.lastGps.location);
                myData.isMoving       = myData.movingDistance > myOptions.minMovingDistance;
             }
-            myData.rtcData.lastLocation = myData.gps.location;
+            myData.rtcData.lastGps = gps;
          } else {
             MyDbg(F(" -> GsmGPS timeout!"));
+            myData.rtcData.lastGps.clear();
          }
       }
    }

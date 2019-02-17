@@ -25,6 +25,8 @@
 #define WIFI_SID      "sid"                    //!< WiFi SID
 #define WIFI_PW       "password"               //!< WiFi password
 #define GPRS_AP       "internet"               //!< gprs access point name
+#define GPRS_USER     ""                       //!< gprs user
+#define GPRS_PASSWORD ""                       //!< gprs password
 #define PHONE_NUMBER  "0123456789"             //!< my phone number for sms communication
 
 #define MQTT_NAME     "SnorkTracker"           //!< MQTT name

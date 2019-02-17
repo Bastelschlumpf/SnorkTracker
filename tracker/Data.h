@@ -32,7 +32,7 @@ public:
      */
    class RtcData {
    public:
-      MyLocation lastLocation;           //!< Last known GPS position. 
+      MyGps      lastGps;
 
       long       aktiveTimeSec;          //!< Time in active mode without current millis().
       long       powerOnTimeSec;         //!< Time the sim808 is on power without current millis..
@@ -41,11 +41,14 @@ public:
                  
       long       lowPowerActiveTimeSec;  //!< Timestamp of the last deep sleep start.
       long       lowPowerPowerOnTimeSec; //!< Timestamp of the last deep sleep start.
-                 
+
       long       lastBme280ReadSec;      //!< Timestamp of the last BME280 read.
       long       lastSmsCheckSec;        //!< Timestamp of the last sms check.
       long       lastGpsReadSec;         //!< Timestamp of the last gps read.
       long       lastMqttSendSec;        //!< Timestamp from the last send.
+
+      long       mqttSendCount;          //!< How many time the mqtt data successfully sent.
+      long       mqttLastSentTime;       //!< Last mqtt sent timestamp.
                  
       long       crcValue;               //!< CRC of the RtcData
 
@@ -83,7 +86,6 @@ public:
    String batteryLevel;        //!< Battery level of the sim808 module
    String batteryVolt;         //!< Battery volt of the sim808 module
    
-   MyGps  gps;                 //!< Current GPS data. 
    long   lastGpsUpdateSec;    //!< Elapsed Time of last read
    
    bool   isMoving;            //!< Is moving recognized
@@ -118,6 +120,8 @@ MyData::RtcData::RtcData()
    , lastSmsCheckSec(0)
    , lastGpsReadSec(0)
    , lastMqttSendSec(0)
+   , mqttSendCount(0)
+   , mqttLastSentTime(0)
 {
    crcValue = getCRC();
 }
@@ -139,7 +143,7 @@ long MyData::RtcData::getCRC()
 {
    long crc = 0;
 
-   crc = crc32(crc, (unsigned char *) &lastLocation,           sizeof(MyLocation));
+   crc = crc32(crc, (unsigned char *) &lastGps,                sizeof(MyGps));
    crc = crc32(crc, (unsigned char *) &aktiveTimeSec,          sizeof(long));
    crc = crc32(crc, (unsigned char *) &powerOnTimeSec,         sizeof(long));
    crc = crc32(crc, (unsigned char *) &deepSleepTimeSec,       sizeof(long));
@@ -150,6 +154,9 @@ long MyData::RtcData::getCRC()
    crc = crc32(crc, (unsigned char *) &lastSmsCheckSec,        sizeof(long));
    crc = crc32(crc, (unsigned char *) &lastGpsReadSec,         sizeof(long));
    crc = crc32(crc, (unsigned char *) &lastMqttSendSec,        sizeof(long));
+   crc = crc32(crc, (unsigned char *) &mqttSendCount,          sizeof(long));
+   crc = crc32(crc, (unsigned char *) &mqttLastSentTime,       sizeof(long));
+   
    return crc;
 }
 

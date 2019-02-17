@@ -378,13 +378,21 @@ void MyWebServer::handleLoadMainInfo()
    AddTableTr(info, F("Temperature"), String(myData->temperature, 1) + F(" °C"));
    AddTableTr(info, F("Humidity"),    String(myData->humidity,    1) + F(" %"));
    AddTableTr(info, F("Pressure"),    String(myData->pressure,    1) + F(" hPa"));
-   if (myData->gps.fixStatus) {
-      AddTableTr(info, F("Longitude"),  myData->gps.longitudeString());
-      AddTableTr(info, F("Latitude"),   myData->gps.latitudeString());
-      AddTableTr(info, F("Altitude"),   myData->gps.altitudeString() + F(" m"));
-      AddTableTr(info, F("Speed"),      myData->gps.kmphString()     + F(" kmph"));
-      AddTableTr(info, F("Satellites"), myData->gps.satellitesString());
+   if (myData->rtcData.lastGps.fixStatus) {
+      AddTableTr(info, F("Longitude"),  myData->rtcData.lastGps.longitudeString());
+      AddTableTr(info, F("Latitude"),   myData->rtcData.lastGps.latitudeString());
+      AddTableTr(info, F("Altitude"),   myData->rtcData.lastGps.altitudeString() + F(" m"));
+      AddTableTr(info, F("Speed"),      myData->rtcData.lastGps.kmphString()     + F(" kmph"));
+      AddTableTr(info, F("Satellites"), myData->rtcData.lastGps.satellitesString());
    }
+
+   if (myOptions->isMqttEnabled) {
+      MyTime mqttLastSentTime(myData->rtcData.mqttLastSentTime);
+
+      AddTableTr(info, F("MQTT sent"), String(myData->rtcData.mqttSendCount));
+      AddTableTr(info, F("MQTT last"), mqttLastSentTime.timeString());
+   }
+
    if (myData->secondsToDeepSleep >= 0) {
       AddTableTr(info, F("Power saving in "), String(myData->secondsToDeepSleep) + F(" Seconds"));
    }
@@ -444,6 +452,8 @@ void MyWebServer::handleLoadSettingsInfo()
    AddOption(info, F("wifiAP"),       F("WiFi SSID"),     myOptions->wifiAP);
    AddOption(info, F("wifiPassword"), F("WiFi Password"), myOptions->wifiPassword, true, true);
    AddOption(info, F("gprsAP"),       F("GPRS AP"),       myOptions->gprsAP);
+   AddOption(info, F("gprsUser"),     F("GPRS User"),     myOptions->gprsUser);
+   AddOption(info, F("gprsPassword"), F("GPRS Password"), myOptions->gprsPassword);
 
    AddOption(info, F("isDebugActive"), F("Debug Active"),  myOptions->isDebugActive);
 
@@ -595,15 +605,15 @@ void MyWebServer::handleLoadInfoInfo()
       AddTableTr(info, F("Battery Volt"),      myData->batteryVolt);
       AddTableTr(info);
    }
-   if (myData->gps.fixStatus) {
-      AddTableTr(info, F("Longitude"),         myData->gps.longitudeString());
-      AddTableTr(info, F("Latitude"),          myData->gps.latitudeString());
-      AddTableTr(info, F("Altitude"),          myData->gps.altitudeString());
-      AddTableTr(info, F("Km/h"),              myData->gps.kmphString());
-      AddTableTr(info, F("Satellite"),         myData->gps.satellitesString());
-      AddTableTr(info, F("Course"),            myData->gps.courseString());
-      AddTableTr(info, F("GPS Datum"),         myData->gps.dateString());
-      AddTableTr(info, F("GPS Time"),          myData->gps.timeString());
+   if (myData->rtcData.lastGps.fixStatus) {
+      AddTableTr(info, F("Longitude"), myData->rtcData.lastGps.longitudeString());
+      AddTableTr(info, F("Latitude"),  myData->rtcData.lastGps.latitudeString());
+      AddTableTr(info, F("Altitude"),  myData->rtcData.lastGps.altitudeString());
+      AddTableTr(info, F("Km/h"),      myData->rtcData.lastGps.kmphString());
+      AddTableTr(info, F("Satellite"), myData->rtcData.lastGps.satellitesString());
+      AddTableTr(info, F("Course"),    myData->rtcData.lastGps.courseString());
+      AddTableTr(info, F("GPS Date"),  myData->rtcData.lastGps.date.dateString());
+      AddTableTr(info, F("GPS Time"),  myData->rtcData.lastGps.time.timeString());
       AddTableTr(info);
    }
    if (myData->isMoving || myData->movingDistance != 0.0) {

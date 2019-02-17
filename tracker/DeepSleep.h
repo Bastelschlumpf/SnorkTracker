@@ -64,7 +64,7 @@ bool MyDeepSleep::begin()
 
    ESP.rtcUserMemoryRead(0, (uint32_t *) &rtcData, sizeof(MyData::RtcData));
    if (!rtcData.isValid()) {
-      MyDbg(F("RtcData invalid"));
+      MyDbg(F("RtcData invalid (power on?)"));
    } else {
       MyDbg(F("RtcData read"));
       myData.rtcData = rtcData;

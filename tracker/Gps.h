@@ -87,6 +87,8 @@ public:
    }
 
    void clear();
+
+   String dateString();
 };
 
 /**
@@ -107,8 +109,18 @@ public:
       : time(0)
    {
    }
+   MyTime(int t)
+      : time(t)
+   {
+   }
 
    void clear();
+
+   String timeString();
+
+   operator int() {
+      return time;
+   }
 };
   
 /**
@@ -164,8 +176,6 @@ public:
    String kmphString       ();
    String satellitesString ();
    String courseString     ();
-   String dateString       ();
-   String timeString       ();
 };
 
 /* ******************************************** */
@@ -340,6 +350,12 @@ int MyDate::day()
    return date % 100;
 }
 
+/** Returns the gps date as a string */
+String MyDate::dateString()
+{
+   return String(day()) + '-' + String(month()) + '-' + String(year());
+}
+
 /** Reset the values. */
 void MyTime::clear()
 {
@@ -362,6 +378,12 @@ int MyTime::minute()
 int MyTime::second()
 {
    return time % 100;
+}
+
+/** Returns the gps time as a string */
+String MyTime::timeString()
+{
+   return String(hour()) + ':' + String(minute()) + ':' + String(second());
 }
 
 
@@ -549,16 +571,4 @@ String MyGps::satellitesString()
 String MyGps::courseString()
 {
    return String(course);
-}
-
-/** Returns the gps date as a string */
-String MyGps::dateString()
-{
-   return String(date.day()) + '-' + String(date.month()) + '-' + String(date.year());
-}
-
-/** Returns the gps time as a string */
-String MyGps::timeString()
-{
-   return String(time.hour()) + ':' + String(time.minute()) + ':' + String(time.second());
 }

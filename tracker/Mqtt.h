@@ -194,13 +194,15 @@ void MyMqtt::handleClient()
             myPublish(topic_batt_level,     myData.batteryLevel);
             myPublish(topic_batt_volt,      myData.batteryVolt);
 
-            if (myData.gps.fixStatus) {
-               myPublish(topic_lon,  myData.gps.longitudeString());
-               myPublish(topic_lat,  myData.gps.latitudeString());
-               myPublish(topic_alt,  myData.gps.altitudeString());
-               myPublish(topic_kmph, myData.gps.kmphString());
+            if (myData.rtcData.lastGps.fixStatus) {
+               myPublish(topic_lon,  myData.rtcData.lastGps.longitudeString());
+               myPublish(topic_lat,  myData.rtcData.lastGps.latitudeString());
+               myPublish(topic_alt,  myData.rtcData.lastGps.altitudeString());
+               myPublish(topic_kmph, myData.rtcData.lastGps.kmphString());
             }
 
+            myData.rtcData.mqttSendCount++;
+            myData.rtcData.mqttLastSentTime = myData.rtcData.lastGps.time;
             myData.rtcData.lastMqttSendSec = secondsSincePowerOn();
             MyDbg(F("mqtt published"), true);
             MyDelay(5000);

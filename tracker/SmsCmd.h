@@ -87,8 +87,8 @@ void MySmsCmd::handleClient()
 /** Returns the gps position as an google map url. */
 String MySmsCmd::getGoogleMapGpsUrl()
 {
-   if (myData.gps.fixStatus) {
-      return (String) F("https://maps.google.com/maps?q=") + myData.gps.latitudeString() + F(",") + myData.gps.longitudeString();
+   if (myData.rtcData.lastGps.fixStatus) {
+      return (String) F("https://maps.google.com/maps?q=") + myData.rtcData.lastGps.latitudeString() + F(",") + myData.rtcData.lastGps.longitudeString();
    } else {
       if (myOptions.isGpsEnabled) {
          return F("No Gps position.\n");
@@ -218,16 +218,16 @@ void MySmsCmd::cmdStatus(const SmsData &sms)
    status += (String) F("Temperature: ") + String(myData.temperature) + F(" C\n");
    status += (String) F("Humidity: ")    + String(myData.humidity)    + F(" %\n");
    status += (String) F("Pressure: ")    + String(myData.pressure)    + F(" hPa\n");
-   if (!myData.gps.fixStatus) {
+   if (!myData.rtcData.lastGps.fixStatus) {
       if (myOptions.isGpsEnabled) {
          status += F("No Gps positions.");
       } else {
          status += F("Gps not enabled.");
       }
    } else {
-      status += (String) F("Altitude: ")   + myData.gps.altitudeString()   + F(" m\n");
-      status += (String) F("Speed: ")      + myData.gps.kmphString()       + F(" kmph\n");
-      status += (String) F("Satellites: ") + myData.gps.satellitesString() + '\n';
+      status += (String) F("Altitude: ")   + myData.rtcData.lastGps.altitudeString()   + F(" m\n");
+      status += (String) F("Speed: ")      + myData.rtcData.lastGps.kmphString()       + F(" kmph\n");
+      status += (String) F("Satellites: ") + myData.rtcData.lastGps.satellitesString() + '\n';
       status += getGoogleMapGpsUrl();
    }
    sendSms(status);

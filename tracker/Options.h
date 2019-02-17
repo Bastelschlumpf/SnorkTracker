@@ -31,6 +31,8 @@ class MyOptions
 {
 public:
    String gprsAP;                    //!< GRPS access point of the sim card supplier.
+   String gprsUser;                  //!< GRPS access point User.
+   String gprsPassword;              //!< GRPS access point Password.
    String wifiAP;                    //!< WiFi AP name.
    String wifiPassword;              //!< WiFi AP password.
    bool   isDebugActive;             //!< Is detailed debugging enabled?
@@ -69,6 +71,8 @@ public:
 
 MyOptions::MyOptions()
    : gprsAP(GPRS_AP)
+   , gprsUser(GPRS_USER)
+   , gprsPassword(GPRS_PASSWORD)
    , wifiAP(WIFI_SID)
    , wifiPassword(WIFI_PW)
    , isDebugActive(false)
@@ -127,6 +131,10 @@ bool MyOptions::load()
 
             if (key == F("gprsAP")) {
                gprsAP = value;
+            } else if (key == F("gprsUser")) {
+               gprsUser = value;
+            } else if (key == F("gprsPassword")) {
+               gprsPassword = value;
             } else if (key == F("wifiAP")) {
                wifiAP = value;
             } else if (key == F("wifiPassword")) {
@@ -202,6 +210,8 @@ bool MyOptions::save()
      MyDbg("Failed to write options file");
   } else {
      file.println((String) F("gprsAP=")                    + gprsAP);
+     file.println((String) F("gprsUser=")                  + gprsUser);
+     file.println((String) F("gprsPassword=")              + gprsPassword);
      file.println((String) F("wifiAP=")                    + wifiAP);
      file.println((String) F("wifiPassword=")              + wifiPassword);
      file.println((String) F("gsmPower=")                  + String(gsmPower));
