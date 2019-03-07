@@ -79,11 +79,11 @@ void MyVoltage::readVoltage()
       if (myData.isPowerOn) {
          myData.rtcData.lowPowerPowerOnTimeSec += lowPowerSec;
       }
-      MyDbg((String) F("Change to high power (V): ") + String(myData.voltage, 1));
+      MyDbg((String) F("Change to high power (V): ") + String(myData.voltage, 2));
    }
    if (!myData.isLowPower && isLowPower) { // Change to low power
       lowPowerStartSec = currSec;
-      MyDbg((String) F("Change to low power (V): ") + String(myData.voltage, 1));
+      MyDbg((String) F("Change to low power (V): ") + String(myData.voltage, 2));
    }
    myData.isLowPower = isLowPower;
 }

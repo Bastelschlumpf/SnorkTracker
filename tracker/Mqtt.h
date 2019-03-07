@@ -28,6 +28,7 @@
 #define topic_voltage                "/Voltage"                //!< Power supply voltage
 #define topic_mAh                    "/mAh"                    //!< Power consumption
 #define topic_mAhLowPower            "/mAhLowPower"            //!< Power consumption in low power
+#define topic_alive                  "/Alive"                  //!< Alive time in sec
 
 #define topic_gsm_power              "/GsmPower"               //!< switch power on/off
 #define topic_gps_enabled            "/GpsEnabled"             //!< switch gps on/off
@@ -177,9 +178,10 @@ void MyMqtt::handleClient()
       }
       if (PubSubClient::connected()) {
          MyDbg(F("Attempting MQTT publishing"), true);
-         myPublish(topic_voltage,     String(myData.voltage));
+         myPublish(topic_voltage,     String(myData.voltage, 2));
          myPublish(topic_mAh,         String(myData.getPowerConsumption()));
          myPublish(topic_mAhLowPower, String(myData.getLowPowerPowerConsumption()));
+         myPublish(topic_alive,       formatInterval(myData.getActiveTimeSec()));
 
          myPublish(topic_temperature, String(myData.temperature));
          myPublish(topic_humidity,    String(myData.humidity));
