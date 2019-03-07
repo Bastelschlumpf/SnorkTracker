@@ -20,7 +20,7 @@
   * DeepSleep functions.
   */
 
-#define NO_DEEP_SLEEP_STARTUP_TIME 120 //!< No deep sleep for the first two minute.
+#define NO_DEEP_SLEEP_STARTUP_TIME 60 //!< No deep sleep for the first minute.
 
 
 /**
@@ -106,6 +106,8 @@ bool MyDeepSleep::haveToSleep()
 void MyDeepSleep::sleep(bool start /* = true */)
 {
    MyDbg((String) F("Entering DeepSleep for: ") + String(myOptions.powerCheckIntervalSec) + F("Sec"));
+
+   delay(2000);
 
    if (start) {
       myData.rtcData.deepSleepStartSec = secondsSincePowerOn();
