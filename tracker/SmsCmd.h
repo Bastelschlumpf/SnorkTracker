@@ -194,7 +194,7 @@ bool MySmsCmd::readValues(long &value1, long &value2, const String message)
 /** Command: switch on the modules */
 void MySmsCmd::cmdOn(const SmsData &sms)
 {
-   myOptions.gsmPower     = true;
+   myOptions.powerOn      = true;
    myOptions.isGpsEnabled = true;
    myOptions.save();
    sendOk(sms);
@@ -203,7 +203,7 @@ void MySmsCmd::cmdOn(const SmsData &sms)
 /** Command: switch off the modules */
 void MySmsCmd::cmdOff(const SmsData &sms)
 {
-   myOptions.gsmPower = false;
+   myOptions.powerOn = false;
    myOptions.save();
    sendOk(sms);
 }

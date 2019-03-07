@@ -30,10 +30,11 @@
 #define topic_mAhLowPower            "/mAhLowPower"            //!< Power consumption in low power
 #define topic_alive                  "/Alive"                  //!< Alive time in sec
 
-#define topic_gsm_power              "/GsmPower"               //!< switch power on/off
+#define topic_power_on               "/PowerOn"                //!< switch power on/off
 #define topic_gps_enabled            "/GpsEnabled"             //!< switch gps on/off
 #define topic_send_on_move_every     "/SendOnMoveEverySec"     //!< mqtt send interval on moving
 #define topic_send_on_non_move_every "/SendOnNonMoveEverySec"  //!< mqtt sending interval on non moving
+#define topic_send_every             "/SendEverySec"           //!< mqtt sending interval
 
 #define topic_temperature            "/BME280/Temperature"     //!< Temperature
 #define topic_humidity               "/BME280/Humidity"        //!< Humidity
@@ -163,7 +164,7 @@ void MyMqtt::handleClient()
             MyDbg(F("Attempting MQTT connection..."), true);
             if (PubSubClient::connect(myOptions.mqttName.c_str(), myOptions.mqttUser.c_str(), myOptions.mqttPassword.c_str())) {  
                mySubscribe(topic_deep_sleep);
-               mySubscribe(topic_gsm_power);
+               mySubscribe(topic_power_on);
                mySubscribe(topic_gps_enabled);
                mySubscribe(topic_send_on_move_every);
                mySubscribe(topic_send_on_non_move_every);
@@ -178,6 +179,19 @@ void MyMqtt::handleClient()
       }
       if (PubSubClient::connected()) {
          MyDbg(F("Attempting MQTT publishing"), true);
+
+/*
+         myPublish(topic_deep_sleep,             String(g_myOptions->isDeepSleepEnabled));
+         myPublish(topic_power_on,               String(g_myOptions->powerOn));
+#ifdef SIM808_CONNECTED
+         myPublish(topic_gps_enabled,            String(g_myOptions->isGpsEnabled));
+         myPublish(topic_send_on_move_every,     String(g_myOptions->mqttSendOnMoveEverySec));
+         myPublish(topic_send_on_non_move_every, String(g_myOptions->mqttSendOnNonMoveEverySec));
+#else 
+         myPublish(topic_send_every,             String(g_myOptions->mqttSendOnNonMoveEverySec));
+#endif
+*/
+
          myPublish(topic_voltage,     String(myData.voltage, 2));
          myPublish(topic_mAh,         String(myData.getPowerConsumption()));
          myPublish(topic_mAhLowPower, String(myData.getLowPowerPowerConsumption()));
@@ -187,6 +201,7 @@ void MyMqtt::handleClient()
          myPublish(topic_humidity,    String(myData.humidity));
          myPublish(topic_pressure,    String(myData.pressure));
 
+#ifdef SIM808_CONNECTED
          myPublish(topic_signal_quality, myData.signalQuality);
          myPublish(topic_batt_level,     myData.batteryLevel);
          myPublish(topic_batt_volt,      myData.batteryVolt);
@@ -197,7 +212,7 @@ void MyMqtt::handleClient()
             myPublish(topic_alt,  myData.rtcData.lastGps.altitudeString());
             myPublish(topic_kmph, myData.rtcData.lastGps.kmphString());
          }
-
+#endif
          myData.rtcData.mqttSendCount++;
          myData.rtcData.mqttLastSentTime = myData.rtcData.lastGps.time;
          myData.rtcData.lastMqttSendSec = secondsSincePowerOn();
@@ -229,9 +244,9 @@ void MyMqtt::mqttCallback(char* topic, byte* payload, unsigned int len)
          g_myOptions->isDeepSleepEnabled = atoi((char *) payload);
          MyDbg(strTopic + g_myOptions->isDeepSleepEnabled ? F(" - On") : F(" - Off"), true);
       }
-      if (strTopic == g_myOptions->mqttName + topic_gsm_power) {
-         g_myOptions->gsmPower = atoi((char *) payload);
-         MyDbg(strTopic + g_myOptions->gsmPower ? F(" - On") : F(" - Off"), true);
+      if (strTopic == g_myOptions->mqttName + topic_power_on) {
+         g_myOptions->powerOn = atoi((char *) payload);
+         MyDbg(strTopic + g_myOptions->powerOn ? F(" - On") : F(" - Off"), true);
       }
       if (strTopic == g_myOptions->mqttName + topic_gps_enabled) {
          g_myOptions->isGpsEnabled = atoi((char *) payload);
@@ -243,6 +258,10 @@ void MyMqtt::mqttCallback(char* topic, byte* payload, unsigned int len)
       }
       if (strTopic == g_myOptions->mqttName + topic_send_on_non_move_every) {
          g_myOptions->mqttSendOnNonMoveEverySec = atoi((char *) payload);
+         MyDbg(strTopic + " - " + String(g_myOptions->mqttSendOnNonMoveEverySec), true);
+      }
+      if (strTopic == g_myOptions->mqttName + topic_send_every) {
+         g_myOptions->mqttSendOnNonMoveEverySec = atoi((char *)payload);
          MyDbg(strTopic + " - " + String(g_myOptions->mqttSendOnNonMoveEverySec), true);
       }
    }

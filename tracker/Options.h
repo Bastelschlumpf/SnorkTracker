@@ -37,7 +37,7 @@ public:
    String wifiPassword;              //!< WiFi AP password.
    bool   isDebugActive;             //!< Is detailed debugging enabled?
    long   bme280CheckIntervalSec;    //!< Time interval to read the temp, hum and pressure.
-   bool   gsmPower;                  //!< Is the GSM power from the DC-DC modul switched on? 
+   bool   powerOn;                   //!< Is the GSM power from the DC-DC modul switched on? 
    bool   isSmsEnabled;              //!< Is the sms check functionality active?
    bool   isGpsEnabled;              //!< Is the gps part of the sim808 active?
    long   gpsTimeoutSec;             //!< Timeout for waiting for gps position.
@@ -77,7 +77,7 @@ MyOptions::MyOptions()
    , wifiPassword(WIFI_PW)
    , isDebugActive(false)
    , bme280CheckIntervalSec(60)
-   , gsmPower(false)
+   , powerOn(false)
    , isSmsEnabled(false)
    , isGpsEnabled(false)
    , gpsTimeoutSec(180)
@@ -139,8 +139,8 @@ bool MyOptions::load()
                wifiAP = value;
             } else if (key == F("wifiPassword")) {
                wifiPassword = value;
-            } else if (key == F("gsmPower")) {
-               gsmPower = lValue;
+            } else if (key == F("powerOn")) {
+               powerOn = lValue;
             } else if (key == F("isDebugActive")) {
                isDebugActive = lValue;
             } else if (key == F("bme280CheckIntervalSec")) {
@@ -214,7 +214,7 @@ bool MyOptions::save()
      file.println((String) F("gprsPassword=")              + gprsPassword);
      file.println((String) F("wifiAP=")                    + wifiAP);
      file.println((String) F("wifiPassword=")              + wifiPassword);
-     file.println((String) F("gsmPower=")                  + String(gsmPower));
+     file.println((String) F("powerOn=")                   + String(powerOn));
      file.println((String) F("isDebugActive=")             + String(isDebugActive));
      file.println((String) F("bme280CheckIntervalSec=")    + String(bme280CheckIntervalSec));
      file.println((String) F("isSmsEnabled=")              + String(isSmsEnabled));

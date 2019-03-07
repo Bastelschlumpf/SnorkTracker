@@ -188,7 +188,7 @@ void loop()
 
 #ifdef SIM808_CONNECTED
    // Starting gsm ?
-   if (myOptions.gsmPower && !gsmHasPower) {
+   if (myOptions.powerOn && !gsmHasPower) {
       if (!isStarting && !isStopping) {
          isStarting = true;
          myGsmPower.on(); 
@@ -203,7 +203,7 @@ void loop()
    }
 
    // Stopping gsm ?
-   if (!myOptions.gsmPower && gsmHasPower) {
+   if (!myOptions.powerOn && gsmHasPower) {
       if (!isStarting && !isStopping) {
          isStopping = true;
          myGsmGps.stop();
@@ -229,7 +229,7 @@ void loop()
       }
    }
 #else
-   if (myOptions.gsmPower && myOptions.isMqttEnabled) {
+   if (myOptions.powerOn && myOptions.isMqttEnabled) {
       myMqtt.handleClient();
    }
 #endif

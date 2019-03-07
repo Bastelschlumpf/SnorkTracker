@@ -364,7 +364,7 @@ void MyWebServer::handleLoadMainInfo()
    String onOff = server.arg(F("o"));
 
    if (onOff == F("1")) {
-      myOptions->gsmPower = !myOptions->gsmPower;
+      myOptions->powerOn = !myOptions->powerOn;
       myOptions->save();
    }
 
@@ -413,7 +413,7 @@ void MyWebServer::handleLoadMainInfo()
          "<tr>"
             "<td style='width:100%'>"
                "<div style='text-align:center;font-weight:bold;font-size:62px'>") +
-                  + (myOptions->gsmPower ? F("ON") : F("OFF")) +
+                  + (myOptions->powerOn ? F("ON") : F("OFF")) +
                F("</div>"
             "</td>"
          "</tr>"

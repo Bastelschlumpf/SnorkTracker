@@ -87,7 +87,7 @@ MyGsmGps::MyGsmGps(MyOptions &options, MyData &data, short pinRx, short pinTx)
 /** Initialized the sim808 modul and start optionally the gsm and/ or gps part. */
 bool MyGsmGps::begin()
 {
-   if (!myOptions.gsmPower) {
+   if (!myOptions.powerOn) {
       MyDbg(F("sim808 has no power!"));
       return false;
    }
@@ -97,7 +97,7 @@ bool MyGsmGps::begin()
       myData.status = F("Sim808 Initializing...");
       MyDbg(myData.status);
       for (int i = 0; !gsmSim808.restart() && i <= 5; i++) {
-         if (!myOptions.gsmPower) {
+         if (!myOptions.powerOn) {
             MyDbg(F("Sim808 Initializing ... canceled"));
             return false;
          }
@@ -117,7 +117,7 @@ bool MyGsmGps::begin()
       myData.status = F("Sim808 Waiting for network...");
       MyDbg(myData.status);
       for (int i = 0; !gsmSim808.waitForNetwork() && i <= 5; i++) {
-         if (!myOptions.gsmPower) {
+         if (!myOptions.powerOn) {
             MyDbg(F("Sim808 Waiting for network... canceled"));
             return false;
          }
