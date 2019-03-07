@@ -93,7 +93,7 @@ bool MyDeepSleep::haveToSleep()
 
    myData.secondsToDeepSleep = -1;
    if (myOptions.isDeepSleepEnabled && myData.voltage < myOptions.powerSaveModeVoltage) {
-      myData.secondsToDeepSleep = myOptions.activeTimeSec - activeTimeSec;
+      myData.secondsToDeepSleep = max(myOptions.activeTimeSec - activeTimeSec, NO_DEEP_SLEEP_STARTUP_TIME - secondsSincePowerOn());
    }
 
    return (myOptions.isDeepSleepEnabled && 
