@@ -59,7 +59,6 @@ public:
    static void mqttCallback(char* topic, byte* payload, unsigned int len);
    
 protected:
-   MyGsmGps  &myGsmGps;             //!< Reference to the Gsmgps instance.
    MyOptions &myOptions;            //!< Reference to the options. 
    MyData    &myData;               //!< Reference to the data.
    bool       publishInProgress;    //!< Are we publishing right now.
@@ -69,7 +68,7 @@ protected:
    bool myPublish(String subTopic, String value);
 
 public:
-   MyMqtt(MyGsmGps &gsmGps, MyOptions &options, MyData &data);
+   MyMqtt(Client &client, MyOptions &options, MyData &data);
    ~MyMqtt();
    
    bool begin();
@@ -81,9 +80,8 @@ public:
 /* ******************************************** */
 
 /** Constructor/Destructor */
-MyMqtt::MyMqtt(MyGsmGps &gsmGps, MyOptions &options, MyData &data)
-   : myGsmGps(gsmGps)
-   , PubSubClient(gsmGps.gsmClient)
+MyMqtt::MyMqtt(Client &client, MyOptions &options, MyData &data)
+   : PubSubClient(client)
    , myOptions(options)
    , myData(data)
    , publishInProgress(false)
@@ -130,12 +128,10 @@ bool MyMqtt::waitingForMqtt()
    if (publishInProgress) {
       return true;
    }
-   if (myGsmGps.isGsmActive) {
-      if (myData.isMoving) {
-         return secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnMoveEverySec);
-      } else {
-         return secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnNonMoveEverySec);
-      }
+   if (myData.isMoving) {
+      return secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnMoveEverySec);
+   } else {
+      return secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnNonMoveEverySec);
    }
    return false;
 }
@@ -152,63 +148,61 @@ bool MyMqtt::begin()
 /** Connect To the MQTT server and send the data when the time is right. */
 void MyMqtt::handleClient()
 {
-   if (myGsmGps.isGsmActive) {
-      bool send = false;
+   bool send = false;
 
-      if (myData.isMoving) {
-         send = secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnMoveEverySec);
-      } else {
-         send = secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnNonMoveEverySec);
-      }
-      if (send && !publishInProgress) {
-         publishInProgress = true;
-         if (!PubSubClient::connected()) {
-            for (int i = 0; !PubSubClient::connected() && i < 5; i++) {  
-               MyDbg(F("Attempting MQTT connection..."), true);
-               if (PubSubClient::connect(myOptions.mqttName.c_str(), myOptions.mqttUser.c_str(), myOptions.mqttPassword.c_str())) {  
-                  mySubscribe(topic_deep_sleep);
-                  mySubscribe(topic_gsm_power);
-                  mySubscribe(topic_gps_enabled);
-                  mySubscribe(topic_send_on_move_every);
-                  mySubscribe(topic_send_on_non_move_every);
-                  MyDbg(F(" connected"), true);
-               } else {  
-                  MyDbg((String) F("   Mqtt failed, rc = ") + String(PubSubClient::state()), true);
-                  MyDbg(F(" Try again in 5 seconds"), true);
-                  MyDelay(5000);
-                  MyDbg(F("."), true, false);
-               }  
+   if (myData.isMoving) {
+      send = secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnMoveEverySec);
+   } else {
+      send = secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnNonMoveEverySec);
+   }
+   if (send && !publishInProgress) {
+      publishInProgress = true;
+      if (!PubSubClient::connected()) {
+         for (int i = 0; !PubSubClient::connected() && i < 5; i++) {  
+            MyDbg(F("Attempting MQTT connection..."), true);
+            if (PubSubClient::connect(myOptions.mqttName.c_str(), myOptions.mqttUser.c_str(), myOptions.mqttPassword.c_str())) {  
+               mySubscribe(topic_deep_sleep);
+               mySubscribe(topic_gsm_power);
+               mySubscribe(topic_gps_enabled);
+               mySubscribe(topic_send_on_move_every);
+               mySubscribe(topic_send_on_non_move_every);
+               MyDbg(F(" connected"), true);
+            } else {  
+               MyDbg((String) F("   Mqtt failed, rc = ") + String(PubSubClient::state()), true);
+               MyDbg(F(" Try again in 5 seconds"), true);
+               MyDelay(5000);
+               MyDbg(F("."), true, false);
             }  
-         }
-         if (PubSubClient::connected()) {
-            MyDbg(F("Attempting MQTT publishing"), true);
-            myPublish(topic_voltage,     String(myData.voltage));
-            myPublish(topic_mAh,         String(myData.getPowerConsumption()));
-            myPublish(topic_mAhLowPower, String(myData.getLowPowerPowerConsumption()));
-
-            myPublish(topic_temperature, String(myData.temperature));
-            myPublish(topic_humidity,    String(myData.humidity));
-            myPublish(topic_pressure,    String(myData.pressure));
-
-            myPublish(topic_signal_quality, myData.signalQuality);
-            myPublish(topic_batt_level,     myData.batteryLevel);
-            myPublish(topic_batt_volt,      myData.batteryVolt);
-
-            if (myData.rtcData.lastGps.fixStatus) {
-               myPublish(topic_lon,  myData.rtcData.lastGps.longitudeString());
-               myPublish(topic_lat,  myData.rtcData.lastGps.latitudeString());
-               myPublish(topic_alt,  myData.rtcData.lastGps.altitudeString());
-               myPublish(topic_kmph, myData.rtcData.lastGps.kmphString());
-            }
-
-            myData.rtcData.mqttSendCount++;
-            myData.rtcData.mqttLastSentTime = myData.rtcData.lastGps.time;
-            myData.rtcData.lastMqttSendSec = secondsSincePowerOn();
-            MyDbg(F("mqtt published"), true);
-            MyDelay(5000);
-         }
-         publishInProgress = false;
+         }  
       }
+      if (PubSubClient::connected()) {
+         MyDbg(F("Attempting MQTT publishing"), true);
+         myPublish(topic_voltage,     String(myData.voltage));
+         myPublish(topic_mAh,         String(myData.getPowerConsumption()));
+         myPublish(topic_mAhLowPower, String(myData.getLowPowerPowerConsumption()));
+
+         myPublish(topic_temperature, String(myData.temperature));
+         myPublish(topic_humidity,    String(myData.humidity));
+         myPublish(topic_pressure,    String(myData.pressure));
+
+         myPublish(topic_signal_quality, myData.signalQuality);
+         myPublish(topic_batt_level,     myData.batteryLevel);
+         myPublish(topic_batt_volt,      myData.batteryVolt);
+
+         if (myData.rtcData.lastGps.fixStatus) {
+            myPublish(topic_lon,  myData.rtcData.lastGps.longitudeString());
+            myPublish(topic_lat,  myData.rtcData.lastGps.latitudeString());
+            myPublish(topic_alt,  myData.rtcData.lastGps.altitudeString());
+            myPublish(topic_kmph, myData.rtcData.lastGps.kmphString());
+         }
+
+         myData.rtcData.mqttSendCount++;
+         myData.rtcData.mqttLastSentTime = myData.rtcData.lastGps.time;
+         myData.rtcData.lastMqttSendSec = secondsSincePowerOn();
+         MyDbg(F("mqtt published"), true);
+         MyDelay(5000);
+      }
+      publishInProgress = false;
    }
 }
 

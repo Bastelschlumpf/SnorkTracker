@@ -372,12 +372,20 @@ void MyWebServer::handleLoadMainInfo()
    if (myData->status != "") {
       AddTableTr(info, F("Status"), myData->status);
    }
+#ifdef SIM808_CONNECTED
    AddTableTr(info, F("Modem Info"),  myData->modemInfo);
-   
+#endif   
    AddTableTr(info, F("Battery"),     String(myData->voltage,     1) + F(" V"));
    AddTableTr(info, F("Temperature"), String(myData->temperature, 1) + F(" °C"));
    AddTableTr(info, F("Humidity"),    String(myData->humidity,    1) + F(" %"));
    AddTableTr(info, F("Pressure"),    String(myData->pressure,    1) + F(" hPa"));
+#ifndef SIM808_CONNECTED
+   AddTableTr(info, F("Active Time"),   formatInterval(myData->getActiveTimeSec()));
+   AddTableTr(info, F("PowerUpTime"),   formatInterval(myData->getPowerOnTimeSec()));
+   AddTableTr(info, F("DeepSleepTime"), formatInterval(myData->rtcData.deepSleepTimeSec));
+   AddTableTr(info, F("mAh"),           String(myData->getPowerConsumption(), 2));
+   AddTableTr(info, F("Low power mAh"), String(myData->getLowPowerPowerConsumption(), 2));
+#endif   
    if (myData->rtcData.lastGps.fixStatus) {
       AddTableTr(info, F("Longitude"),  myData->rtcData.lastGps.longitudeString());
       AddTableTr(info, F("Latitude"),   myData->rtcData.lastGps.latitudeString());
@@ -390,7 +398,9 @@ void MyWebServer::handleLoadMainInfo()
       MyTime mqttLastSentTime(myData->rtcData.mqttLastSentTime);
 
       AddTableTr(info, F("MQTT sent"), String(myData->rtcData.mqttSendCount));
+#ifdef SIM808_CONNECTED
       AddTableTr(info, F("MQTT last"), mqttLastSentTime.timeString());
+#endif
    }
 
    if (myData->secondsToDeepSleep >= 0) {
@@ -451,14 +461,16 @@ void MyWebServer::handleLoadSettingsInfo()
    MyDbg(F("LoadSettings"), true);
    AddOption(info, F("wifiAP"),       F("WiFi SSID"),     myOptions->wifiAP);
    AddOption(info, F("wifiPassword"), F("WiFi Password"), myOptions->wifiPassword, true, true);
+#ifdef SIM808_CONNECTED
    AddOption(info, F("gprsAP"),       F("GPRS AP"),       myOptions->gprsAP);
    AddOption(info, F("gprsUser"),     F("GPRS User"),     myOptions->gprsUser);
    AddOption(info, F("gprsPassword"), F("GPRS Password"), myOptions->gprsPassword);
-
+#endif
    AddOption(info, F("isDebugActive"), F("Debug Active"),  myOptions->isDebugActive);
 
    AddOption(info, F("bme280CheckIntervalSec"), F("Temperature check every (Interval)"), formatInterval(myOptions->bme280CheckIntervalSec));
 
+#ifdef SIM808_CONNECTED
    AddBr(info);
    {
       HtmlTag fieldset(info, F("fieldset"));
@@ -471,7 +483,6 @@ void MyWebServer::handleLoadSettingsInfo()
       AddOption(info, F("smsCheckIntervalSec"), F("SMS check every (Interval)"), formatInterval(myOptions->smsCheckIntervalSec));
       AddOption(info, F("phoneNumber"),         F("Information send to"),        myOptions->phoneNumber, false);
    }
-
    AddBr(info);
    {
       HtmlTag fieldset(info, F("fieldset"));
@@ -483,6 +494,7 @@ void MyWebServer::handleLoadSettingsInfo()
       AddOption(info, F("gpsCheckIntervalSec"), F("GPS check every (Interval)"), formatInterval(myOptions->gpsCheckIntervalSec));
       AddOption(info, F("gpsTimeoutSec"),       F("GPS timeout"), formatInterval(myOptions->gpsTimeoutSec), false);
    }
+#endif
 
    AddBr(info);
    {
@@ -498,8 +510,12 @@ void MyWebServer::handleLoadSettingsInfo()
       AddOption(info, F("mqttPort"),                  F("MQTT Port"),                              String(myOptions->mqttPort));
       AddOption(info, F("mqttUser"),                  F("MQTT User"),                              myOptions->mqttUser);
       AddOption(info, F("mqttPassword"),              F("MQTT Password"),                          myOptions->mqttPassword, true, true);
+#ifdef SIM808_CONNECTED
       AddOption(info, F("mqttSendOnMoveEverySec"),    F("MQTT Send on moving every (Interval)"),   formatInterval(myOptions->mqttSendOnMoveEverySec));
       AddOption(info, F("mqttSendOnNonMoveEverySec"), F("MQTT Send on standing every (Interval)"), formatInterval(myOptions->mqttSendOnNonMoveEverySec), false);
+#else
+      AddOption(info, F("mqttSendOnNonMoveEverySec"), F("MQTT Send every (Interval)"),             formatInterval(myOptions->mqttSendOnNonMoveEverySec), false);
+#endif
    }
 
    AddBr(info);
@@ -594,6 +610,7 @@ void MyWebServer::handleLoadInfoInfo()
       AddTableTr(info, F("MAC Address"),       myData->softAPmacAddress);
       AddTableTr(info);
    }
+#ifdef SIM808_CONNECTED
    if (myData->modemInfo     != "" || myData->modemIP != ""      || myData->imei        != "" || myData->cop != "" || 
        myData->signalQuality != "" || myData->batteryLevel != "" || myData->batteryVolt != "") {
       AddTableTr(info, F("Modem Info"),        myData->modemInfo);
@@ -627,6 +644,7 @@ void MyWebServer::handleLoadInfoInfo()
    AddTableTr(info, F("mAh"),                  String(myData->getPowerConsumption(), 2));
    AddTableTr(info, F("Low power mAh"),        String(myData->getLowPowerPowerConsumption(), 2));
    AddTableTr(info);                       
+#endif   
    AddTableTr(info, F("ESP Chip ID"),          String(ESP.getChipId()));
    AddTableTr(info, F("Flash Chip ID"),        String(ESP.getFlashChipId()));
    AddTableTr(info, F("Real Flash Memory"),    String(ESP.getFlashChipRealSize()) + F(" Byte"));

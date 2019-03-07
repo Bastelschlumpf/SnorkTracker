@@ -35,10 +35,11 @@ protected:
    MyOptions      &myOptions;    //!< Reference to global options
    MyData         &myData;       //!< Reference to global data
    int             pinGrnd;      //!< Ground-Pin connection to switch on the BME280 module
+   uint8_t         portAddr;     //!< Port address of the bme280
    Adafruit_BME280 bme280;       //!< Adafruit BME280 helper interface
    
 public:
-   MyBME280(MyOptions &options, MyData &data, int pin);
+   MyBME280(MyOptions &options, MyData &data, int pin, uint8_t addr);
 
    bool begin();
 
@@ -48,10 +49,11 @@ public:
 /* ******************************************** */
 
 /** Constructor */
-MyBME280::MyBME280(MyOptions &options, MyData &data, int pin)
+MyBME280::MyBME280(MyOptions &options, MyData &data, int pin, uint8_t addr)
    : pinGrnd(pin)
    , myOptions(options)
    , myData(data)
+   , portAddr(addr)
 {
 }
 
@@ -73,7 +75,7 @@ bool MyBME280::readValues()
    if (secondsElapsedAndUpdate(myData.rtcData.lastBme280ReadSec, myOptions.bme280CheckIntervalSec)) {
       digitalWrite(pinGrnd, LOW);
       delay(100); // Short delay after power on
-      if (!bme280.begin()) {
+      if (!bme280.begin(portAddr)) {
          myData.temperature = 0;
          myData.humidity    = 0;
          myData.pressure    = 0;

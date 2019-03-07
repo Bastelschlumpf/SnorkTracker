@@ -21,6 +21,7 @@
   * Could be set before starting the program or via web interface.
   */
 
+// #define SIM808_CONNECTED                       //!< With SIM808 or only as a WeatherStation?
 
 #define WIFI_SID      "sid"                    //!< WiFi SID
 #define WIFI_PW       "password"               //!< WiFi password

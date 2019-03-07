@@ -46,25 +46,32 @@
 #include "BME280.h"
 
 
-#define     PIN_POWER     D3                               //!< power on/off to DC-DC LM2596
-#define     PIN_BME_GRND  D4                               //!< Ground pin to the BME280 module
-#define     PIN_TX        D5                               //!< Transmit-pin to the sim808 RX
-#define     PIN_RX        D6                               //!< Receive-pin to the sim808 TX
+#define     PIN_POWER     D3                                        //!< power on/off to DC-DC LM2596
+#define     PIN_BME_GRND  D4                                        //!< Ground pin to the BME280 module
+#define     BME_ADDRESS   0x76                                      //!< BME280 port address (Default 0x77, China 0x76)
+#define     PIN_TX        D5                                        //!< Transmit-pin to the sim808 RX
+#define     PIN_RX        D6                                        //!< Receive-pin to the sim808 TX
+                                                                 
+MyOptions   myOptions;                                              //!< The global options.
+MyData      myData;                                                 //!< The global collected data.
+MyVoltage   myVoltage(myOptions, myData);                           //!< Helper class for deep sleeps.
+MyDeepSleep myDeepSleep(myOptions, myData);                         //!< Helper class for deep sleeps.
+MyWebServer myWebServer(myOptions, myData);                         //!< The Webserver
+MyBME280    myBME280(myOptions, myData, PIN_BME_GRND, BME_ADDRESS); //!< Helper class for the BME280 sensor communication.
 
-MyOptions   myOptions;                                     //!< The global options.
-MyData      myData;                                        //!< The global collected data.
-MyVoltage   myVoltage(myOptions, myData);                  //!< Helper class for deep sleeps.
-MyDeepSleep myDeepSleep(myOptions, myData);                //!< Helper class for deep sleeps.
-MyWebServer myWebServer(myOptions, myData);                //!< The Webserver
-MyGsmPower  myGsmPower(myData, PIN_POWER);                 //!< Helper class to switch on/off the sim808 power.
-MyGsmGps    myGsmGps(myOptions, myData, PIN_RX, PIN_TX);   //!< sim808 gsm/gps communication class.
-MySmsCmd    mySmsCmd(myGsmGps, myOptions, myData);         //!< sms controller class for the sms handling.
-MyMqtt      myMqtt(myGsmGps, myOptions, myData);           //!< Helper class for the mqtt communication.
-MyBME280    myBME280(myOptions, myData, PIN_BME_GRND);    //!< Helper class for the BME280 sensor communication.
+#ifdef SIM808_CONNECTED
+   MyGsmPower  myGsmPower(myData, PIN_POWER);                       //!< Helper class to switch on/off the sim808 power.
+   MyGsmGps    myGsmGps(myOptions, myData, PIN_RX, PIN_TX);         //!< sim808 gsm/gps communication class.
+   MySmsCmd    mySmsCmd(myGsmGps, myOptions, myData);               //!< sms controller class for the sms handling.
+   MyMqtt      myMqtt(myGsmGps.gsmClient, myOptions, myData);       //!< Helper class for the mqtt communication.
+#else                   
+   WiFiClient  wifiClient(myWebServer.server.client());             //!< Wifi client connection.                          
+   MyMqtt      myMqtt(wifiClient, myOptions, myData);               //!< Helper class for the mqtt communication.
+#endif                                                          
 
-bool        gsmHasPower = false;                           //!< Is the DC-DC modul switched on?
-bool        isStarting  = false;                           //!< Are we in a starting process?
-bool        isStopping  = false;                           //!< Are we in a stopping process?
+bool        gsmHasPower = false;                                    //!< Is the DC-DC modul switched on?
+bool        isStarting  = false;                                    //!< Are we in a starting process?
+bool        isStopping  = false;                                    //!< Are we in a stopping process?
 
 /**
  * ***** IMPORTANT *****
@@ -133,7 +140,9 @@ void setup()
    Serial.begin(115200); 
    MyDbg(F("Start SnorkTracker ..."));
 
+#ifdef SIM808_CONNECTED
    myGsmPower.begin();
+#endif
    SPIFFS.begin();
    myOptions.load();
    myVoltage.begin();
@@ -141,7 +150,9 @@ void setup()
    
    myWebServer.begin();
    myMqtt.begin();
+#ifdef SIM808_CONNECTED
    mySmsCmd.begin();
+#endif
    myBME280.begin();
 }
 
@@ -159,11 +170,13 @@ void loop()
    myVoltage.readVoltage();
    myBME280.readValues();
 
+#ifdef SIM808_CONNECTED
    if (!myData.consoleCmds.isEmpty()) {
       String cmd = myData.consoleCmds.removeHead();
       
       myGsmGps.sendAT(cmd);
    }
+#endif
    
    myWebServer.handleClient();
    
@@ -171,6 +184,7 @@ void loop()
       ArduinoOTA.handle();    
    }
 
+#ifdef SIM808_CONNECTED
    // Starting gsm ?
    if (myOptions.gsmPower && !gsmHasPower) {
       if (!isStarting && !isStopping) {
@@ -207,14 +221,20 @@ void loop()
          if (myOptions.isSmsEnabled) {
             mySmsCmd.handleClient();
          }
-         if (myOptions.isMqttEnabled) {
+         if (myOptions.isMqttEnabled && myGsmGps.isGsmActive) {
             myMqtt.handleClient();
          }
       }
    }
+#else
+   if (myOptions.gsmPower && myOptions.isMqttEnabled) {
+      myMqtt.handleClient();
+   }
+#endif
 
    // Deep Sleep?
    // (No deep sleep if we are waiting for a valid gps position).
+#ifdef SIM808_CONNECTED
    if (!myGsmGps.waitingForGps() && !myMqtt.waitingForMqtt()) {
       if (myDeepSleep.haveToSleep()) {
          if (myGsmGps.isGsmActive) {
@@ -227,6 +247,16 @@ void loop()
          myDeepSleep.sleep();
       }
    }
+#else
+   if (!myMqtt.waitingForMqtt()) {
+      if (myDeepSleep.haveToSleep()) {
+         WiFi.disconnect();
+         WiFi.mode(WIFI_OFF);
+         yield();
+         myDeepSleep.sleep();
+      }
+   }
+#endif
    
    yield();
    delay(10); 
