@@ -526,7 +526,7 @@ void MyWebServer::handleLoadSettingsInfo()
 
          AddOption(info, F("isDeepSleepEnabled"), F("Power saving mode active"), myOptions->isDeepSleepEnabled, false);
       }
-      AddOption(info, F("powerSaveModeVoltage"),  F("Power saving mode under (Volt)"), String(myOptions->powerSaveModeVoltage, 1));
+      AddOption(info, F("powerSaveModeVoltage"),  F("Power saving mode below (Volt)"), String(myOptions->powerSaveModeVoltage, 1));
       AddOption(info, F("powerCheckIntervalSec"), F("Check power every (Interval)"),   formatInterval(myOptions->powerCheckIntervalSec));
 
       AddOption(info, F("activeTimeSec"),    F("Active time (Interval)"),    formatInterval(myOptions->activeTimeSec));
