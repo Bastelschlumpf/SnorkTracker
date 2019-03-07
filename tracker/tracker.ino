@@ -138,6 +138,8 @@ long secondsSincePowerOn()
 void setup() 
 {
    Serial.begin(115200); 
+   delay(1000);
+
    MyDbg(F("Start SnorkTracker ..."));
 
 #ifdef SIM808_CONNECTED
