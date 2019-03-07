@@ -55,6 +55,7 @@ MyVoltage::MyVoltage(MyOptions &options, MyData &data)
 bool MyVoltage::begin()
 {
    MyDbg(F("MyVoltage::begin"));
+   pinMode(A0, INPUT);
    myData.voltage    = ANALOG_FACTOR * analogRead(A0); // Volt
    myData.isLowPower = myData.voltage < myOptions.powerSaveModeVoltage;
    lowPowerStartSec  = millis() / 1000;
