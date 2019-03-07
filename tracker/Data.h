@@ -32,7 +32,7 @@ public:
      */
    class RtcData {
    public:
-      MyGps      lastGps;
+      MyGps      lastGps;                //!< Last known gps location without timeout.
 
       long       aktiveTimeSec;          //!< Time in active mode without current millis().
       long       powerOnTimeSec;         //!< Time the sim808 is on power without current millis..
@@ -87,6 +87,7 @@ public:
    String batteryVolt;         //!< Battery volt of the sim808 module
    
    long   lastGpsUpdateSec;    //!< Elapsed Time of last read
+   bool   waitingForGps;       //!< We are trying to get a location.
    
    bool   isMoving;            //!< Is moving recognized
    double movingDistance;      //!< Minimum distance for moving flag
@@ -174,6 +175,7 @@ MyData::MyData()
    , isMoving(false)
    , movingDistance(0.0)
    , lastGpsUpdateSec(0)
+   , waitingForGps(false)
 {
 }
 

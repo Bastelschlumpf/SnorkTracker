@@ -206,6 +206,7 @@ void MyGsmGps::handleClient()
             if (waitForGpsTime > myOptions.gpsTimeoutSec) {
                MyDbg(F(" -> gps timeout!"));
                startGpsCheck = 0;
+               myData.waitingForGps = false;
                myData.rtcData.lastGps.hasTimeout = true;
                myData.rtcData.lastGpsReadSec = secondsSincePowerOn();
             } else {
@@ -241,7 +242,7 @@ bool MyGsmGps::stop()
 /** Is the gps enabled but we don't have a valid gps position. */
 bool MyGsmGps::waitingForGps()
 {
-   return isGsmActive && myOptions.isGpsEnabled && !myData.rtcData.lastGps.fixStatus && !myData.rtcData.lastGps.hasTimeout;
+   return isGsmActive && myOptions.isGpsEnabled && myData.waitingForGps && !myData.rtcData.lastGps.hasTimeout;
 }
 
 /** Send one AT command to the sim modul and log the result for the console window. */
@@ -338,6 +339,7 @@ bool MyGsmGps::getGps()
    if (isGpsActive) {
       MyGps gps;
 
+      myData.waitingForGps = true;
       if (gsmSim808.getGps(gps)) {
          myData.lastGpsUpdateSec = secondsSincePowerOn();
 
@@ -355,6 +357,7 @@ bool MyGsmGps::getGps()
             myData.isMoving       = myData.movingDistance > myOptions.minMovingDistance;
          }
          myData.rtcData.lastGps = gps;
+         myData.waitingForGps   = false;
          ret = true;
       } else {
          // Get the GPS position as fallback from the GSM modul.
