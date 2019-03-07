@@ -225,7 +225,7 @@ bool MyOptions::save()
      file.println((String) F("phoneNumber=")               + phoneNumber);
      file.println((String) F("smsCheckIntervalSec=")       + String(smsCheckIntervalSec));
      file.println((String) F("isDeepSleepEnabled=")        + String(isDeepSleepEnabled));
-     file.println((String) F("powerSaveModeVoltage=")      + String(powerSaveModeVoltage, 1));
+     file.println((String) F("powerSaveModeVoltage=")      + String(powerSaveModeVoltage, 2));
      file.println((String) F("powerCheckIntervalSec=")     + String(powerCheckIntervalSec));
      file.println((String) F("activeTimeSec=")             + String(activeTimeSec));
      file.println((String) F("deepSleepTimeSec=")          + String(deepSleepTimeSec));

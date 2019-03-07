@@ -214,7 +214,7 @@ void MySmsCmd::cmdStatus(const SmsData &sms)
    String status;
 
    status += (String) F("Status: ")      + myData.status              + '\n';
-   status += (String) F("Voltage: ")     + String(myData.voltage, 1)  + F(" V\n");
+   status += (String) F("Voltage: ")     + String(myData.voltage, 2)  + F(" V\n");
    status += (String) F("Temperature: ") + String(myData.temperature) + F(" C\n");
    status += (String) F("Humidity: ")    + String(myData.humidity)    + F(" %\n");
    status += (String) F("Pressure: ")    + String(myData.pressure)    + F(" hPa\n");

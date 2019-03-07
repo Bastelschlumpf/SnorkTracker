@@ -375,7 +375,7 @@ void MyWebServer::handleLoadMainInfo()
 #ifdef SIM808_CONNECTED
    AddTableTr(info, F("Modem Info"),  myData->modemInfo);
 #endif   
-   AddTableTr(info, F("Battery"),     String(myData->voltage,     1) + F(" V"));
+   AddTableTr(info, F("Battery"),     String(myData->voltage,     2) + F(" V"));
    AddTableTr(info, F("Temperature"), String(myData->temperature, 1) + F(" °C"));
    AddTableTr(info, F("Humidity"),    String(myData->humidity,    1) + F(" %"));
    AddTableTr(info, F("Pressure"),    String(myData->pressure,    1) + F(" hPa"));
@@ -526,7 +526,7 @@ void MyWebServer::handleLoadSettingsInfo()
 
          AddOption(info, F("isDeepSleepEnabled"), F("Power saving mode active"), myOptions->isDeepSleepEnabled, false);
       }
-      AddOption(info, F("powerSaveModeVoltage"),  F("Power saving mode below (Volt)"), String(myOptions->powerSaveModeVoltage, 1));
+      AddOption(info, F("powerSaveModeVoltage"),  F("Power saving mode below (Volt)"), String(myOptions->powerSaveModeVoltage, 2));
       AddOption(info, F("powerCheckIntervalSec"), F("Check power every (Interval)"),   formatInterval(myOptions->powerCheckIntervalSec));
 
       AddOption(info, F("activeTimeSec"),    F("Active time (Interval)"),    formatInterval(myOptions->activeTimeSec));
