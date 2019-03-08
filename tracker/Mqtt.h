@@ -157,7 +157,7 @@ void MyMqtt::handleClient()
    } else {
       send = secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnNonMoveEverySec);
    }
-   if (send && !publishInProgress) {
+   if ((send || myData.mqttInitSend) && !publishInProgress) {
       publishInProgress = true;
       if (!PubSubClient::connected()) {
          for (int i = 0; !PubSubClient::connected() && i < 5; i++) {  
@@ -180,17 +180,18 @@ void MyMqtt::handleClient()
       if (PubSubClient::connected()) {
          MyDbg(F("Attempting MQTT publishing"), true);
 
-/*
-         myPublish(topic_deep_sleep,             String(g_myOptions->isDeepSleepEnabled));
-         myPublish(topic_power_on,               String(g_myOptions->powerOn));
+         if (myData.mqttInitSend) { // On power on or SaveSettings we publish the subscribed values.
+            myPublish(topic_deep_sleep,             String(g_myOptions->isDeepSleepEnabled));
+            myPublish(topic_power_on,               String(g_myOptions->powerOn));
 #ifdef SIM808_CONNECTED
-         myPublish(topic_gps_enabled,            String(g_myOptions->isGpsEnabled));
-         myPublish(topic_send_on_move_every,     String(g_myOptions->mqttSendOnMoveEverySec));
-         myPublish(topic_send_on_non_move_every, String(g_myOptions->mqttSendOnNonMoveEverySec));
+            myPublish(topic_gps_enabled,            String(g_myOptions->isGpsEnabled));
+            myPublish(topic_send_on_move_every,     String(g_myOptions->mqttSendOnMoveEverySec));
+            myPublish(topic_send_on_non_move_every, String(g_myOptions->mqttSendOnNonMoveEverySec));
 #else 
-         myPublish(topic_send_every,             String(g_myOptions->mqttSendOnNonMoveEverySec));
+            myPublish(topic_send_every,             String(g_myOptions->mqttSendOnNonMoveEverySec));
 #endif
-*/
+            myData.mqttInitSend = false;
+         }
 
          myPublish(topic_voltage,     String(myData.voltage, 2));
          myPublish(topic_mAh,         String(myData.getPowerConsumption()));
