@@ -574,7 +574,7 @@ void MyWebServer::handleSaveSettings()
 
    // Reset the rtc data if something has changed.
    myData->awakeTimeOffsetSec = millis() / 1000;
-   myData->mqttInitSend       = true;
+   // myData->mqttInitSend       = true;
    myOptions->save();
 
    if (false /* reboot */) {

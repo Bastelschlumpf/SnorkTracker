@@ -180,6 +180,7 @@ void MyMqtt::handleClient()
       if (PubSubClient::connected()) {
          MyDbg(F("Attempting MQTT publishing"), true);
 
+         /*
          if (myData.mqttInitSend) { // On power on or SaveSettings we publish the subscribed values.
             myPublish(topic_deep_sleep,             String(g_myOptions->isDeepSleepEnabled));
             myPublish(topic_power_on,               String(g_myOptions->powerOn));
@@ -192,6 +193,7 @@ void MyMqtt::handleClient()
 #endif
             myData.mqttInitSend = false;
          }
+         */
 
          myPublish(topic_voltage,     String(myData.voltage, 2));
          myPublish(topic_mAh,         String(myData.getPowerConsumption()));
