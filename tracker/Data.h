@@ -69,8 +69,6 @@ public:
    long   secondsToDeepSleep;  //!< Time until next deepsleep. -1 = disabled
    long   awakeTimeOffsetSec;  //!< Awake time offset for SaveSettings.
 
-   bool   mqttInitSend;        //!< First mqtt send or settings changed
-
    double voltage;             //!< Current supply voltage
    double temperature;         //!< Current BME280 temperature
    double humidity;            //!< Current BME280 humidity
@@ -170,7 +168,6 @@ MyData::MyData()
    , isLowPower(false)
    , secondsToDeepSleep(-1)
    , awakeTimeOffsetSec(0)
-   , mqttInitSend(false)
    , voltage(0.0)
    , temperature(0.0)
    , humidity(0.0)

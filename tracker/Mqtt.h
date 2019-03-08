@@ -157,7 +157,7 @@ void MyMqtt::handleClient()
    } else {
       send = secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnNonMoveEverySec);
    }
-   if ((send || myData.mqttInitSend) && !publishInProgress) {
+   if (send && !publishInProgress) {
       publishInProgress = true;
       if (!PubSubClient::connected()) {
          for (int i = 0; !PubSubClient::connected() && i < 5; i++) {  
@@ -165,9 +165,11 @@ void MyMqtt::handleClient()
             if (PubSubClient::connect(myOptions.mqttName.c_str(), myOptions.mqttUser.c_str(), myOptions.mqttPassword.c_str())) {  
                mySubscribe(topic_deep_sleep);
                mySubscribe(topic_power_on);
+#ifdef SIM808_CONNECTED
                mySubscribe(topic_gps_enabled);
                mySubscribe(topic_send_on_move_every);
                mySubscribe(topic_send_on_non_move_every);
+#endif
                MyDbg(F(" connected"), true);
             } else {  
                MyDbg((String) F("   Mqtt failed, rc = ") + String(PubSubClient::state()), true);
@@ -179,21 +181,6 @@ void MyMqtt::handleClient()
       }
       if (PubSubClient::connected()) {
          MyDbg(F("Attempting MQTT publishing"), true);
-
-         /*
-         if (myData.mqttInitSend) { // On power on or SaveSettings we publish the subscribed values.
-            myPublish(topic_deep_sleep,             String(g_myOptions->isDeepSleepEnabled));
-            myPublish(topic_power_on,               String(g_myOptions->powerOn));
-#ifdef SIM808_CONNECTED
-            myPublish(topic_gps_enabled,            String(g_myOptions->isGpsEnabled));
-            myPublish(topic_send_on_move_every,     String(g_myOptions->mqttSendOnMoveEverySec));
-            myPublish(topic_send_on_non_move_every, String(g_myOptions->mqttSendOnNonMoveEverySec));
-#else 
-            myPublish(topic_send_every,             String(g_myOptions->mqttSendOnNonMoveEverySec));
-#endif
-            myData.mqttInitSend = false;
-         }
-         */
 
          myPublish(topic_voltage,     String(myData.voltage, 2));
          myPublish(topic_mAh,         String(myData.getPowerConsumption()));
