@@ -65,7 +65,7 @@ MyBME280    myBME280(myOptions, myData, PIN_BME_GRND, BME_ADDRESS); //!< Helper 
    MySmsCmd    mySmsCmd(myGsmGps, myOptions, myData);               //!< sms controller class for the sms handling.
    MyMqtt      myMqtt(myGsmGps.gsmClient, myOptions, myData);       //!< Helper class for the mqtt communication.
 #else                   
-   WiFiClient  wifiClient(myWebServer.server.client());             //!< Wifi client connection.                          
+   WiFiClient  wifiClient;                                          //!< Wifi client connection.                          
    MyMqtt      myMqtt(wifiClient, myOptions, myData);               //!< Helper class for the mqtt communication.
 #endif                                                          
 
