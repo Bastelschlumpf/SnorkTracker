@@ -171,7 +171,7 @@ String Trim(const String &data, const String &chars)
    
    for (int i = 0; i < ret.length(); i++) {
       if (chars.indexOf(ret[i]) != -1) {
-         ret.remove(i);
+         ret.remove(i, 1);
          i--;
          continue;
       }
@@ -179,7 +179,7 @@ String Trim(const String &data, const String &chars)
    }
    for (int i = data.length() - 1; i >= 0; i--) {
       if (chars.indexOf(ret[i]) != -1) {
-         ret.remove(i);
+         ret.remove(i, 1);
          continue;
       }
       break;
@@ -215,9 +215,10 @@ String formatInterval(long secs)
 /** Helper function to scan a interval information '[days] hours:minutes:seconds' */
 bool scanInterval(String interval, long &secs)
 {
-   int first = interval.indexOf(F(":"));
+   int first = -1;
 
    interval = Trim(interval, F(" "));
+   first    = interval.indexOf(F(":"));
    if (first != -1) {
       String daysString;
       String hoursString;
@@ -248,7 +249,7 @@ bool scanInterval(String interval, long &secs)
          seconds = atol(secondsString.c_str());
 
          if (days    >= 0 && 
-             hours   <= 0 && hours   <= 23 && 
+             hours   >= 0 && hours   <= 23 && 
              minutes >= 0 && minutes <= 59 && 
              seconds >= 0 && seconds <= 59) {
             secs = 0;
