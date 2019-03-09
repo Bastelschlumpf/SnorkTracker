@@ -105,16 +105,21 @@ bool MyDeepSleep::haveToSleep()
 /** Entering the DeepSleep mode. Be sure we have connected the RST pin to the D0 pin for wakeup. */
 void MyDeepSleep::sleep(bool start /* = true */)
 {
-   MyDbg((String) F("Entering DeepSleep for: ") + String(myOptions.powerCheckIntervalSec) + F("Sec"));
+   long powerCheckIntervalSec = myOptions.powerCheckIntervalSec;
 
-   delay(2000);
+   if (powerCheckIntervalSec > 60 * 60) {
+      MyDbg(F("Invalid DeepSleep time more than 60 Minutes!"));
+      powerCheckIntervalSec = 60 * 60;
+   }
+   MyDbg((String) F("Entering DeepSleep for: ") + String(myOptions.powerCheckIntervalSec) + F("Sec"));
+   delay(1000);
 
    if (start) {
       myData.rtcData.deepSleepStartSec = secondsSincePowerOn();
    }
    myData.rtcData.aktiveTimeSec    += millis() / 1000;
-   myData.rtcData.deepSleepTimeSec += myOptions.powerCheckIntervalSec;
+   myData.rtcData.deepSleepTimeSec += powerCheckIntervalSec;
    myData.rtcData.setCRC();
    ESP.rtcUserMemoryWrite(0, (uint32_t *) &myData.rtcData, sizeof(MyData::RtcData));
-   ESP.deepSleep(myOptions.powerCheckIntervalSec * 1000000);
+   ESP.deepSleep(powerCheckIntervalSec * 1000000);
 }
