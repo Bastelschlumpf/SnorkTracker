@@ -29,17 +29,29 @@
 #include "HtmlTag.h"
 
 /**
+  * MyESPWebServer helper class for accessing the internal _currentClient.
+  */
+class MyESPWebServer : public ESP8266WebServer
+{
+public:
+   MyESPWebServer(int port = 80)
+      : ESP8266WebServer(port) { }
+
+   WiFiClient &wifiClient() { return _currentClient; }
+};
+
+/**
   * My Webserver interface. Works together with .html, .css and .js files from the SPIFFS.
   * Works mostly with static functions because of the server callback functions.
   */
 class MyWebServer
 {
 public:
-   static ESP8266WebServer server;    //!< Webserver helper class.
-   static IPAddress        ip;        //!< Soft AP ip Address
-   static DNSServer        dnsServer; //!< Dns server
-   static MyOptions       *myOptions; //!< Reference to the options.
-   static MyData          *myData;    //!< Reference to the data.
+   static MyESPWebServer server;    //!< Webserver helper class.
+   static IPAddress      ip;        //!< Soft AP ip Address
+   static DNSServer      dnsServer; //!< Dns server
+   static MyOptions     *myOptions; //!< Reference to the options.
+   static MyData        *myData;    //!< Reference to the data.
 
 protected:
    static bool loadFromSpiffs  (String path);
@@ -85,11 +97,11 @@ public:
 
 /* ******************************************** */
 
-IPAddress        MyWebServer::ip(192, 168, 1, 1);       
-DNSServer        MyWebServer::dnsServer;
-ESP8266WebServer MyWebServer::server(80);
-MyOptions       *MyWebServer::myOptions = NULL;
-MyData          *MyWebServer::myData    = NULL;
+IPAddress      MyWebServer::ip(192, 168, 1, 1);       
+DNSServer      MyWebServer::dnsServer;
+MyESPWebServer MyWebServer::server(80);
+MyOptions     *MyWebServer::myOptions = NULL;
+MyData        *MyWebServer::myData    = NULL;
 
 
 /** Constructor/Destructor */

@@ -63,10 +63,9 @@ MyBME280    myBME280(myOptions, myData, PIN_BME_GRND, BME_ADDRESS); //!< Helper 
    MyGsmPower  myGsmPower(myData, PIN_POWER);                       //!< Helper class to switch on/off the sim808 power.
    MyGsmGps    myGsmGps(myOptions, myData, PIN_RX, PIN_TX);         //!< sim808 gsm/gps communication class.
    MySmsCmd    mySmsCmd(myGsmGps, myOptions, myData);               //!< sms controller class for the sms handling.
-   MyMqtt      myMqtt(myGsmGps.gsmClient, myOptions, myData);       //!< Helper class for the mqtt communication.
-#else                   
-   WiFiClient  wifiClient;                                          //!< Wifi client connection.                          
-   MyMqtt      myMqtt(wifiClient, myOptions, myData);               //!< Helper class for the mqtt communication.
+   MyMqtt      myMqtt(myGsmGps.gsmClient, myOptions, myData);       //!< Helper class for the mqtt communication via gsm.
+#else                                                               //!< Helper class for the mqtt communication via wifi.
+   MyMqtt      myMqtt(MyWebServer::server.wifiClient(), myOptions, myData); 
 #endif                                                          
 
 bool        gsmHasPower = false;                                    //!< Is the DC-DC modul switched on?
