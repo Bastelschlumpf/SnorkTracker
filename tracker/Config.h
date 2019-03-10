@@ -23,6 +23,8 @@
 
 // #define SIM808_CONNECTED                       //!< With SIM808 or only as a WeatherStation?
 
+#define SOFT_AP_NAME  "SnorkTracker"           //!< Soft access point name
+#define SOFT_AP_PW    ""                       //!< Soft access point password
 #define WIFI_SID      "sid"                    //!< WiFi SID
 #define WIFI_PW       "password"               //!< WiFi password
 #define GPRS_AP       "internet"               //!< gprs access point name

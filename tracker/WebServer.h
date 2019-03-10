@@ -130,12 +130,12 @@ bool MyWebServer::begin()
    MyDbg(F("MyWebServer::begin"));
    WiFi.persistent(false);
    WiFi.mode(WIFI_AP_STA);
-   WiFi.softAP("SnorkTracker", "");
+   WiFi.softAP(SOFT_AP_NAME, SOFT_AP_PW);
    WiFi.softAPConfig(ip, ip, IPAddress(255, 255, 255, 0));  
    dnsServer.setErrorReplyCode(DNSReplyCode::NoError);
    dnsServer.start(53, F("*"), ip);
    myData->softAPIP         = WiFi.softAPIP().toString();
-   myData->softAPmacAddress =  WiFi.softAPmacAddress();
+   myData->softAPmacAddress = WiFi.softAPmacAddress();
    MyDbg((String) F("SoftAPIP address: ")     + myData->softAPIP, true);
    MyDbg((String) F("SoftAPIP mac address: ") + myData->softAPmacAddress, true);
 
