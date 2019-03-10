@@ -148,6 +148,8 @@ bool MyWebServer::begin()
       myData->stationIP = WiFi.localIP().toString();
       MyDbg((String) F("Connected to ")        + myOptions->wifiAP, true);
       MyDbg((String) F("Station IP address: ") + myData->stationIP, true);
+      MyDbg((String) F("AP1 SSID (RSSI): ")    + String(myOptions->wifiAP + F(" (") + WifiGetRssiAsQuality(WiFi.RSSI()) + F("%)")));
+
    } else { // switch to AP Mode only
       MyDbg((String) F("No connection to ") + myOptions->wifiAP, true);
       WiFi.disconnect();
@@ -386,17 +388,21 @@ void MyWebServer::handleLoadMainInfo()
    }
 #ifdef SIM808_CONNECTED
    AddTableTr(info, F("Modem Info"),  myData->modemInfo);
+#else
+   AddTableTr(info, F("AP1 SSID (RSSI)"), String(myOptions->wifiAP + F(" (") + WifiGetRssiAsQuality(WiFi.RSSI()) + F("%)")));
+   AddTableTr(info);
 #endif   
-   AddTableTr(info, F("Battery"),     String(myData->voltage,     2) + F(" V"));
-   AddTableTr(info, F("Temperature"), String(myData->temperature, 1) + F(" °C"));
-   AddTableTr(info, F("Humidity"),    String(myData->humidity,    1) + F(" %"));
-   AddTableTr(info, F("Pressure"),    String(myData->pressure,    1) + F(" hPa"));
+
+   AddTableTr(info, F("Battery"),         String(myData->voltage,     2) + F(" V"));
+   AddTableTr(info, F("Temperature"),     String(myData->temperature, 1) + F(" °C"));
+   AddTableTr(info, F("Humidity"),        String(myData->humidity,    1) + F(" %"));
+   AddTableTr(info, F("Pressure"),        String(myData->pressure,    1) + F(" hPa"));
 #ifndef SIM808_CONNECTED
-   AddTableTr(info, F("Active Time"),   formatInterval(myData->getActiveTimeSec()));
-   AddTableTr(info, F("PowerUpTime"),   formatInterval(myData->getPowerOnTimeSec()));
-   AddTableTr(info, F("DeepSleepTime"), formatInterval(myData->rtcData.deepSleepTimeSec));
-   AddTableTr(info, F("mAh"),           String(myData->getPowerConsumption(), 2));
-   AddTableTr(info, F("Low power mAh"), String(myData->getLowPowerPowerConsumption(), 2));
+   AddTableTr(info, F("Active Time"),     formatInterval(myData->getActiveTimeSec()));
+   AddTableTr(info, F("PowerUpTime"),     formatInterval(myData->getPowerOnTimeSec()));
+   AddTableTr(info, F("DeepSleepTime"),   formatInterval(myData->rtcData.deepSleepTimeSec));
+   AddTableTr(info, F("mAh"),             String(myData->getPowerConsumption(), 2));
+   AddTableTr(info, F("Low power mAh"),   String(myData->getLowPowerPowerConsumption(), 2));
 #endif   
    if (myData->rtcData.lastGps.fixStatus) {
       AddTableTr(info, F("Longitude"),  myData->rtcData.lastGps.longitudeString());
@@ -516,8 +522,10 @@ void MyWebServer::handleLoadSettingsInfo()
          
          AddOption(info, F("isMqttEnabled"), F("MQTT Active"), myOptions->isMqttEnabled, false);
       }
+
       AddOption(info, F("mqttName"),                  F("MQTT Name"),                              myOptions->mqttName);
       AddOption(info, F("mqttId"),                    F("MQTT Id"),                                myOptions->mqttId);
+
       AddOption(info, F("mqttServer"),                F("MQTT Server"),                            myOptions->mqttServer);
       AddOption(info, F("mqttPort"),                  F("MQTT Port"),                              String(myOptions->mqttPort));
       AddOption(info, F("mqttUser"),                  F("MQTT User"),                              myOptions->mqttUser);
