@@ -187,29 +187,23 @@ String Trim(const String &data, const String &chars)
    return ret;
 }
 
-/** Helper function to format a int with two digits (with '0' if needed */
-String print2(int value) 
-{
-   if (value < 10) {
-      return "0" + String(value);
-   } else {
-      return String(value);
-   }
-}
-
 /** Helper function to format seconds to x days hours:minutes:seconds */
 String formatInterval(long secs)
 {
+   char buff[255];
+
    int days    =  secs / 60 / 60 / 24;
    int hours   = (secs / 60 / 60) % 24;
    int minutes = (secs / 60) % 60;
    int seconds =  secs % 60;
 
+   buff[0] = '\0';
    if (days <= 0) {
-      return print2(hours) + F(":") + print2(minutes) + F(":") + print2(seconds);
+      sprintf(buff, "%02d:%02d:%02d", hours, minutes, seconds);
    } else {
-      return String(days) + F(" ") + print2(hours) + F(":") + print2(minutes) + F(":") + print2(seconds);
+      sprintf(buff, "%d %02d:%02d:%02d", days, hours, minutes, seconds);
    }
+   return buff;
 }
 
 /** Helper function to scan a interval information '[days] hours:minutes:seconds' */
