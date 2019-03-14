@@ -171,21 +171,32 @@ void loop()
    myVoltage.readVoltage();
    myBME280.readValues();
 
-#ifdef SIM808_CONNECTED
-   if (!myData.consoleCmds.isEmpty()) {
-      String cmd = myData.consoleCmds.removeHead();
-      
-      myGsmGps.sendAT(cmd);
-   }
-#endif
-   
    myWebServer.handleClient();
    
    if (myData.isOtaActive) {
       ArduinoOTA.handle();    
    }
 
-#ifdef SIM808_CONNECTED
+#ifndef SIM808_CONNECTED
+   if (myOptions.powerOn && myOptions.isMqttEnabled && myWebServer.isWifiConnected) {
+      myMqtt.handleClient();
+   }
+
+   if (!myWebServer.isWifiConnected || !myMqtt.waitingForMqtt()) {
+      if (myDeepSleep.haveToSleep()) {
+         WiFi.disconnect();
+         WiFi.mode(WIFI_OFF);
+         yield();
+         myDeepSleep.sleep();
+      }
+   }
+#else
+   if (!myData.consoleCmds.isEmpty()) {
+      String cmd = myData.consoleCmds.removeHead();
+
+      myGsmGps.sendAT(cmd);
+   }
+
    // Starting gsm ?
    if (myOptions.powerOn && !gsmHasPower) {
       if (!isStarting && !isStopping) {
@@ -227,15 +238,9 @@ void loop()
          }
       }
    }
-#else
-   if (myOptions.powerOn && myOptions.isMqttEnabled) {
-      myMqtt.handleClient();
-   }
-#endif
 
    // Deep Sleep?
    // (No deep sleep if we are waiting for a valid gps position).
-#ifdef SIM808_CONNECTED
    if (!myGsmGps.waitingForGps() && !myMqtt.waitingForMqtt()) {
       if (myDeepSleep.haveToSleep()) {
          if (myGsmGps.isGsmActive) {
@@ -248,17 +253,9 @@ void loop()
          myDeepSleep.sleep();
       }
    }
-#else
-   if (!myMqtt.waitingForMqtt()) {
-      if (myDeepSleep.haveToSleep()) {
-         WiFi.disconnect();
-         WiFi.mode(WIFI_OFF);
-         yield();
-         myDeepSleep.sleep();
-      }
-   }
+
 #endif
-   
+
    yield();
    delay(10); 
 }

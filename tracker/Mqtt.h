@@ -131,9 +131,9 @@ bool MyMqtt::waitingForMqtt()
       return true;
    }
    if (myData.isMoving) {
-      return secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnMoveEverySec);
+      return secondsElapsed(myData.rtcData.lastMqttPublishSec, myOptions.mqttSendOnMoveEverySec);
    } else {
-      return secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnNonMoveEverySec);
+      return secondsElapsed(myData.rtcData.lastMqttPublishSec, myOptions.mqttSendOnNonMoveEverySec);
    }
    return false;
 }
@@ -153,9 +153,9 @@ void MyMqtt::handleClient()
    bool send = false;
 
    if (myData.isMoving) {
-      send = secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnMoveEverySec);
+      send = secondsElapsed(myData.rtcData.lastMqttPublishSec, myOptions.mqttSendOnMoveEverySec);
    } else {
-      send = secondsElapsed(myData.rtcData.lastMqttSendSec, myOptions.mqttSendOnNonMoveEverySec);
+      send = secondsElapsed(myData.rtcData.lastMqttPublishSec, myOptions.mqttSendOnNonMoveEverySec);
    }
    if (send && !publishInProgress) {
       publishInProgress = true;
@@ -205,10 +205,11 @@ void MyMqtt::handleClient()
 #endif
          myData.rtcData.mqttSendCount++;
          myData.rtcData.mqttLastSentTime = myData.rtcData.lastGps.time;
-         myData.rtcData.lastMqttSendSec = secondsSincePowerOn();
          MyDbg(F("mqtt published"), true);
          MyDelay(5000);
       }
+      // Set time even on error
+      myData.rtcData.lastMqttPublishSec = secondsSincePowerOn();
       publishInProgress = false;
    }
 }

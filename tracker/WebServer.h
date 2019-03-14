@@ -86,7 +86,8 @@ public:
 
 public:
    bool isWebServerActive; //!< Is the webserver currently active.
-   
+   bool isWifiConnected;   //!< Do we have a valid connection to an AP?
+
 public:
    MyWebServer(MyOptions &options, MyData &data);
    ~MyWebServer();
@@ -107,6 +108,7 @@ MyData        *MyWebServer::myData    = NULL;
 /** Constructor/Destructor */
 MyWebServer::MyWebServer(MyOptions &options, MyData &data)
    : isWebServerActive(false)
+   , isWifiConnected(false)
 {
    myOptions = &options;
    myData    = &data;      
@@ -140,15 +142,16 @@ bool MyWebServer::begin()
    MyDbg((String) F("SoftAPIP mac address: ") + myData->softAPmacAddress, true);
 
    WiFi.begin(myOptions->wifiAP.c_str(), myOptions->wifiPassword.c_str());
-   for (int i = 0; i < 30 && WiFi.status() != WL_CONNECTED; i++) { // 15 Sec versuchen
+   for (int i = 0; i < 30 && WiFi.status() != WL_CONNECTED; i++) { // 30 Sec versuchen
       MyDbg(F("."), true, false);
-      MyDelay(500);
+      MyDelay(1000);
    }
    if (WiFi.status() == WL_CONNECTED) {
       myData->stationIP = WiFi.localIP().toString();
       MyDbg((String) F("Connected to ")        + myOptions->wifiAP, true);
       MyDbg((String) F("Station IP address: ") + myData->stationIP, true);
       MyDbg((String) F("AP1 SSID (RSSI): ")    + String(myOptions->wifiAP + F(" (") + WifiGetRssiAsQuality(WiFi.RSSI()) + F("%)")));
+      isWifiConnected = true;
 
    } else { // switch to AP Mode only
       MyDbg((String) F("No connection to ") + myOptions->wifiAP, true);

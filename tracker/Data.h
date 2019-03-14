@@ -45,7 +45,7 @@ public:
       long       lastBme280ReadSec;      //!< Timestamp of the last BME280 read.
       long       lastSmsCheckSec;        //!< Timestamp of the last sms check.
       long       lastGpsReadSec;         //!< Timestamp of the last gps read.
-      long       lastMqttSendSec;        //!< Timestamp from the last send.
+      long       lastMqttPublishSec;     //!< Timestamp from the last send.
 
       long       mqttSendCount;          //!< How many time the mqtt data successfully sent.
       long       mqttLastSentTime;       //!< Last mqtt sent timestamp.
@@ -120,7 +120,7 @@ MyData::RtcData::RtcData()
    , lastBme280ReadSec(0)
    , lastSmsCheckSec(0)
    , lastGpsReadSec(0)
-   , lastMqttSendSec(0)
+   , lastMqttPublishSec(0)
    , mqttSendCount(0)
    , mqttLastSentTime(0)
 {
@@ -154,7 +154,7 @@ long MyData::RtcData::getCRC()
    crc = crc32(crc, (unsigned char *) &lastBme280ReadSec,      sizeof(long));
    crc = crc32(crc, (unsigned char *) &lastSmsCheckSec,        sizeof(long));
    crc = crc32(crc, (unsigned char *) &lastGpsReadSec,         sizeof(long));
-   crc = crc32(crc, (unsigned char *) &lastMqttSendSec,        sizeof(long));
+   crc = crc32(crc, (unsigned char *) &lastMqttPublishSec,     sizeof(long));
    crc = crc32(crc, (unsigned char *) &mqttSendCount,          sizeof(long));
    crc = crc32(crc, (unsigned char *) &mqttLastSentTime,       sizeof(long));
    
