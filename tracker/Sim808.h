@@ -123,8 +123,8 @@ bool MyGsmSim808::getGsmGps(MyGps &gps)
       dateTime.replace("/", "");
       dateTime.replace(":", "");
       dateTime += ".000";
-      gps.setLatitude(longitude);
-      gps.setLongitude(latitude);
+      gps.setLatitude(latitude);
+      gps.setLongitude(longitude);
       gps.setDateTime(dateTime);
       gps.fixStatus = true;
    }
