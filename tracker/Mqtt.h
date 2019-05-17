@@ -45,10 +45,7 @@
 #define topic_batt_level             "/Gsm/BattLevel"          //!< Battery level of the gsm modul
 #define topic_batt_volt              "/Gsm/BattVolt"           //!< Battery volt of the gsm modul
 
-#define topic_lon                    "/Gps/Longitude"          //!< Gps longitude
-#define topic_lat                    "/Gps/Latitude"           //!< Gps latitude
-#define topic_alt                    "/Gps/Altitude"           //!< Gps altitude
-#define topic_kmph                   "/Gps/Kmh"                //!< Gps moving speed
+#define topic_gps                    "/Gps"                    //!< Gps longitude, latitude, altitude, moving speed
 
 /**
   * MQTT client for sending the collected data to a MQTT server
@@ -201,10 +198,18 @@ void MyMqtt::handleClient()
          myPublish(topic_batt_volt,      myData.batteryVolt);
 
          if (myData.rtcData.lastGps.fixStatus) {
-            myPublish(topic_lon,  myData.rtcData.lastGps.longitudeString());
-            myPublish(topic_lat,  myData.rtcData.lastGps.latitudeString());
-            myPublish(topic_alt,  myData.rtcData.lastGps.altitudeString());
-            myPublish(topic_kmph, myData.rtcData.lastGps.kmphString());
+            String gps;
+            char   data[160];
+
+            gps += "{";
+            gps += "\"long\":\"" + myData.rtcData.lastGps.longitudeString() + "\",";
+            gps += "\"lat\":\""  + myData.rtcData.lastGps.latitudeString()  + "\",";
+            gps += "\"alt\":\""  + myData.rtcData.lastGps.altitudeString()  + "\",";
+            gps += "\"kmph\":\"" + myData.rtcData.lastGps.kmphString()      + "\"";
+            gps += "}";
+            
+            gps.toCharArray(data, (gps.length() + 1));
+            myPublish(topic_gps,  data);
          }
 #endif
          myData.rtcData.mqttSendCount++;
