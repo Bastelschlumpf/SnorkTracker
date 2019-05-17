@@ -570,6 +570,7 @@ void MyWebServer::handleSaveSettings()
    
    MyDbg(F("SaveSettings"), true);
    GetOption(F("gprsAP"),                    myOptions->gprsAP);
+   GetOption(F("gprsPassword"),              myOptions->gprsPassword);
    GetOption(F("wifiAP"),                    myOptions->wifiAP);
    GetOption(F("wifiPassword"),              myOptions->wifiPassword);
    GetOption(F("isDebugActive"),             myOptions->isDebugActive);
