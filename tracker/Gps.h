@@ -143,7 +143,6 @@ public:
    double     vdop;              //!< Vertical dilution of precision 
    int        satellitesInView;  //!< Sattelites in the View
    int        satellitesUsed;    //!< Sattelites used for gps position.
-   bool       hasTimeout;        //!< Timeout happend
 
 protected:
    bool parse(bool   &b, const String &data);
@@ -176,6 +175,8 @@ public:
    String kmphString       ();
    String satellitesString ();
    String courseString     ();
+
+   bool   getAsGpsJson(char *gpsJson);
 };
 
 /* ******************************************** */
@@ -400,7 +401,6 @@ MyGps::MyGps()
    , vdop(0)
    , satellitesInView(0)
    , satellitesUsed(0)
-   , hasTimeout(false)
 {
 }
 
@@ -421,7 +421,6 @@ void MyGps::clear()
    vdop             = 0.0;
    satellitesInView = 0;
    satellitesUsed   = 0;
-   hasTimeout       = false;
 }
 
 /** Parse a bool value from a string '0' or '1' */
@@ -571,4 +570,23 @@ String MyGps::satellitesString()
 String MyGps::courseString()
 {
    return String(course);
+}
+
+/** Returns the core gps data as json array */
+bool MyGps::getAsGpsJson(char *gpsJson)
+{
+   if (fixStatus) {
+      String gps;
+
+      gps += "{";
+      gps += "\"long\":\"" + longitudeString() + "\",";
+      gps += "\"lat\":\""  + latitudeString()  + "\",";
+      gps += "\"alt\":\""  + altitudeString()  + "\",";
+      gps += "\"kmph\":\"" + kmphString()      + "\"";
+      gps += "}";
+
+      gps.toCharArray(gpsJson, (gps.length() + 1));
+      return true;
+   }
+   return false;
 }

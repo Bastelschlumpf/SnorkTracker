@@ -149,8 +149,11 @@ void setup()
    SPIFFS.begin();
    myOptions.load();
    myVoltage.begin();
+
+   // Back to deep sleep?
    myDeepSleep.begin();
-   
+
+   // no deep sleep!
    myWebServer.begin();
    myMqtt.begin();
 #ifdef SIM808_CONNECTED
@@ -180,11 +183,11 @@ void loop()
    }
 
 #ifndef SIM808_CONNECTED
-   if (myOptions.powerOn && myOptions.isMqttEnabled && myWebServer.isWifiConnected) {
+   if (myOptions.isMqttEnabled) {
       myMqtt.handleClient();
    }
 
-   if (!myWebServer.isWifiConnected || !myMqtt.waitingForMqtt()) {
+   if (!myMqtt.waitingForMqtt()) {
       if (myDeepSleep.haveToSleep()) {
          WiFi.disconnect();
          WiFi.mode(WIFI_OFF);
@@ -235,7 +238,7 @@ void loop()
          if (myOptions.isSmsEnabled) {
             mySmsCmd.handleClient();
          }
-         if (myOptions.isMqttEnabled && myGsmGps.isGsmActive) {
+         if (myOptions.isMqttEnabled) {
             myMqtt.handleClient();
          }
       }
@@ -245,7 +248,7 @@ void loop()
    // (No deep sleep if we are waiting for a valid gps position).
    if (!myGsmGps.waitingForGps() && !myMqtt.waitingForMqtt()) {
       if (myDeepSleep.haveToSleep()) {
-         if (myGsmGps.isGsmActive) {
+         if (myData.isGsmActive) {
             myGsmGps.stop();
          }
          myGsmPower.off();

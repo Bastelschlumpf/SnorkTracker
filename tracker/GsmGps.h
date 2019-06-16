@@ -40,15 +40,13 @@ public:
    MyGsmSim808   gsmSim808;        //!< SIM808 interface class 
    TinyGsmClient gsmClient;        //!< Gsm client interface
    
-   bool          isGsmActive;      //!< Is the sim808 modul started?
-   bool          isGpsActive;      //!< Is the gs part of the sim808 activated?
-
    MyOptions    &myOptions;        //!< Reference to the options.
    MyData       &myData;           //!< Reference to the data.
 
 protected:
    void enableGps(bool enable);
    bool getGps();
+   bool getGpsFromGsm();
    bool sleepMode2();
 
 public:
@@ -73,8 +71,6 @@ MyGsmGps::MyGsmGps(MyOptions &options, MyData &data, short pinRx, short pinTx)
    : gsmSerial(data.logInfos, options.isDebugActive, pinRx, pinTx)
    , gsmSim808(gsmSerial)
    , gsmClient(gsmSim808)
-   , isGsmActive(false)
-   , isGpsActive(false)
    , myOptions(options)
    , myData(data)
    , lastGsmChecSec(0)
@@ -92,7 +88,7 @@ bool MyGsmGps::begin()
       return false;
    }
 
-   if (!isGsmActive) {
+   if (!myData.isGsmActive) {
       MyDbg(F("MyGsmGps::begin"));
       myData.status = F("Sim808 Initializing...");
       MyDbg(myData.status);
@@ -158,12 +154,11 @@ bool MyGsmGps::begin()
          myData.cop = gsmSim808.getOperator();
          MyDbg((String) F("cop: ") + myData.modemInfo);
       }
-      isGsmActive = true;
+      myData.isGsmActive = true;
    }
    
-   if (isGsmActive && myOptions.isGpsEnabled && !isGpsActive) {
+   if (myData.isGsmActive && myOptions.isGpsEnabled && !myData.isGpsActive) {
       enableGps(true);
-      isGpsActive = true;
    }
 
    return true;
@@ -172,7 +167,7 @@ bool MyGsmGps::begin()
 /** Checks the gps from time to time if enabled. */
 void MyGsmGps::handleClient()
 {
-   if (!isGsmActive) {
+   if (!myData.isGsmActive) {
       return;
    }
 
@@ -188,7 +183,7 @@ void MyGsmGps::handleClient()
 
    if (secondsElapsedAndUpdate(lastGpsCheckSec, 10)) { // Wait 10 sec between retries
       if (secondsElapsed(myData.rtcData.lastGpsReadSec, myOptions.gpsCheckIntervalSec)) {
-         if (!isGpsActive) {
+         if (!myData.isGpsActive) {
             enableGps(true);
          }
          MyDbg(F("getGPS"));
@@ -204,10 +199,11 @@ void MyGsmGps::handleClient()
 
             // Ignore gps if we cannot get a position in X minutes.
             if (waitForGpsTime > myOptions.gpsTimeoutSec) {
+               getGpsFromGsm(); // fallback from gsm
+
                MyDbg(F(" -> gps timeout!"));
                startGpsCheck = 0;
                myData.waitingForGps = false;
-               myData.rtcData.lastGps.hasTimeout = true;
                myData.rtcData.lastGpsReadSec = secondsSincePowerOn();
             } else {
                if (myOptions.gpsTimeoutSec - waitForGpsTime > 0) {
@@ -230,8 +226,7 @@ bool MyGsmGps::stop()
       ret = gsmSim808.gprsDisconnect();
    }  
    if (ret) {
-      isGpsActive = false;
-      isGsmActive = false;
+      myData.isGsmActive = false;
       MyDbg(F("gprs gps stopped"));
       myData.status = F("Sim808 stopped!");
       sleepMode2();
@@ -242,13 +237,13 @@ bool MyGsmGps::stop()
 /** Is the gps enabled but we don't have a valid gps position. */
 bool MyGsmGps::waitingForGps()
 {
-   return isGsmActive && myOptions.isGpsEnabled && myData.waitingForGps && !myData.rtcData.lastGps.hasTimeout;
+   return myData.isGsmActive && myOptions.isGpsEnabled && myData.waitingForGps;
 }
 
 /** Send one AT command to the sim modul and log the result for the console window. */
 bool MyGsmGps::sendAT(String cmd)
 {
-   if (!isGsmActive) {
+   if (!myData.isGsmActive) {
       MyDbg(F("sim808 not active!"));
       return false;
    }
@@ -272,7 +267,7 @@ bool MyGsmGps::sleepMode2()
 /** Read one sms if available. */
 bool MyGsmGps::getSMS(SmsData &sms)
 {
-   if (!isGsmActive) {
+   if (!myData.isGsmActive) {
       MyDbg(F("gsm not active!"));
       return false;
    }
@@ -284,7 +279,7 @@ bool MyGsmGps::getSMS(SmsData &sms)
 /** Send one sms to a specific phone number via gsm. */
 bool MyGsmGps::sendSMS(String phoneNumber, String message)
 {
-   if (!isGsmActive) {
+   if (!myData.isGsmActive) {
       MyDbg(F("gsm not active!"));
       return false;
    }
@@ -296,7 +291,7 @@ bool MyGsmGps::sendSMS(String phoneNumber, String message)
 /** Delete one specific sms from the sim card. */
 bool MyGsmGps::deleteSMS(long index)
 {
-   if (!isGsmActive) {
+   if (!myData.isGsmActive) {
       MyDbg(F("gsm not active!"));
       return false;
    }
@@ -308,8 +303,8 @@ bool MyGsmGps::deleteSMS(long index)
 /** Switch on the gps part of the sim808 modul. */
 void MyGsmGps::enableGps(bool enable)
 {
-   if (!isGsmActive) {
-      MyDbg(F("sim808 not active!"));
+   if (!myData.isGsmActive) {
+      MyDbg(F("sim808 gsm not active!"));
       return;
    }
 
@@ -317,26 +312,26 @@ void MyGsmGps::enableGps(bool enable)
       gsmSim808.enableGPS();
       myData.status = F("Sim808 gps enabled!");
       MyDbg(myData.status);
-      isGpsActive = true;
+      myData.isGpsActive = true;
    } else {
       gsmSim808.disableGPS();
       myData.status = F("Sim808 gps disabled!");
       MyDbg(myData.status);
-      isGpsActive = false;
+      myData.isGpsActive = false;
    }
 }
 
 /** Read one gps position with the sim808 modul and save the values in the global data. */
 bool MyGsmGps::getGps()
 {
-   if (!isGsmActive) {
-      MyDbg(F("sim808 not active!"));
+   if (!myData.isGsmActive) {
+      MyDbg(F("sim808 gsm not active!"));
       return false;
    }
 
    bool ret = false;
 
-   if (isGpsActive) {
+   if (myData.isGpsActive) {
       MyGps gps;
 
       myData.waitingForGps = true;
@@ -360,26 +355,40 @@ bool MyGsmGps::getGps()
          myData.waitingForGps   = false;
          ret = true;
       } else {
-         // Get the GPS position as fallback from the GSM modul.
-         MyDbg(F("getGsmGps"));
-         if (gsmSim808.getGsmGps(gps)) {
-            myData.lastGpsUpdateSec = secondsSincePowerOn();
-            
-            MyDbg((String) F("(gsmGps) longitude: ") + gps.longitudeString());
-            MyDbg((String) F("(gsmGps) latitude: ")  + gps.latitudeString());
-            MyDbg((String) F("(gsmGps) gpsDate: ")   + gps.date.dateString());
-            MyDbg((String) F("(gsmGps) gpsTime: ")   + gps.time.timeString());
-            
-            if (myData.rtcData.lastGps.location.latitude() != 0) {
-               myData.movingDistance = gps.location.distanceTo(myData.rtcData.lastGps.location);
-               myData.isMoving       = myData.movingDistance > myOptions.minMovingDistance;
-            }
-            myData.rtcData.lastGps = gps;
-         } else {
-            MyDbg(F(" -> GsmGPS timeout!"));
-            myData.rtcData.lastGps.clear();
-         }
+         MyDbg(F(" -> GPS timeout!"));
       }
    }
    return ret;
+}
+
+/** Get the Gps position from the gsm modul as fallback. */
+bool MyGsmGps::getGpsFromGsm()
+{
+   if (!myData.isGsmActive) {
+      MyDbg(F("sim808 gsm not active!"));
+      return false;
+   }
+
+   MyGps gps;
+
+   // Get the GPS position as fallback from the GSM modul.
+   MyDbg(F("getGsmGps"));
+   if (gsmSim808.getGsmGps(gps)) {
+      myData.lastGpsUpdateSec = secondsSincePowerOn();
+            
+      MyDbg((String) F("(gsmGps) longitude: ") + gps.longitudeString());
+      MyDbg((String) F("(gsmGps) latitude: ")  + gps.latitudeString());
+      MyDbg((String) F("(gsmGps) gpsDate: ")   + gps.date.dateString());
+      MyDbg((String) F("(gsmGps) gpsTime: ")   + gps.time.timeString());
+            
+      if (myData.rtcData.lastGps.location.latitude() != 0) {
+         myData.movingDistance = gps.location.distanceTo(myData.rtcData.lastGps.location);
+         myData.isMoving       = myData.movingDistance > myOptions.minMovingDistance;
+      }
+      myData.rtcData.lastGps = gps;
+      return true;
+   } else {
+      MyDbg(F(" -> GsmGPS timeout!"));
+   }
+   return false;
 }

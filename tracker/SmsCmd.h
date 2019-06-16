@@ -101,7 +101,7 @@ String MySmsCmd::getGoogleMapGpsUrl()
 /** Checks for new sms and parse the commands from the message */
 void MySmsCmd::checkSms()
 {
-   if (!myGsmGps.isGsmActive) {
+   if (!myData.isGsmActive) {
       return;
    }
    

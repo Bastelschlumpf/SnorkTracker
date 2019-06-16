@@ -78,7 +78,7 @@ bool MyDeepSleep::begin()
          // power is too low until the deep sleep time is over.
          MyDbg((String) F("CheckTime elapsed: ") + String(checkTimeElapsed) + F(" sec"));
          if (checkTimeElapsed < myOptions.deepSleepTimeSec) {
-            sleep(false);
+            sleep(false); // back to sleep
          }
          MyDbg(F("Awake"));
       }

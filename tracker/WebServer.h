@@ -86,7 +86,6 @@ public:
 
 public:
    bool isWebServerActive; //!< Is the webserver currently active.
-   bool isWifiConnected;   //!< Do we have a valid connection to an AP?
 
 public:
    MyWebServer(MyOptions &options, MyData &data);
@@ -108,7 +107,6 @@ MyData        *MyWebServer::myData    = NULL;
 /** Constructor/Destructor */
 MyWebServer::MyWebServer(MyOptions &options, MyData &data)
    : isWebServerActive(false)
-   , isWifiConnected(false)
 {
    myOptions = &options;
    myData    = &data;      
@@ -141,20 +139,22 @@ bool MyWebServer::begin()
    MyDbg((String) F("SoftAPIP address: ")     + myData->softAPIP, true);
    MyDbg((String) F("SoftAPIP mac address: ") + myData->softAPmacAddress, true);
 
-   WiFi.begin(myOptions->wifiAP.c_str(), myOptions->wifiPassword.c_str());
-   for (int i = 0; i < 30 && WiFi.status() != WL_CONNECTED; i++) { // 30 Sec versuchen
-      MyDbg(F("."), true, false);
-      MyDelay(1000);
+   if (myOptions->connectWifiAP) {
+      WiFi.begin(myOptions->wifiAP.c_str(), myOptions->wifiPassword.c_str());
+      for (int i = 0; i < 30 && WiFi.status() != WL_CONNECTED; i++) { // 30 Sec versuchen
+         MyDbg(F("."), true, false);
+         MyDelay(1000);
+      }
    }
    if (WiFi.status() == WL_CONNECTED) {
       myData->stationIP = WiFi.localIP().toString();
       MyDbg((String) F("Connected to ")        + myOptions->wifiAP, true);
       MyDbg((String) F("Station IP address: ") + myData->stationIP, true);
       MyDbg((String) F("AP1 SSID (RSSI): ")    + String(myOptions->wifiAP + F(" (") + WifiGetRssiAsQuality(WiFi.RSSI()) + F("%)")));
-      isWifiConnected = true;
-
    } else { // switch to AP Mode only
-      MyDbg((String) F("No connection to ") + myOptions->wifiAP, true);
+      if (myOptions->connectWifiAP) {
+         MyDbg((String) F("No connection to ") + myOptions->wifiAP, true);
+      }
       WiFi.disconnect();
       WiFi.mode(WIFI_AP);
    }
@@ -392,7 +392,11 @@ void MyWebServer::handleLoadMainInfo()
 #ifdef SIM808_CONNECTED
    AddTableTr(info, F("Modem Info"),  myData->modemInfo);
 #else
-   AddTableTr(info, F("AP1 SSID (RSSI)"), String(myOptions->wifiAP + F(" (") + WifiGetRssiAsQuality(WiFi.RSSI()) + F("%)")));
+   if (WiFi.status() != WL_CONNECTED) {
+      AddTableTr(info, F("AP SSID"), String(SOFT_AP_NAME));
+   } else {
+      AddTableTr(info, F("AP SSID (RSSI)"), String(myOptions->wifiAP + F(" (") + WifiGetRssiAsQuality(WiFi.RSSI()) + F("%)")));
+   }
    AddTableTr(info);
 #endif   
 
@@ -480,16 +484,29 @@ void MyWebServer::handleLoadSettingsInfo()
    String info;
 
    MyDbg(F("LoadSettings"), true);
-   AddOption(info, F("wifiAP"),       F("WiFi SSID"),     myOptions->wifiAP);
-   AddOption(info, F("wifiPassword"), F("WiFi Password"), myOptions->wifiPassword, true, true);
+
+   AddOption(info, F("isDebugActive"), F("Debug Active"), myOptions->isDebugActive);
+
+   AddOption(info, F("bme280CheckIntervalSec"), F("Temperature check every (Interval)"), formatInterval(myOptions->bme280CheckIntervalSec));
+
 #ifdef SIM808_CONNECTED
    AddOption(info, F("gprsAP"),       F("GPRS AP"),       myOptions->gprsAP);
    AddOption(info, F("gprsUser"),     F("GPRS User"),     myOptions->gprsUser);
    AddOption(info, F("gprsPassword"), F("GPRS Password"), myOptions->gprsPassword);
 #endif
-   AddOption(info, F("isDebugActive"), F("Debug Active"),  myOptions->isDebugActive);
 
-   AddOption(info, F("bme280CheckIntervalSec"), F("Temperature check every (Interval)"), formatInterval(myOptions->bme280CheckIntervalSec));
+   AddBr(info);
+   {
+      HtmlTag fieldset(info, F("fieldset"));
+      {
+         HtmlTag legend(info, F("legend"));
+
+         AddOption(info, F("connectWifiAP"), F("WiFi connect"), myOptions->connectWifiAP, false);
+      }
+
+      AddOption(info, F("wifiAP"), F("WiFi SSID"), myOptions->wifiAP, false);
+      AddOption(info, F("wifiPassword"), F("WiFi Password"), myOptions->wifiPassword, false, true);
+   }
 
 #ifdef SIM808_CONNECTED
    AddBr(info);
@@ -512,8 +529,9 @@ void MyWebServer::handleLoadSettingsInfo()
 
          AddOption(info, F("isGpsEnabled"), F("GPS Enabled"), myOptions->isGpsEnabled, false);
       }
-      AddOption(info, F("gpsCheckIntervalSec"), F("GPS check every (Interval)"), formatInterval(myOptions->gpsCheckIntervalSec));
-      AddOption(info, F("gpsTimeoutSec"),       F("GPS timeout"), formatInterval(myOptions->gpsTimeoutSec), false);
+      AddOption(info, F("gpsCheckIntervalSec"), F("GPS check every (Interval)"),         formatInterval(myOptions->gpsCheckIntervalSec));
+      AddOption(info, F("gpsTimeoutSec"),       F("GPS timeout"),                        formatInterval(myOptions->gpsTimeoutSec));
+      AddOption(info, F("minMovingDistance"),   F("GPS is moving if more than (meter)"), String(myOptions->minMovingDistance), false);
    }
 #endif
 
@@ -570,7 +588,9 @@ void MyWebServer::handleSaveSettings()
    
    MyDbg(F("SaveSettings"), true);
    GetOption(F("gprsAP"),                    myOptions->gprsAP);
+   GetOption(F("gprsUser"),                  myOptions->gprsUser);
    GetOption(F("gprsPassword"),              myOptions->gprsPassword);
+   GetOption(F("connectWifiAP"),             myOptions->connectWifiAP);
    GetOption(F("wifiAP"),                    myOptions->wifiAP);
    GetOption(F("wifiPassword"),              myOptions->wifiPassword);
    GetOption(F("isDebugActive"),             myOptions->isDebugActive);
@@ -581,6 +601,7 @@ void MyWebServer::handleSaveSettings()
    GetOption(F("isGpsEnabled"),              myOptions->isGpsEnabled);
    GetOption(F("gpsTimeoutSec"),             myOptions->gpsTimeoutSec);
    GetOption(F("gpsCheckIntervalSec"),       myOptions->gpsCheckIntervalSec);
+   GetOption(F("minMovingDistance"),         myOptions->minMovingDistance);
    GetOption(F("isDeepSleepEnabled"),        myOptions->isDeepSleepEnabled);
    GetOption(F("powerSaveModeVoltage"),      myOptions->powerSaveModeVoltage);
    GetOption(F("powerCheckIntervalSec"),     myOptions->powerCheckIntervalSec);
@@ -770,9 +791,10 @@ void MyWebServer::handleNotFound()
    message += F("\nArguments: ");
    message += server.args();
    message += F("\n");
-   for (uint8_t i=0; i<server.args(); i++){
-      message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
-   }
+   // Better no debuggin of browser args
+   // for (uint8_t i=0; i<server.args(); i++){
+   //   message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
+   // }
    server.send(404, F("text/plain"), message);
    MyDbg(message, true);
 }

@@ -65,7 +65,9 @@ public:
    bool   isOtaActive;         //!< Is OverTheAir update active?
    bool   isPowerOn;           //!< Is the power of the sim808 switched on?
    bool   isLowPower;          //!< Is the power below min voltage?
-
+   bool   isGsmActive;         //!< Is the sim808 modul connected to a gsm network?
+   bool   isGpsActive;         //!< Is the gs part of the sim808 activated?
+   
    long   secondsToDeepSleep;  //!< Time until next deepsleep. -1 = disabled
    long   awakeTimeOffsetSec;  //!< Awake time offset for SaveSettings.
 
@@ -166,6 +168,8 @@ MyData::MyData()
    : isOtaActive(false)
    , isPowerOn(false)
    , isLowPower(false)
+   , isGsmActive(false)
+   , isGpsActive(false)
    , secondsToDeepSleep(-1)
    , awakeTimeOffsetSec(0)
    , voltage(0.0)

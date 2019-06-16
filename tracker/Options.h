@@ -33,6 +33,7 @@ public:
    String gprsAP;                    //!< GRPS access point of the sim card supplier.
    String gprsUser;                  //!< GRPS access point User.
    String gprsPassword;              //!< GRPS access point Password.
+   bool   connectWifiAP;             //!< Should we connect to wifi
    String wifiAP;                    //!< WiFi AP name.
    String wifiPassword;              //!< WiFi AP password.
    bool   isDebugActive;             //!< Is detailed debugging enabled?
@@ -70,26 +71,27 @@ public:
 /* ******************************************** */
 
 MyOptions::MyOptions()
-   : gprsAP(GPRS_AP)
+   : isDebugActive(false)
+   , gprsAP(GPRS_AP)
    , gprsUser(GPRS_USER)
    , gprsPassword(GPRS_PASSWORD)
    , wifiAP(WIFI_SID)
+   , connectWifiAP(false)
    , wifiPassword(WIFI_PW)
-   , isDebugActive(false)
-   , bme280CheckIntervalSec(60)
+   , bme280CheckIntervalSec(60) // 1 Min
    , powerOn(false)
    , isSmsEnabled(false)
-   , isGpsEnabled(false)
-   , gpsTimeoutSec(180)
-   , gpsCheckIntervalSec(300)
-   , minMovingDistance(100)
+   , isGpsEnabled(true)
+   , gpsTimeoutSec(180)         //  3 Min 
+   , gpsCheckIntervalSec(300)   //  5 Min
+   , minMovingDistance(3000)    //  3 km
    , phoneNumber(PHONE_NUMBER)
-   , smsCheckIntervalSec(600)
+   , smsCheckIntervalSec(600)   //  1 Min
    , isDeepSleepEnabled(false)
    , powerSaveModeVoltage(16.0)
-   , powerCheckIntervalSec(300)
-   , activeTimeSec(10)
-   , deepSleepTimeSec(300)
+   , powerCheckIntervalSec(300) //  5 Min
+   , activeTimeSec(60)          //  1 Min
+   , deepSleepTimeSec(900)      // 15 Min
    , isMqttEnabled(false)
    , mqttName(MQTT_NAME)
    , mqttId(MQTT_ID)
@@ -97,8 +99,8 @@ MyOptions::MyOptions()
    , mqttPort(MQTT_PORT)
    , mqttUser(MQTT_USER)
    , mqttPassword(MQTT_PASSWORD)
-   , mqttSendOnMoveEverySec(600)
-   , mqttSendOnNonMoveEverySec(10800)
+   , mqttSendOnMoveEverySec(900)      //  15 Min
+   , mqttSendOnNonMoveEverySec(10800) // 180 Min
 {
 }
 
@@ -129,7 +131,9 @@ bool MyOptions::load()
             value.replace("\n", "");
             MyDbg((String) F("Load option '") + key + F("=") + value + F("'"));
 
-            if (key == F("gprsAP")) {
+            if (key == F("isDebugActive")) {
+               isDebugActive = lValue;
+            } else if (key == F("gprsAP")) {
                gprsAP = value;
             } else if (key == F("gprsUser")) {
                gprsUser = value;
@@ -137,12 +141,12 @@ bool MyOptions::load()
                gprsPassword = value;
             } else if (key == F("wifiAP")) {
                wifiAP = value;
+            } else if (key == F("connectWifiAP")) {
+               connectWifiAP = lValue;
             } else if (key == F("wifiPassword")) {
                wifiPassword = value;
             } else if (key == F("powerOn")) {
                powerOn = lValue;
-            } else if (key == F("isDebugActive")) {
-               isDebugActive = lValue;
             } else if (key == F("bme280CheckIntervalSec")) {
                bme280CheckIntervalSec = lValue;
             } else if (key == F("isSmsEnabled")) {
@@ -209,13 +213,14 @@ bool MyOptions::save()
   if (!file) {
      MyDbg("Failed to write options file");
   } else {
+     file.println((String) F("isDebugActive=")             + String(isDebugActive));
      file.println((String) F("gprsAP=")                    + gprsAP);
      file.println((String) F("gprsUser=")                  + gprsUser);
      file.println((String) F("gprsPassword=")              + gprsPassword);
+     file.println((String) F("connectWifiAP=")             + String(connectWifiAP));
      file.println((String) F("wifiAP=")                    + wifiAP);
      file.println((String) F("wifiPassword=")              + wifiPassword);
      file.println((String) F("powerOn=")                   + String(powerOn));
-     file.println((String) F("isDebugActive=")             + String(isDebugActive));
      file.println((String) F("bme280CheckIntervalSec=")    + String(bme280CheckIntervalSec));
      file.println((String) F("isSmsEnabled=")              + String(isSmsEnabled));
      file.println((String) F("isGpsEnabled=")              + String(isGpsEnabled));

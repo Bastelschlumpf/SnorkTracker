@@ -46,6 +46,7 @@
 #define topic_batt_volt              "/Gsm/BattVolt"           //!< Battery volt of the gsm modul
 
 #define topic_gps                    "/Gps"                    //!< Gps longitude, latitude, altitude, moving speed
+#define topic_gps_distance           "/GpsDistance"            //!< Gps distance to last position         
 
 /**
   * MQTT client for sending the collected data to a MQTT server
@@ -98,6 +99,10 @@ MyMqtt::~MyMqtt()
 */
 bool MyMqtt::mySubscribe(String subTopic)
 {
+   if (!myData.isGsmActive) {
+      return false;
+   }
+
    String topic;
 
    topic = myOptions.mqttName + F("/") + myOptions.mqttId + subTopic;
@@ -110,6 +115,10 @@ bool MyMqtt::mySubscribe(String subTopic)
 */
 bool MyMqtt::myPublish(String subTopic, String value)
 {
+   if (!myData.isGsmActive) {
+      return false;
+   }
+
    bool ret = false;
 
    if (value.length() > 0) {
@@ -125,6 +134,9 @@ bool MyMqtt::myPublish(String subTopic, String value)
 /** Check if we have to wait for sending mqtt data. */
 bool MyMqtt::waitingForMqtt()
 {
+   if (!myData.isGsmActive) {
+      return false;
+   }
    if (publishInProgress) {
       return true;
    }
@@ -148,6 +160,10 @@ bool MyMqtt::begin()
 /** Connect To the MQTT server and send the data when the time is right. */
 void MyMqtt::handleClient()
 {
+   if (!myData.isGsmActive) {
+      return;
+   }
+
    bool send = false;
 
    if (myData.isMoving) {
@@ -161,12 +177,12 @@ void MyMqtt::handleClient()
          for (int i = 0; !PubSubClient::connected() && i < 5; i++) {  
             MyDbg(F("Attempting MQTT connection..."), true);
             if (PubSubClient::connect(myOptions.mqttName.c_str(), myOptions.mqttUser.c_str(), myOptions.mqttPassword.c_str())) {  
-               mySubscribe(topic_deep_sleep);
-               mySubscribe(topic_power_on);
+               // mySubscribe(topic_deep_sleep);
+               // mySubscribe(topic_power_on);
 #ifdef SIM808_CONNECTED
-               mySubscribe(topic_gps_enabled);
-               mySubscribe(topic_send_on_move_every);
-               mySubscribe(topic_send_on_non_move_every);
+               // mySubscribe(topic_gps_enabled);
+               // mySubscribe(topic_send_on_move_every);
+               // mySubscribe(topic_send_on_non_move_every);
 #endif
                MyDbg(F(" connected"), true);
             } else {  
@@ -178,8 +194,9 @@ void MyMqtt::handleClient()
          }  
       }
       if (PubSubClient::connected()) {
-         MyDbg(F("Attempting MQTT publishing"), true);
+         char gpsJson[255];
 
+         MyDbg(F("Attempting MQTT publishing"), true);
          myPublish(topic_voltage,     String(myData.voltage, 2));
          myPublish(topic_mAh,         String(myData.getPowerConsumption()));
          myPublish(topic_mAhLowPower, String(myData.getLowPowerPowerConsumption()));
@@ -187,7 +204,6 @@ void MyMqtt::handleClient()
 #ifndef SIM808_CONNECTED
          myPublish(topic_rssi,        WifiGetRssiAsQuality(WiFi.RSSI()));
 #endif
-
          myPublish(topic_temperature, String(myData.temperature));
          myPublish(topic_humidity,    String(myData.humidity));
          myPublish(topic_pressure,    String(myData.pressure));
@@ -197,19 +213,9 @@ void MyMqtt::handleClient()
          myPublish(topic_batt_level,     myData.batteryLevel);
          myPublish(topic_batt_volt,      myData.batteryVolt);
 
-         if (myData.rtcData.lastGps.fixStatus) {
-            String gps;
-            char   data[160];
-
-            gps += "{";
-            gps += "\"long\":\"" + myData.rtcData.lastGps.longitudeString() + "\",";
-            gps += "\"lat\":\""  + myData.rtcData.lastGps.latitudeString()  + "\",";
-            gps += "\"alt\":\""  + myData.rtcData.lastGps.altitudeString()  + "\",";
-            gps += "\"kmph\":\"" + myData.rtcData.lastGps.kmphString()      + "\"";
-            gps += "}";
-            
-            gps.toCharArray(data, (gps.length() + 1));
-            myPublish(topic_gps,  data);
+         if (myData.rtcData.lastGps.getAsGpsJson(gpsJson)) {
+            myPublish(topic_gps, gpsJson);
+            myPublish(topic_gps_distance, String(myData.movingDistance));
          }
 #endif
          myData.rtcData.mqttSendCount++;
